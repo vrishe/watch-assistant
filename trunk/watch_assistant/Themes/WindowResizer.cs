@@ -60,7 +60,7 @@ namespace watch_assistant.Themes
         private Size resizeSize = new Size();
         private Point resizeWindowPoint = new Point();
 
-        private delegate void RefreshDelegate();
+        //private delegate void RefreshDelegate();
 
         #endregion // Fields
 
@@ -160,8 +160,8 @@ namespace watch_assistant.Themes
             {
                 while (resizeSide != ResizeSide.NOTHING)
                 {
-                    _owner.Dispatcher.Invoke(System.Windows.Threading.DispatcherPriority.Render, new RefreshDelegate(updateSize));
-                    _owner.Dispatcher.Invoke(System.Windows.Threading.DispatcherPriority.Render, new RefreshDelegate(updateMouseDown));
+                    _owner.Dispatcher.Invoke(System.Windows.Threading.DispatcherPriority.Render, new Action(updateSize));
+                    _owner.Dispatcher.Invoke(System.Windows.Threading.DispatcherPriority.Render, new Action(updateMouseDown));
                 }
             }
             catch (Exception)
@@ -177,7 +177,7 @@ namespace watch_assistant.Themes
 
             if (resizeSide.HasFlag(ResizeSide.RIGHT))
             {
-                _owner.Width = Math.Max(0, this.resizeSize.Width - (resizePoint.X - p.X));
+                _owner.Width = Math.Max(0, resizeSize.Width - (resizePoint.X - p.X));
             }
 
             if (resizeSide.HasFlag(ResizeSide.BOTTOM))
@@ -188,13 +188,13 @@ namespace watch_assistant.Themes
             if (resizeSide.HasFlag(ResizeSide.LEFT))
             {
                 _owner.Width = Math.Max(0, resizeSize.Width + (resizePoint.X - p.X));
-                _owner.Left = Math.Max(0, resizeWindowPoint.X - (resizePoint.X - p.X));
+                if (_owner.Width > _owner.MinWidth) _owner.Left = Math.Max(0, resizeWindowPoint.X - (resizePoint.X - p.X));
             }
 
             if (resizeSide.HasFlag(ResizeSide.TOP))
             {
                 _owner.Height = Math.Max(0, resizeSize.Height + (resizePoint.Y - p.Y));
-                _owner.Top = Math.Max(0, resizeWindowPoint.Y - (resizePoint.Y - p.Y));
+                if (_owner.Height > _owner.MinHeight) _owner.Top = Math.Max(0, resizeWindowPoint.Y - (resizePoint.Y - p.Y));
             }
         }
 
