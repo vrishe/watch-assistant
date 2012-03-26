@@ -12,10 +12,12 @@
                 <Label>Left</Label>
             </local:WindowPage.LeftHeaderCell>
             <local:WindowPage.MidHeaderCell>
-                <Label>Mid</Label>
+                <Label HorizontalAlignment="Center">Mid</Label>
             </local:WindowPage.MidHeaderCell>
             <local:WindowPage.RightHeaderCell>
-                <Label>Right</Label>
+            <Label>
+                <Button Style="{StaticResource CloseTitleBarButton}" Width="13" Height="13"/>
+            </Label>
             </local:WindowPage.RightHeaderCell>
 
             <Label FontSize="56">I DID IT!</Label>
