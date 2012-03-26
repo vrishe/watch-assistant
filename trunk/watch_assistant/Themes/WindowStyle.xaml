@@ -137,9 +137,9 @@
 
     <!-- Window Template -->
     <ControlTemplate x:Key="WindowTemplate" TargetType="{x:Type Window}">
-        <!--<ControlTemplate.Resources>
+        <ControlTemplate.Resources>
             <GridLength x:Key="BorderWidth">6</GridLength>
-        </ControlTemplate.Resources>-->
+        </ControlTemplate.Resources>
 
         <!-- SizeChanged -->
         <Grid x:Name="WindowRoot" Style="{DynamicResource WindowRoot}" SizeChanged="OnWindowSizeChanged" Loaded="OnWindowLoaded"> 
