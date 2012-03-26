@@ -166,7 +166,7 @@
                             Grid.Row="1"
                             Grid.Column="1">
                           
-                        <Grid x:Name="WindowLayout">
+                        <!--<Grid x:Name="WindowLayout">
                             <Grid.RowDefinitions>
                                 <RowDefinition x:Name="HeaderRow" Height="30"/>
                                 <RowDefinition Height="*"/>
@@ -180,24 +180,23 @@
                                 </Grid.ColumnDefinitions>
                                         
                                 <ContentPresenter x:Name="LeftContentCell" Grid.Column="0"/>
-                                <ContentPresenter x:Name="CaptionContentCell" Grid.Column="1"/>
+                                <ContentPresenter x:Name="CaptionContentCell" Grid.Column="1"/>-->
                                         
                                 <!-- Window state buttons -->
-                                <StackPanel Margin="0,0,5,0" Orientation="Horizontal" Grid.Column="2" VerticalAlignment="Center">
-                                    <!--<Button Style="{StaticResource MinimizeTitleBarButton}" Click="MinimizeWindow" Width="13" Height="13"/>
-                                    <Button Style="{StaticResource MaximizeTitleBarButton}" Click="MaximizeWindow"  Width="13" Height="13"/>-->
+                        <!--<StackPanel Margin="0,0,5,0" Orientation="Horizontal" Grid.Column="2" VerticalAlignment="Center">
+                                    <Button Style="{StaticResource MinimizeTitleBarButton}" Click="MinimizeWindow" Width="13" Height="13"/>
+                                    <Button Style="{StaticResource MaximizeTitleBarButton}" Click="MaximizeWindow"  Width="13" Height="13"/>
                                     <Button Style="{StaticResource CloseTitleBarButton}" Command="{Binding Path=Commands[CloseWindow]}" Width="13" Height="13"/>
-                                    <!---->
                                 </StackPanel>
-                            </Grid>
+                            </Grid>-->
 
-                            <!-- The window content -->
-                            <Border x:Name="WindowContent" Grid.Row="1">
-                                <AdornerDecorator>
-                                    <ContentPresenter />
-                                </AdornerDecorator>
-                            </Border>
-                        </Grid>                       
+                            <!-- The window content 
+                        </Grid>-->
+                            
+                        
+                        <Border x:Name="WindowContent" Grid.Row="1">
+                            <ContentPresenter />
+                        </Border>
                     </Border>
 
                     <!-- Side grips -->

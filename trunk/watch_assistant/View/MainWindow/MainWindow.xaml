@@ -1,9 +1,24 @@
 ﻿<Window x:Class="watch_assistant.View.MainWindow.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
+        xmlns:local="clr-namespace:watch_assistant"
          
         DataContext="{Binding RelativeSource={RelativeSource Self}}"
         Style="{DynamicResource SkinWindowStyle}"
         
         Height="350" Width="525">
+        <local:WindowPage>
+            <local:WindowPage.LeftHeaderCell>
+                <Label>Left</Label>
+            </local:WindowPage.LeftHeaderCell>
+            <local:WindowPage.MidHeaderCell>
+                <Label>Mid</Label>
+            </local:WindowPage.MidHeaderCell>
+            <local:WindowPage.RightHeaderCell>
+                <Label>Right</Label>
+            </local:WindowPage.RightHeaderCell>
+
+            <Label FontSize="56">I DID IT!</Label>
+
+        </local:WindowPage>
 </Window>
