@@ -6,11 +6,24 @@ using System.Runtime.InteropServices;
 using System.Windows.Input;
 using System.Windows;
 using System.Threading;
+using System.Windows.Shapes;
 
 namespace watch_assistant.Themes
 {
     class WindowResizer
     {
+        public enum ElementResizeDirection
+        {
+            NS_VERTICAL,
+            SN_VERTICAL,
+            WE_HORIZONTAL,
+            EW_HORIZONTAL,
+            NWSE_DIAGONAL,
+            SENW_DIAGONAL,
+            NESW_DIAGONAL,
+            SWNE_DIAGONAL
+        }
+
         [Flags]
         private enum ResizeSide
         {
@@ -37,10 +50,10 @@ namespace watch_assistant.Themes
 
         private readonly Window _owner;
 
-        private Dictionary<UIElement, short> leftElements = new Dictionary<UIElement, short>();
-        private Dictionary<UIElement, short> rightElements = new Dictionary<UIElement, short>();
-        private Dictionary<UIElement, short> topElements = new Dictionary<UIElement, short>();
-        private Dictionary<UIElement, short> bottomElements = new Dictionary<UIElement, short>();
+        private List<UIElement> leftElements = new List<UIElement>();
+        private List<UIElement> rightElements = new List<UIElement>();
+        private List<UIElement> topElements = new List<UIElement>();
+        private List<UIElement> bottomElements = new List<UIElement>();
 
         private ResizeSide resizeSide = ResizeSide.NOTHING;
         private PointAPI resizePoint = new PointAPI();
@@ -57,10 +70,10 @@ namespace watch_assistant.Themes
         {
             ResizeSide result = ResizeSide.NOTHING;
 
-            if (leftElements.ContainsKey(resizer)) result |= ResizeSide.LEFT;
-            if (rightElements.ContainsKey(resizer)) result |= ResizeSide.RIGHT;
-            if (topElements.ContainsKey(resizer)) result |= ResizeSide.TOP;
-            if (bottomElements.ContainsKey(resizer)) result |= ResizeSide.BOTTOM;
+            if (leftElements.Contains(resizer)) result |= ResizeSide.LEFT;
+            if (rightElements.Contains(resizer)) result |= ResizeSide.RIGHT;
+            if (topElements.Contains(resizer)) result |= ResizeSide.TOP;
+            if (bottomElements.Contains(resizer)) result |= ResizeSide.BOTTOM;
 
             return result;
         }
@@ -76,78 +89,52 @@ namespace watch_assistant.Themes
             element.MouseLeave += new MouseEventHandler((s, e) => { _owner.Cursor = Cursors.Arrow; });
         }
 
-        public void addResizerRight(UIElement element)
+        public void AddResizer(string resizingElementName, ElementResizeDirection resizeDirection)
         {
+            Rectangle element = (Rectangle)_owner.Template.FindName(resizingElementName, _owner);
+
             if (element == null) return;
 
-            connectMouseHandlers(element);
-            rightElements.Add(element, 0);
-        }
+            switch (resizeDirection)
+            {
+                case ElementResizeDirection.EW_HORIZONTAL:
+                    if (!rightElements.Contains(element)) rightElements.Add(element);
+                    break;
 
-        public void addResizerLeft(UIElement element)
-        {
-            if (element == null) return;
+                case ElementResizeDirection.WE_HORIZONTAL:
+                    if (!leftElements.Contains(element)) leftElements.Add(element);
+                    break;
 
-            connectMouseHandlers(element);
-            leftElements.Add(element, 0);
-        }
+                case ElementResizeDirection.NS_VERTICAL:
+                    if (!topElements.Contains(element)) topElements.Add(element);
+                    break;
 
-        public void addResizerUp(UIElement element)
-        {
-            if (element == null)
-                return;
+                case ElementResizeDirection.SN_VERTICAL:
+                    if (!bottomElements.Contains(element)) bottomElements.Add(element);
+                    break;
 
-            connectMouseHandlers(element);
-            topElements.Add(element, 0);
-        }
+                case ElementResizeDirection.NWSE_DIAGONAL:
+                    if (!leftElements.Contains(element)) leftElements.Add(element);
+                    if (!topElements.Contains(element)) topElements.Add(element);
+                    break;
 
-        public void addResizerDown(UIElement element)
-        {
-            if (element == null)
-                return;
+                case ElementResizeDirection.SENW_DIAGONAL:
+                    if (!rightElements.Contains(element)) rightElements.Add(element);
+                    if (!bottomElements.Contains(element)) bottomElements.Add(element);
+                    break;
 
-            connectMouseHandlers(element);
-            bottomElements.Add(element, 0);
-        }
+                case ElementResizeDirection.NESW_DIAGONAL:
+                    if (!rightElements.Contains(element)) rightElements.Add(element);
+                    if (!topElements.Contains(element)) topElements.Add(element);
+                    break;
 
-        public void addResizerRightDown(UIElement element)
-        {
-            if (element == null)
-                return;
-
-            connectMouseHandlers(element);
-            rightElements.Add(element, 0);
-            bottomElements.Add(element, 0);
-        }
-
-        public void addResizerLeftDown(UIElement element)
-        {
-            if (element == null)
-                return;
+                case ElementResizeDirection.SWNE_DIAGONAL:
+                    if (!leftElements.Contains(element)) leftElements.Add(element);
+                    if (!bottomElements.Contains(element)) bottomElements.Add(element);
+                    break;
+            }
 
             connectMouseHandlers(element);
-            leftElements.Add(element, 0);
-            bottomElements.Add(element, 0);
-        }
-
-        public void addResizerRightUp(UIElement element)
-        {
-            if (element == null)
-                return;
-
-            connectMouseHandlers(element);
-            rightElements.Add(element, 0);
-            topElements.Add(element, 0);
-        }
-
-        public void addResizerLeftUp(UIElement element)
-        {
-            if (element == null)
-                return;
-
-            connectMouseHandlers(element);
-            leftElements.Add(element, 0);
-            topElements.Add(element, 0);
         }
         #endregion // Resize components management
 
@@ -167,11 +154,6 @@ namespace watch_assistant.Themes
             t.Start();
         }
 
-        void element_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
-        {
-
-        }
-
         private void updateSizeLoop()
         {
             try
@@ -180,12 +162,7 @@ namespace watch_assistant.Themes
                 {
                     _owner.Dispatcher.Invoke(System.Windows.Threading.DispatcherPriority.Render, new RefreshDelegate(updateSize));
                     _owner.Dispatcher.Invoke(System.Windows.Threading.DispatcherPriority.Render, new RefreshDelegate(updateMouseDown));
-                    //Thread.Sleep(10);
                 }
-
-                //_owner.Dispatcher.Invoke(System.Windows.Threading.DispatcherPriority.Render, new RefreshDelegate(
-                //    delegate() { if (resizeSide.HasFlag(ResizeSide.NOTHING)) _owner.Cursor = Cursors.Arrow; })
-                //);
             }
             catch (Exception)
             {
@@ -259,39 +236,6 @@ namespace watch_assistant.Themes
                 return;
             }
         }
-
-        //private void setWECursor(object sender, MouseEventArgs e)
-        //{
-        //    _owner.Cursor = Cursors.SizeWE;
-        //}
-
-        //private void setNSCursor(object sender, MouseEventArgs e)
-        //{
-        //    _owner.Cursor = Cursors.SizeNS;
-        //}
-
-        //private void setNESWCursor(object sender, MouseEventArgs e)
-        //{
-        //    _owner.Cursor = Cursors.SizeNESW;
-        //}
-
-        //private void setNWSECursor(object sender, MouseEventArgs e)
-        //{
-        //    _owner.Cursor = Cursors.SizeNWSE;
-        //}
-
-        //private void setArrowCursor(object sender, MouseEventArgs e)
-        //{
-        //    if (!resizeDown && !resizeLeft && !resizeRight && !resizeUp)
-        //    {
-        //        _owner.Cursor = Cursors.Arrow;
-        //    }
-        //}
-
-        //private void setArrowCursor()
-        //{
-        //    _owner.Cursor = Cursors.Arrow;
-        //}
         #endregion // Cursor updaters
 
         #endregion // Methods

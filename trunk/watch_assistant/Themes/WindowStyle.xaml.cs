@@ -95,15 +95,15 @@ namespace watch_assistant.Themes
 
         wResizer = new WindowResizer(_owner);
 
-        // Attach resizer
-        wResizer.addResizerRight((Rectangle)_owner.Template.FindName("rightSizeGrip", _owner));
-        wResizer.addResizerLeft((Rectangle)_owner.Template.FindName("leftSizeGrip", _owner));
-        wResizer.addResizerUp((Rectangle)_owner.Template.FindName("topSizeGrip", _owner));
-        wResizer.addResizerDown((Rectangle)_owner.Template.FindName("bottomSizeGrip", _owner));
-        wResizer.addResizerLeftUp((Rectangle)_owner.Template.FindName("topLeftSizeGrip", _owner));
-        wResizer.addResizerRightUp((Rectangle)_owner.Template.FindName("topRightSizeGrip", _owner));
-        wResizer.addResizerLeftDown((Rectangle)_owner.Template.FindName("bottomLeftSizeGrip", _owner));
-        wResizer.addResizerRightDown((Rectangle)_owner.Template.FindName("bottomRightSizeGrip", _owner));
+        // Attach resizers
+        wResizer.AddResizer("rightSizeGrip", WindowResizer.ElementResizeDirection.EW_HORIZONTAL);
+        wResizer.AddResizer("leftSizeGrip", WindowResizer.ElementResizeDirection.WE_HORIZONTAL);
+        wResizer.AddResizer("topSizeGrip", WindowResizer.ElementResizeDirection.NS_VERTICAL);
+        wResizer.AddResizer("bottomSizeGrip", WindowResizer.ElementResizeDirection.SN_VERTICAL);
+        wResizer.AddResizer("topLeftSizeGrip", WindowResizer.ElementResizeDirection.NWSE_DIAGONAL);
+        wResizer.AddResizer("topRightSizeGrip", WindowResizer.ElementResizeDirection.NESW_DIAGONAL);
+        wResizer.AddResizer("bottomLeftSizeGrip", WindowResizer.ElementResizeDirection.SWNE_DIAGONAL);
+        wResizer.AddResizer("bottomRightSizeGrip", WindowResizer.ElementResizeDirection.SENW_DIAGONAL);
     }
 
     /// <summary>
@@ -164,5 +164,5 @@ namespace watch_assistant.Themes
     //        Application.Current.Resources.MergedDictionaries[0] = skin;
     //    }
     //}
-  }
+ }
 }
