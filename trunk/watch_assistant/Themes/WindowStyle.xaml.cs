@@ -7,9 +7,25 @@ using watch_assistant.ViewModel;
 
 namespace watch_assistant.Themes
 {
-  public partial class WindowStyle : ResourceDictionary
+    public partial class WindowStyle : ResourceDictionary
   {
     private WindowResizer wResizer;
+
+    #region Dependency propertyes
+
+
+    public object LeftContentCell
+    {
+        get { return (object)GetValue(LeftContentCellProperty); }
+        set { SetValue(LeftContentCellProperty, value); }
+    }
+
+    // Using a DependencyProperty as the backing store for LeftContentCell.  This enables animation, styling, binding, etc...
+    public static readonly DependencyProperty LeftContentCellProperty =
+        DependencyProperty.Register("LeftContentCell", typeof(object), typeof(WindowStyle), new UIPropertyMetadata(null));
+
+    
+    #endregion //Dependency propertyes
 
     public WindowStyle()
     {

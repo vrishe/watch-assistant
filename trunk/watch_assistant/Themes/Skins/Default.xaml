@@ -8,7 +8,13 @@
     <Color x:Key="WindowFrameBrushColor1">#E9767676</Color>
     <Color x:Key="WindowFrameBrushColor2">#F0969696</Color>
     <Color x:Key="WindowFrameBrushColor3">#E9666666</Color>
+    <Color x:Key="WindowBackgroundBrushColor1">#FF0A0A0A</Color>
+    <Color x:Key="WindowBackgroundBrushColor2">#FF4F4F4F</Color>
 
+    <RadialGradientBrush x:Key="WindowBackgroundBrush" Center="0.5,0.5" RadiusX="2.1" RadiusY="1.9">
+        <GradientStop Color="{DynamicResource WindowBackgroundBrushColor1}" Offset="0.99"/>
+        <GradientStop Color="{DynamicResource WindowBackgroundBrushColor2}" />
+    </RadialGradientBrush>
 
     <LinearGradientBrush x:Key="WindowFrameBrush" StartPoint="0.5,0" EndPoint="0.5,1">
         <GradientStop Color="{DynamicResource WindowFrameBrushColor1}"/>
@@ -16,14 +22,10 @@
         <GradientStop Color="{DynamicResource WindowFrameBrushColor3}" Offset="0.36"/>
     </LinearGradientBrush>
 
-    <Color x:Key="WindowBackgroundBrushColor1">#FF0A0A0A</Color>
-    <Color x:Key="WindowBackgroundBrushColor2">#FF4F4F4F</Color>
 
-    <SolidColorBrush x:Key="WindowBackgroundBrush" Color="White" />
-
-    <LinearGradientBrush x:Key="TitleBarBackgroundBrush" StartPoint="0.5,0" EndPoint="0.25,1">
+    <!--<LinearGradientBrush x:Key="TitleBarBackgroundBrush" StartPoint="0.5,0" EndPoint="0.25,1">
         <GradientStop Color="{DynamicResource WindowBackgroundBrushColor1}"/>
         <GradientStop Color="{DynamicResource WindowBackgroundBrushColor2}" Offset="1"/>
-    </LinearGradientBrush>
+    </LinearGradientBrush>-->
 
 </ResourceDictionary>
