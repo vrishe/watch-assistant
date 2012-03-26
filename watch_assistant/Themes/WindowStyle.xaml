@@ -162,7 +162,7 @@
                             MouseMove="OnBorderMouseMove"
                             MouseLeftButtonDown="OnBorderMouseLeftButtonDown"
                             CornerRadius="{Binding ElementName=WindowFrame, Path=CornerRadius}"
-                            Background="Gray"
+                            Background="{DynamicResource WindowBackgroundBrush}"
                             Grid.Row="1"
                             Grid.Column="1">
                           
