@@ -2,6 +2,8 @@
                     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
+    <CornerRadius x:Key="DefaultCornerRadius">5</CornerRadius>
+    
     <!-- Base title button style -->
     <Style x:Key="TitleBarButtonBase" TargetType="{x:Type Button}">
         <Setter Property="SnapsToDevicePixels" Value="true" />
@@ -114,7 +116,7 @@
     </Style>
     
     <Style x:Key="WindowFrameBorder" TargetType="{x:Type Border}" BasedOn="{StaticResource WindowBorderBase}">
-        <Setter Property="CornerRadius" Value="5" />
+        <Setter Property="CornerRadius" Value="{StaticResource DefaultCornerRadius}" />
         <Setter Property="Background" Value="{DynamicResource WindowFrameBrush}" />
         <Setter Property="BorderBrush" Value="DimGray" />
         <Setter Property="BorderThickness" Value="1" />
@@ -139,6 +141,9 @@
     <ControlTemplate x:Key="WindowTemplate" TargetType="{x:Type Window}">
         <ControlTemplate.Resources>
             <GridLength x:Key="BorderWidth">6</GridLength>
+            <Style TargetType="Label">
+                <Setter Property="Foreground" Value="{DynamicResource WindowCaptionTextColor}"/>
+            </Style>
         </ControlTemplate.Resources>
 
         <!-- SizeChanged -->
@@ -164,35 +169,7 @@
                             CornerRadius="{Binding ElementName=WindowFrame, Path=CornerRadius}"
                             Background="{DynamicResource WindowBackgroundBrush}"
                             Grid.Row="1"
-                            Grid.Column="1">
-                          
-                        <!--<Grid x:Name="WindowLayout">
-                            <Grid.RowDefinitions>
-                                <RowDefinition x:Name="HeaderRow" Height="30"/>
-                                <RowDefinition Height="*"/>
-                            </Grid.RowDefinitions>
-
-                            <Grid Grid.Row="0">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="Auto"/>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="Auto"/>
-                                </Grid.ColumnDefinitions>
-                                        
-                                <ContentPresenter x:Name="LeftContentCell" Grid.Column="0"/>
-                                <ContentPresenter x:Name="CaptionContentCell" Grid.Column="1"/>-->
-                                        
-                                <!-- Window state buttons -->
-                        <!--<StackPanel Margin="0,0,5,0" Orientation="Horizontal" Grid.Column="2" VerticalAlignment="Center">
-                                    <Button Style="{StaticResource MinimizeTitleBarButton}" Click="MinimizeWindow" Width="13" Height="13"/>
-                                    <Button Style="{StaticResource MaximizeTitleBarButton}" Click="MaximizeWindow"  Width="13" Height="13"/>
-                                    <Button Style="{StaticResource CloseTitleBarButton}" Command="{Binding Path=Commands[CloseWindow]}" Width="13" Height="13"/>
-                                </StackPanel>
-                            </Grid>-->
-
-                            <!-- The window content 
-                        </Grid>-->
-                            
+                            Grid.Column="1">                            
                         
                         <Border x:Name="WindowContent" Grid.Row="1">
                             <ContentPresenter />
