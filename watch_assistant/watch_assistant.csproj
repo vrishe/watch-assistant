@@ -55,7 +55,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="CustomControls\UserNamePlate.xaml.cs">
+    <Compile Include="View\CustomControls\UserNamePlate.xaml.cs">
       <DependentUpon>UserNamePlate.xaml</DependentUpon>
     </Compile>
     <Compile Include="RelayCommand.cs" />
@@ -67,8 +67,8 @@
       <DependentUpon>WindowStyle.xaml</DependentUpon>
     </Compile>
     <Compile Include="Themes\WindowResizer.cs" />
-    <Compile Include="CustomControls\WindowPage.cs" />
-    <Page Include="CustomControls\UserNamePlate.xaml">
+    <Compile Include="View\CustomControls\WindowPage.cs" />
+    <Page Include="View\CustomControls\UserNamePlate.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
