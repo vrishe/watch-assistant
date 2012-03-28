@@ -12,7 +12,8 @@
                             <RowDefinition Height="30"/>
                             <RowDefinition Height="*"/>
                         </Grid.RowDefinitions>
-                        <Grid Grid.Row="0">
+
+                        <Grid Grid.Row="0" Grid.Column="1">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="0.2*"/>
                                 <ColumnDefinition Width="*"/>
@@ -24,7 +25,9 @@
                             <ContentPresenter ContentSource="RightHeaderCell" Grid.Column="2"/>
                         </Grid>
 
-                        <ContentPresenter Grid.Row="1"/>
+                        <AdornerDecorator Grid.Row="1" Grid.Column="1">
+                            <ContentPresenter/>
+                        </AdornerDecorator>
                     </Grid>
                 </ControlTemplate>
             </Setter.Value>
