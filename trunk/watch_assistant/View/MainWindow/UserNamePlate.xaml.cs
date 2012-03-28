@@ -12,7 +12,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace watch_assistant.View.CustomControls
+namespace watch_assistant.View.MainWindow
 {
     /// <summary>
     /// Логика взаимодействия для UserNamePlate.xaml
