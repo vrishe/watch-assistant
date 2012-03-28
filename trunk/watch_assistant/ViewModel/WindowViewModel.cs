@@ -8,17 +8,17 @@ using System.Windows.Shapes;
 
 namespace watch_assistant.ViewModel
 {
-	public class WindowViewModel : WorkspaceViewModel
+	public class WindowViewModel : ViewModelBase
     {
         #region Fields
 
-        private readonly Window _owner;
+        protected readonly Window _owner;
 
         #endregion // Fields
 
         #region Properties
 
-        public Dictionary<string, ICommand> Commands { get; private set; }
+        //public Dictionary<string, ICommand> Commands { get; private set; }
 
         #endregion
 
@@ -30,10 +30,10 @@ namespace watch_assistant.ViewModel
                 throw new ArgumentNullException("owner");
 
             this._owner = owner;
-            this.RequestClose += new EventHandler((s, e) => { owner.Close(); });
+            //this.RequestClose += new EventHandler((s, e) => { owner.Close(); });
 
-            Commands = new Dictionary<string, ICommand>();
-            Commands.Add("CloseWindow", this.CloseCommand);
+            //Commands = new Dictionary<string, ICommand>();
+            //Commands.Add("CloseWindow", this.CloseCommand);
         }
 
         #endregion // Constructors

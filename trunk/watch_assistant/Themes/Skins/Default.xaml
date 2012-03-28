@@ -5,6 +5,8 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     mc:Ignorable="d">
 
+    <Color x:Key="BlackColor">#FF000000</Color>
+    <Color x:Key="WhiteColor">#FFFFFFFF</Color>
     <Color x:Key="WindowFrameBrushColor1">#E9767676</Color>
     <Color x:Key="WindowFrameBrushColor2">#F0969696</Color>
     <Color x:Key="WindowFrameBrushColor3">#E9666666</Color>
@@ -12,6 +14,14 @@
     <Color x:Key="WindowBackgroundBrushColor2">#FF4F4F4F</Color>
     <SolidColorBrush x:Key="UserAvatarBackgroundColor"  Color="#FFA0A0A0" />
     <SolidColorBrush x:Key="WindowCaptionTextColor" Color="Beige" />
+    <SolidColorBrush x:Key="DisabledForegroundBrush" Color="#888" />
+    <SolidColorBrush x:Key="OutsideFontColor" Color="#FFFFFFFF" />
+    <SolidColorBrush x:Key="FocusBrush" Color="#FFE99862"/>
+
+    <LinearGradientBrush x:Key="MouseOverHighlightBrush" EndPoint="0.5,1" StartPoint="0.5,0">
+        <GradientStop Color="#FFFFFFFB" Offset="0" />
+        <GradientStop Color="#FFFEF3B5" Offset="1" />
+    </LinearGradientBrush>
 
     <RadialGradientBrush x:Key="WindowBackgroundBrush" Center="0.5,0.5" RadiusX="2.1" RadiusY="1.9">
         <GradientStop Color="{DynamicResource WindowBackgroundBrushColor1}" Offset="0.99"/>
@@ -29,7 +39,31 @@
         <GradientStop Color="#AE000000" Offset="0" />
         <GradientStop Color="#00000000" Offset="1" />
     </LinearGradientBrush>
-    
+
+    <LinearGradientBrush x:Key="TextControlBorderBrush"  EndPoint="0.5,1" StartPoint="0.5,0">
+        <GradientStop Color="#FFABAEB3"/>
+        <GradientStop Color="#FFE2E8EE" Offset="1"/>
+    </LinearGradientBrush>
+
+    <Style TargetType="{x:Type TextBox}">
+        <Setter Property="KeyboardNavigation.TabNavigation" Value="None" />
+        <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+        <Setter Property="AllowDrop" Value="true" />
+        <Setter Property="Background" >
+            <Setter.Value>
+                <SolidColorBrush Color="{DynamicResource WhiteColor}"/>
+            </Setter.Value>
+        </Setter>
+        <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+        <Setter Property="VerticalContentAlignment" Value="Stretch" />
+        <Setter Property="FontFamily" Value="Trebuchet MS" />
+        <Setter Property="FontSize" Value="12" />
+        <Setter Property="Padding" Value="4" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="BorderBrush" Value="{StaticResource TextControlBorderBrush}" />
+        <Setter Property="Template" Value="{DynamicResource TextBoxTemplate}" />
+    </Style>
+
     <Style TargetType="{x:Type ListBox}">
         <Setter Property="SnapsToDevicePixels" Value="true" />
         <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Auto" />
@@ -68,5 +102,84 @@
             </Setter.Value>
         </Setter>
     </Style>
+
+    <ControlTemplate x:Key="TextBoxTemplate" TargetType="{x:Type TextBox}">
+        <ControlTemplate.Resources>
+            <Storyboard x:Key="HoverOn">
+                <DoubleAnimation Duration="00:00:00.1000000" Storyboard.TargetName="Over" Storyboard.TargetProperty="Opacity" To="1" />
+                <DoubleAnimation Duration="00:00:00.1000000" Storyboard.TargetName="Over_Border" Storyboard.TargetProperty="Opacity" To="1" />
+            </Storyboard>
+            <Storyboard x:Key="HoverOff">
+                <DoubleAnimation Duration="00:00:00.4000000" Storyboard.TargetName="Over" Storyboard.TargetProperty="Opacity" To="0" />
+                <DoubleAnimation Duration="00:00:00.4000000" Storyboard.TargetName="Over_Border" Storyboard.TargetProperty="Opacity" To="0" />
+            </Storyboard>
+            <Storyboard x:Key="FocusedOn">
+                <DoubleAnimationUsingKeyFrames BeginTime="00:00:00" Storyboard.TargetName="FocusVisualElement" Storyboard.TargetProperty="(UIElement.Opacity)">
+                    <SplineDoubleKeyFrame KeyTime="00:00:00.1000000" Value="1" />
+                </DoubleAnimationUsingKeyFrames>
+            </Storyboard>
+            <Storyboard x:Key="FocusedOff">
+                <DoubleAnimationUsingKeyFrames BeginTime="00:00:00" Storyboard.TargetName="FocusVisualElement" Storyboard.TargetProperty="(UIElement.Opacity)">
+                    <SplineDoubleKeyFrame KeyTime="00:00:00.3000000" Value="0" />
+                </DoubleAnimationUsingKeyFrames>
+            </Storyboard>
+            <Storyboard x:Key="DisabledOn">
+                <ObjectAnimationUsingKeyFrames BeginTime="00:00:00" Storyboard.TargetName="DisabledVisualElement" Storyboard.TargetProperty="(UIElement.Visibility)">
+                    <DiscreteObjectKeyFrame KeyTime="00:00:00.1000000" Value="{x:Static Visibility.Visible}" />
+                </ObjectAnimationUsingKeyFrames>
+            </Storyboard>
+            <Storyboard x:Key="DisabledOff">
+                <ObjectAnimationUsingKeyFrames BeginTime="00:00:00" Storyboard.TargetName="DisabledVisualElement" Storyboard.TargetProperty="(UIElement.Visibility)">
+                    <DiscreteObjectKeyFrame KeyTime="00:00:00.1000000" Value="{x:Static Visibility.Collapsed}" />
+                </ObjectAnimationUsingKeyFrames>
+            </Storyboard>
+        </ControlTemplate.Resources>
+        <Grid>
+            <Border x:Name="BorderBase" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="2.75" />
+            <Border x:Name="Over" BorderBrush="{DynamicResource FocusBrush}" BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="2.75" Opacity="0" />
+            <Border x:Name="Over_Border" Margin="-1" BorderBrush="{DynamicResource MouseOverHighlightBrush}" BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="3.75" IsHitTestVisible="False" Opacity="0" />
+            <ScrollViewer Margin="0" x:Name="PART_ContentHost" Foreground="{DynamicResource OutsideFontColor}" />
+            <Border x:Name="DisabledVisualElement" Background="#A5FFFFFF" BorderBrush="#59C0C0C0" BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="2.75" IsHitTestVisible="False" Visibility="Collapsed" />
+            <Border x:Name="ReadOnlyVisualElement" Background="#66FFFFFF" CornerRadius="2.75" Visibility="Collapsed" />
+            <Border x:Name="FocusVisualElement" BorderBrush="#FFB1703C" BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="2.75" IsHitTestVisible="False" Opacity="0" />
+
+        </Grid>
+        <ControlTemplate.Triggers>
+            <Trigger Property="IsFocused" Value="True">
+                <Trigger.ExitActions>
+                    <BeginStoryboard Storyboard="{StaticResource FocusedOff}" x:Name="FocusedOff_BeginStoryboard" />
+                </Trigger.ExitActions>
+                <Trigger.EnterActions>
+                    <BeginStoryboard Storyboard="{StaticResource FocusedOn}" x:Name="FocusedOn_BeginStoryboard" />
+                </Trigger.EnterActions>
+            </Trigger>
+            <MultiTrigger>
+                <MultiTrigger.Conditions>
+                    <Condition Property="IsMouseOver" Value="True" />
+                    <Condition Property="IsFocused" Value="False" />
+                </MultiTrigger.Conditions>
+                <MultiTrigger.ExitActions>
+                    <BeginStoryboard x:Name="HoverOff_BeginStoryboard" Storyboard="{StaticResource HoverOff}" />
+                </MultiTrigger.ExitActions>
+                <MultiTrigger.EnterActions>
+                    <BeginStoryboard Storyboard="{StaticResource HoverOn}" />
+                </MultiTrigger.EnterActions>
+            </MultiTrigger>
+            <Trigger Property="IsEnabled" Value="False">
+                <Trigger.EnterActions>
+                    <BeginStoryboard Storyboard="{StaticResource DisabledOn}" x:Name="DisabledOn_BeginStoryboard" />
+                </Trigger.EnterActions>
+
+                <Setter Property="Foreground" Value="{DynamicResource DisabledForegroundBrush}" />
+            </Trigger>
+            <Trigger Property="IsEnabled" Value="True">
+                <Trigger.EnterActions>
+                    <BeginStoryboard Storyboard="{StaticResource DisabledOff}" />
+                </Trigger.EnterActions>
+
+                <Setter Property="Foreground" Value="#FF000000" />
+            </Trigger>
+        </ControlTemplate.Triggers>
+    </ControlTemplate>
 
 </ResourceDictionary>

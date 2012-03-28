@@ -43,12 +43,63 @@
                 </Setter.Value>
             </Setter>
         </Style>
-        
-        
         <!-- End of list view style -->
     </Window.Resources>
+    
+    <Grid x:Name="MainWindowResizableGrid">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition />
+            <ColumnDefinition Width="4"/>
+            <ColumnDefinition />
+        </Grid.ColumnDefinitions>
 
-        <local:WindowPage Margin="0,0,0,3.5">
+        <Border x:Name="SearchBasement"
+                CornerRadius="5,0,0,5"
+                Grid.Column="0">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="30" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+
+                <Label HorizontalAlignment="Center"
+                       Grid.Row="0">
+                    SEARCH
+                </Label>
+
+                <Grid Grid.Row="1">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <Grid Grid.Row="0"
+                          Margin="{StaticResource DefaultLeftRightMargin}">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="3*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <TextBox Foreground="LightGray"
+                                 Grid.Column="0">
+                            Type search query here
+                        </TextBox>
+                        <Button Grid.Column="1" Margin="2,0,0,0">Search</Button>
+                    </Grid>
+
+                    <ListBox x:Name="searchView" 
+                     Grid.Row="1" 
+                     Margin="5,3,5,3.5"
+                     ItemContainerStyle="{StaticResource ListViewItemStyle}">
+                        <ListBoxItem></ListBoxItem>
+                        <ListBoxItem></ListBoxItem>
+                    </ListBox>
+                </Grid>
+            </Grid>
+        </Border>
+
+        <GridSplitter VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Grid.Column="1"/>
+    
+        <local:WindowPage Margin="0,0,0,3.5" Grid.Column="2">
             <local:WindowPage.LeftHeaderCell>
                 <Label>Menu</Label>
             </local:WindowPage.LeftHeaderCell>
@@ -62,6 +113,7 @@
                     <Button Style="{DynamicResource CloseTitleBarButton}"
                             HorizontalAlignment="Center"
                             VerticalAlignment="Center"
+                            Command="Close"
                             />
                 </StackPanel>
             </local:WindowPage.RightHeaderCell>
@@ -90,7 +142,7 @@
             <!-- Main List -->
             <ListBox x:Name="listView" 
                      Grid.Row="1" 
-                     Margin="5,2,5,3.5"
+                     Margin="5,3,5,3.5"
                      ItemContainerStyle="{StaticResource ListViewItemStyle}">
                 <ListBoxItem></ListBoxItem>
                 <ListBoxItem></ListBoxItem>
@@ -104,6 +156,7 @@
                 <local:UserNamePlate Margin="{StaticResource DefaultLeftRightMargin}" />
             </StackPanel>       
         </Grid>
-
+            
     </local:WindowPage>
+    </Grid>
 </Window>
