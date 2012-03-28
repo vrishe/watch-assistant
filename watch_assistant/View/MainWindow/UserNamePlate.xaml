@@ -1,4 +1,4 @@
-﻿<UserControl x:Class="watch_assistant.View.CustomControls.UserNamePlate"
+﻿<UserControl x:Class="watch_assistant.View.MainWindow.UserNamePlate"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
@@ -9,9 +9,9 @@
                 FlowDirection="LeftToRight"
                 MaxHeight="40"
                 MaxWidth="120">
-        <StackPanel Orientation="Vertical">
-            <Label x:Name="Nickname">A2 Inc.</Label>
-            <Label x:Name="DetailsOpenLink" Margin="0,-10,0,0">Details</Label>
+        <StackPanel Orientation="Vertical" Margin="0,0,2,0">
+            <Label x:Name="Nickname" HorizontalAlignment="Left">A2 Inc.</Label>
+            <TextBlock x:Name="DetailsOpenLink" HorizontalAlignment="Left">Details</TextBlock>
         </StackPanel>
         <Border Background="{DynamicResource UserAvatarBackgroundColor}"
                 CornerRadius="{StaticResource DefaultCornerRadius}">

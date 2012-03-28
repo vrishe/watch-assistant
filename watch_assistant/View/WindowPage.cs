@@ -1,7 +1,7 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
 
-namespace watch_assistant.View.CustomControls
+namespace watch_assistant.View
 {
     public class WindowPage : UserControl
     {

@@ -141,9 +141,6 @@
     <ControlTemplate x:Key="WindowTemplate" TargetType="{x:Type Window}">
         <ControlTemplate.Resources>
             <GridLength x:Key="BorderWidth">6</GridLength>
-            <Style TargetType="Label">
-                <Setter Property="Foreground" Value="{DynamicResource WindowCaptionTextColor}"/>
-            </Style>
         </ControlTemplate.Resources>
 
         <!-- SizeChanged -->
