@@ -59,6 +59,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="ViewModel\DetailsWindow\DetailsWindowViewModel.cs" />
+    <Compile Include="View\DetailsWindow\DetailsWindow.xaml.cs">
+      <DependentUpon>DetailsWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="View\MainWindow\UserNamePlate.xaml.cs">
       <DependentUpon>UserNamePlate.xaml</DependentUpon>
     </Compile>
@@ -70,6 +74,10 @@
     </Compile>
     <Compile Include="Themes\WindowResizer.cs" />
     <Compile Include="View\WindowPage.cs" />
+    <Page Include="View\DetailsWindow\DetailsWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="View\MainWindow\UserNamePlate.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

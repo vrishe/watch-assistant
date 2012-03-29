@@ -13,5 +13,12 @@ namespace watch_assistant.View.MainWindow
 
             DataContext = new watch_assistant.ViewModel.MainWindow.MainWindowViewModel(this);
         }
+
+        // Delete this when DetailsWindow is seted up
+        private void ListBoxItem_MouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            DetailsWindow.DetailsWindow tempPreview = new DetailsWindow.DetailsWindow();
+            tempPreview.ShowDialog();
+        }
     }
 }
