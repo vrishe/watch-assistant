@@ -61,55 +61,45 @@
             <ColumnDefinition />
         </Grid.ColumnDefinitions>
 
-        <Border x:Name="SearchBasement"
-                CornerRadius="5,0,0,5"
-                Grid.Column="0">
-            <Grid>
+        <vw:WindowPage>
+            <vw:WindowPage.MidHeaderCell>
+                <Label HorizontalAlignment="Center">SEARCH</Label>
+            </vw:WindowPage.MidHeaderCell>
+
+            <Grid Grid.Row="1">
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="30" />
-                    <RowDefinition Height="*" />
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
 
-                <Label HorizontalAlignment="Center"
-                       Grid.Row="0">
-                    SEARCH
-                </Label>
-
-                <Grid Grid.Row="1">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="*"/>
-                    </Grid.RowDefinitions>
-
-                    <Grid Grid.Row="0"
-                          Margin="{StaticResource DefaultLeftRightMargin}">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="3*" />
-                            <ColumnDefinition Width="Auto" />
-                        </Grid.ColumnDefinitions>
-                        <TextBox Foreground="LightGray"
-                                 Grid.Column="0">
-                            Type search query here
-                        </TextBox>
-                        <Button Grid.Column="1" Margin="2,0,0,0">Search</Button>
-                    </Grid>
-
-                    <ListBox x:Name="searchView" 
-                     Grid.Row="1" 
-                     Margin="5,3,5,3.5"
-                     ItemContainerStyle="{StaticResource ListViewItemStyle}">
-                        <ListBoxItem></ListBoxItem>
-                        <ListBoxItem></ListBoxItem>
-                    </ListBox>
+                <Grid Grid.Row="0"
+                      Margin="{StaticResource DefaultLeftRightMargin}">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="3*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <TextBox Foreground="LightGray"
+                            Grid.Column="0">
+                        Type search query here
+                    </TextBox>
+                    <Button Grid.Column="1" Margin="2,0,0,0">Search</Button>
                 </Grid>
+
+                <ListBox x:Name="searchView" 
+                         Grid.Row="1" 
+                         Margin="5,3,5,3.5"
+                         ItemContainerStyle="{StaticResource ListViewItemStyle}">
+                    <ListBoxItem></ListBoxItem>
+                    <ListBoxItem></ListBoxItem>
+                </ListBox>
             </Grid>
-        </Border>
+        </vw:WindowPage>
 
         <GridSplitter VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Grid.Column="1"/>
     
         <vw:WindowPage Margin="0,0,0,3.5" Grid.Column="2">
             <vw:WindowPage.LeftHeaderCell>
-                <Label>Menu</Label>
+                <Label Margin="5.5,0,0,0">Menu</Label>
             </vw:WindowPage.LeftHeaderCell>
             <vw:WindowPage.MidHeaderCell>
                 <Label HorizontalAlignment="Center">Watch Assistant</Label>
@@ -152,7 +142,7 @@
                      Grid.Row="1" 
                      Margin="5,3,5,3.5"
                      ItemContainerStyle="{StaticResource ListViewItemStyle}">
-                <ListBoxItem></ListBoxItem>
+                    <ListBoxItem MouseDoubleClick="ListBoxItem_MouseDoubleClick"></ListBoxItem>
                 <ListBoxItem></ListBoxItem>
             </ListBox>
 

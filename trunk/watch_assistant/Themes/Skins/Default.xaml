@@ -70,7 +70,7 @@
         <GradientStop Color="#00000000" Offset="0" />
         <GradientStop Color="#AE000000" Offset="1" />
     </LinearGradientBrush>
-    <SolidColorBrush x:Key="ControlBorderBrush" Color="#FF703CB1"/>
+    <SolidColorBrush x:Key="ControlBorderBrush" Color="#FF858585"/>
 
     <SolidColorBrush x:Key="GlyphBrush" Color="#FF527DB5"/>
 
