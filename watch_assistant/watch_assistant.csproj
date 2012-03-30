@@ -72,7 +72,7 @@
     <Compile Include="Themes\WindowStyle.xaml.cs">
       <DependentUpon>WindowStyle.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Themes\WindowResizer.cs" />
+    <Compile Include="Utility\WindowResizer.cs" />
     <Compile Include="View\WindowPage.cs" />
     <Page Include="View\DetailsWindow\DetailsWindow.xaml">
       <SubType>Designer</SubType>
@@ -147,7 +147,12 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Model\" />
-    <Folder Include="Resources\Dictionaries\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\CustomControls\CustomControls.csproj">
+      <Project>{E1D2E8EA-7900-4D6D-B76A-C54B5D4B563A}</Project>
+      <Name>CustomControls</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

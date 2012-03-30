@@ -9,7 +9,7 @@ namespace watch_assistant.Themes
 {
     public partial class WindowStyle : ResourceDictionary
     {
-        private WindowResizer wResizer;
+        //private WindowResizer wResizer;
         private bool _restorationBlock = false;
 
         public WindowStyle()
@@ -97,21 +97,21 @@ namespace watch_assistant.Themes
 
         private void OnWindowLoaded(object sender, RoutedEventArgs e)
         {
-            Window window = (Window)(sender as FrameworkElement).TemplatedParent;
+            //Window window = (Window)(sender as FrameworkElement).TemplatedParent;
         
-            UpdateWindowConstraints(window);
+            //UpdateWindowConstraints(window);
 
-            wResizer = new WindowResizer(window);
+            //wResizer = new WindowResizer(window);
 
-            // Attach resizers
-            wResizer.AddResizer("rightSizeGrip", WindowResizer.ElementResizeDirection.EW_HORIZONTAL);
-            wResizer.AddResizer("leftSizeGrip", WindowResizer.ElementResizeDirection.WE_HORIZONTAL);
-            wResizer.AddResizer("topSizeGrip", WindowResizer.ElementResizeDirection.NS_VERTICAL);
-            wResizer.AddResizer("bottomSizeGrip", WindowResizer.ElementResizeDirection.SN_VERTICAL);
-            wResizer.AddResizer("topLeftSizeGrip", WindowResizer.ElementResizeDirection.NWSE_DIAGONAL);
-            wResizer.AddResizer("topRightSizeGrip", WindowResizer.ElementResizeDirection.NESW_DIAGONAL);
-            wResizer.AddResizer("bottomLeftSizeGrip", WindowResizer.ElementResizeDirection.SWNE_DIAGONAL);
-            wResizer.AddResizer("bottomRightSizeGrip", WindowResizer.ElementResizeDirection.SENW_DIAGONAL);
+            //// Attach resizers
+            //wResizer.AddResizer("rightSizeGrip", WindowResizer.ElementResizeDirection.EW_HORIZONTAL);
+            //wResizer.AddResizer("leftSizeGrip", WindowResizer.ElementResizeDirection.WE_HORIZONTAL);
+            //wResizer.AddResizer("topSizeGrip", WindowResizer.ElementResizeDirection.NS_VERTICAL);
+            //wResizer.AddResizer("bottomSizeGrip", WindowResizer.ElementResizeDirection.SN_VERTICAL);
+            //wResizer.AddResizer("topLeftSizeGrip", WindowResizer.ElementResizeDirection.NWSE_DIAGONAL);
+            //wResizer.AddResizer("topRightSizeGrip", WindowResizer.ElementResizeDirection.NESW_DIAGONAL);
+            //wResizer.AddResizer("bottomLeftSizeGrip", WindowResizer.ElementResizeDirection.SWNE_DIAGONAL);
+            //wResizer.AddResizer("bottomRightSizeGrip", WindowResizer.ElementResizeDirection.SENW_DIAGONAL);
         }
 
         /// <summary>
