@@ -8,7 +8,7 @@ using System.Windows;
 using System.Threading;
 using System.Windows.Shapes;
 
-namespace watch_assistant.Themes
+namespace watch_assistant.Utility
 {
     class WindowResizer
     {
