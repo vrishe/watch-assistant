@@ -14,9 +14,9 @@
         <ResourceDictionary Source="/CustomControls;component/Themes/resWindowPage.xaml" />
         
         <ResourceDictionary Source="/CustomControls;component/Themes/Skins/Default/resFrameStyle.xaml" />
+        <ResourceDictionary Source="/CustomControls;component/Themes/Skins/Default/resFrameStyleMax.xaml" />
         <ResourceDictionary Source="/CustomControls;component/Themes/Skins/Default/resColors.xaml" />
         <ResourceDictionary Source="/CustomControls;component/Themes/Skins/Default/resStandartControlsStyles.xaml" />
     </ResourceDictionary.MergedDictionaries>
-
 
 </ResourceDictionary>

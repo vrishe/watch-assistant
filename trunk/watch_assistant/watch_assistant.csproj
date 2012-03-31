@@ -69,10 +69,6 @@
     <Compile Include="ViewModel\MainWindow\MainWindowViewModel.cs" />
     <Compile Include="ViewModel\WindowViewModel.cs" />
     <Compile Include="ViewModel\ViewModelBase.cs" />
-    <Compile Include="Themes\WindowStyle.xaml.cs">
-      <DependentUpon>WindowStyle.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Utility\WindowResizer.cs" />
     <Compile Include="View\WindowPage.cs" />
     <Page Include="View\DetailsWindow\DetailsWindow.xaml">
       <SubType>Designer</SubType>
@@ -81,14 +77,6 @@
     <Page Include="View\MainWindow\UserNamePlate.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Themes\Generic.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Themes\Skins\Sample.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
     </Page>
     <Page Include="View\MainWindow\MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -102,22 +90,6 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Page Include="Themes\Skins\Default.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Themes\WindowStyle.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Themes\WindowStyleWin7.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Themes\WindowStyleXP.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs">
@@ -136,14 +108,6 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\App.ico" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Themes\Images\highlighted close.png" />
-    <Resource Include="Themes\Images\highlighted maximize.bmp" />
-    <Resource Include="Themes\Images\highlighted minimize.bmp" />
-    <Resource Include="Themes\Images\normal close.png" />
-    <Resource Include="Themes\Images\normal maximize.bmp" />
-    <Resource Include="Themes\Images\normal minimize.bmp" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Model\" />

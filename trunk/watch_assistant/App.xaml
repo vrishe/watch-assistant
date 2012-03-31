@@ -7,10 +7,11 @@
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                
-                <!-- Set default skin -->
-                <ResourceDictionary Source="Themes\WindowStyle.xaml" />
-                <ResourceDictionary Source="Themes\Skins\Default.xaml" />
+
+                <ResourceDictionary Source="/CustomControls;component/Themes/Skins/Default/resFrameStyle.xaml" />
+                <!--<ResourceDictionary Source="/CustomControls;component/Themes/Skins/Default/resFrameStyleMax.xaml" />-->
+                <ResourceDictionary Source="/CustomControls;component/Themes/Skins/Default/resColors.xaml" />
+                <ResourceDictionary Source="/CustomControls;component/Themes/Skins/Default/resStandartControlsStyles.xaml" />
 
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
