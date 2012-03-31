@@ -36,6 +36,20 @@ namespace CustomControls
 
         #region Properties
 
+        public string LayoutName
+        {
+            get { return (string)GetValue(LayoutNameProperty); }
+            set { SetValue(LayoutNameProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for LayoutName.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty LayoutNameProperty =
+            DependencyProperty.Register("LayoutName", typeof(string), typeof(CustomWindow), new UIPropertyMetadata(
+                String.Empty, (s, e) => { ((CustomWindow)s).UpdateFrameSettings(); })
+            );
+
+        
+
         public Layout FrameLayout
         {
             get { return _frameLayout; }
