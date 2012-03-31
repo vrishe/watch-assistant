@@ -10,8 +10,9 @@
     -->
 
     <ResourceDictionary.MergedDictionaries>
-        <ResourceDictionary Source="/CustomControls;component/Themes/resCustomWindow.xaml" />
-        <ResourceDictionary Source="/CustomControls;component/Themes/resXSButton.xaml" />
+        <ResourceDictionary Source="/CustomControls;component/Themes/Skins/Default/resCustomWindow.xaml" />
+        <ResourceDictionary Source="/CustomControls;component/Themes/Skins/Default/resColors.xaml" />
+        <ResourceDictionary Source="/CustomControls;component/Themes/Skins/Default/resStandartControlsStyles.xaml" />
     </ResourceDictionary.MergedDictionaries>
 
 
