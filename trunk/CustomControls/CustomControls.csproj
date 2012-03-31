@@ -53,11 +53,14 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Compile Include="CustomControl1.cs">
+    <Compile Include="CustomSystemButton.cs" />
+    <Compile Include="CustomSystemButtonConverters.cs" />
+    <Compile Include="CustomWindow.cs">
       <SubType>Code</SubType>
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CustomWindowCommands.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
