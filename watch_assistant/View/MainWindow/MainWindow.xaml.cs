@@ -1,11 +1,12 @@
 ﻿using System.Windows;
+using CustomControls;
 
 namespace watch_assistant.View.MainWindow
 {
     /// <summary>
     /// Логика взаимодействия для MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class MainWindow : CustomWindow
     {
         public MainWindow()
         {

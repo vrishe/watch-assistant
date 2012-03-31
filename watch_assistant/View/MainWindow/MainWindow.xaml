@@ -1,20 +1,16 @@
-﻿<Window x:Class="watch_assistant.View.MainWindow.MainWindow"
+﻿<custom:CustomWindow x:Class="watch_assistant.View.MainWindow.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
         xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
         
-        xmlns:vm="clr-namespace:watch_assistant.ViewModel"
-        xmlns:vw="clr-namespace:watch_assistant.View"
-        xmlns:vwmw="clr-namespace:watch_assistant.View.MainWindow"
-         
-        DataContext="{Binding RelativeSource={RelativeSource Self}}"
-        Style="{DynamicResource SkinWindowStyle}"
+        xmlns:custom="clr-namespace:CustomControls;assembly=CustomControls"
+        xmlns:mwv="clr-namespace:watch_assistant.View.MainWindow"
         
         Height="350" Width="525">
 
     <Window.Resources>
         <Thickness x:Key="DefaultLeftRightMargin">5,0,5,0</Thickness>
-        
+
         <!-- List view style -->
         <Style x:Key="ListViewItemStyle" TargetType="{x:Type ListBoxItem}">
             <Setter Property="Template">
@@ -50,10 +46,6 @@
         <!-- End of list view style -->
     </Window.Resources>
 
-    <i:Interaction.Behaviors>
-        <vm:WindowMoveBehavior/>
-    </i:Interaction.Behaviors>
-
     <Grid x:Name="MainWindowResizableGrid">
         <Grid.ColumnDefinitions>
             <ColumnDefinition />
@@ -61,10 +53,11 @@
             <ColumnDefinition />
         </Grid.ColumnDefinitions>
 
-        <vw:WindowPage>
-            <vw:WindowPage.MidHeaderCell>
+        <!-- Search window part -->
+        <custom:WindowPage>
+            <custom:WindowPage.MidHeaderCell>
                 <Label HorizontalAlignment="Center">SEARCH</Label>
-            </vw:WindowPage.MidHeaderCell>
+            </custom:WindowPage.MidHeaderCell>
 
             <Grid Grid.Row="1">
                 <Grid.RowDefinitions>
@@ -93,18 +86,20 @@
                     <ListBoxItem></ListBoxItem>
                 </ListBox>
             </Grid>
-        </vw:WindowPage>
+        </custom:WindowPage>
 
+        <!-- Splitter -->
         <GridSplitter VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Grid.Column="1"/>
-    
-        <vw:WindowPage Margin="0,0,0,3.5" Grid.Column="2">
-            <vw:WindowPage.LeftHeaderCell>
+
+        <!-- User lists window part -->
+        <custom:WindowPage Margin="0,0,0,3.5" Grid.Column="2">
+            <custom:WindowPage.LeftHeaderCell>
                 <Label Margin="5.5,0,0,0">Menu</Label>
-            </vw:WindowPage.LeftHeaderCell>
-            <vw:WindowPage.MidHeaderCell>
+            </custom:WindowPage.LeftHeaderCell>
+            <custom:WindowPage.MidHeaderCell>
                 <Label HorizontalAlignment="Center">Watch Assistant</Label>
-            </vw:WindowPage.MidHeaderCell>
-            <vw:WindowPage.RightHeaderCell>
+            </custom:WindowPage.MidHeaderCell>
+            <custom:WindowPage.RightHeaderCell>
                 <StackPanel Orientation="Horizontal" 
                             FlowDirection="RightToLeft"
                             Margin="{StaticResource DefaultLeftRightMargin}">
@@ -114,47 +109,47 @@
                             Command="Close"
                             />
                 </StackPanel>
-            </vw:WindowPage.RightHeaderCell>
+            </custom:WindowPage.RightHeaderCell>
 
-        <Grid VerticalAlignment="Stretch">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="*"/>
-                <RowDefinition Height="Auto"/>
-            </Grid.RowDefinitions>
-            
-            <!-- Tab Buttons -->
-            <Grid x:Name="TabButtonsGrid"
+            <Grid VerticalAlignment="Stretch">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <!-- Tab Buttons -->
+                <Grid x:Name="TabButtonsGrid"
                   Grid.Row="0"
                   Margin="{StaticResource DefaultLeftRightMargin}">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="*" />
-                </Grid.ColumnDefinitions>
-                <Button Grid.Column="0"
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <Button Grid.Column="0"
                         HorizontalContentAlignment="Center">Favorites</Button>
-                <Button Grid.Column="1"
+                    <Button Grid.Column="1"
                         HorizontalContentAlignment="Center">Interest</Button>
-            </Grid>
-            
-            <!-- Main List -->
-            <ListBox x:Name="listView" 
+                </Grid>
+
+                <!-- Main List -->
+                <ListBox x:Name="listView" 
                      Grid.Row="1" 
                      Margin="5,3,5,3.5"
                      ItemContainerStyle="{StaticResource ListViewItemStyle}">
                     <ListBoxItem MouseDoubleClick="ListBoxItem_MouseDoubleClick"></ListBoxItem>
-                <ListBoxItem></ListBoxItem>
-            </ListBox>
+                    <ListBoxItem></ListBoxItem>
+                </ListBox>
 
-            <!-- Userbar -->
-            <StackPanel x:Name="userBar"
+                <!-- Userbar -->
+                <StackPanel x:Name="userBar"
                         Grid.Row="2"
                         Orientation="Horizontal"
                         FlowDirection="RightToLeft">
-                <vwmw:UserNamePlate Margin="{StaticResource DefaultLeftRightMargin}" />
-            </StackPanel>       
-        </Grid>
-            
-    </vw:WindowPage>
+                    <mwv:UserNamePlate Margin="{StaticResource DefaultLeftRightMargin}" />
+                </StackPanel>
+            </Grid>
+
+        </custom:WindowPage>
     </Grid>
-</Window>
+    </custom:CustomWindow>

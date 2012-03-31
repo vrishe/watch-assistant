@@ -14,7 +14,7 @@
             <TextBlock x:Name="DetailsOpenLink" HorizontalAlignment="Left">Details</TextBlock>
         </StackPanel>
         <Border Background="{DynamicResource UserAvatarBackgroundColor}"
-                CornerRadius="{StaticResource DefaultCornerRadius}">
+                CornerRadius="{DynamicResource DefaultCornerRadius}">
             <Image Source="\Resources\App.ico" Margin="1,1,1,1"/>
         </Border>
     </StackPanel>
