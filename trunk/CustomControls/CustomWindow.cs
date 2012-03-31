@@ -20,7 +20,6 @@ namespace CustomControls
         #region Fields
         
         private Control _frame;
-        private Layout _frameLayout;
 
         private Point _cursorOffset;
         private FrameworkElement _sizingBorderTop;
@@ -32,6 +31,13 @@ namespace CustomControls
         private FrameworkElement _sizingBorderBottomLeft;
         private FrameworkElement _sizingBorderTopLeft;
 
+        // Using a DependencyProperty as the backing store for LayoutName.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty LayoutNameProperty =
+            DependencyProperty.Register("LayoutName", typeof(string), typeof(CustomWindow), new UIPropertyMetadata(
+                    "Default", (s, e) => { ((CustomWindow)s).UpdateFrameSettings(e.NewValue as string); }
+                )
+            );
+
         #endregion (Fields)
 
         #region Properties
@@ -40,25 +46,6 @@ namespace CustomControls
         {
             get { return (string)GetValue(LayoutNameProperty); }
             set { SetValue(LayoutNameProperty, value); }
-        }
-
-        // Using a DependencyProperty as the backing store for LayoutName.  This enables animation, styling, binding, etc...
-        public static readonly DependencyProperty LayoutNameProperty =
-            DependencyProperty.Register("LayoutName", typeof(string), typeof(CustomWindow), new UIPropertyMetadata(
-                String.Empty, (s, e) => { ((CustomWindow)s).UpdateFrameSettings(); })
-            );
-
-        
-
-        public Layout FrameLayout
-        {
-            get { return _frameLayout; }
-            set
-            {
-                _frameLayout = value;
-
-                UpdateFrameSettings();
-            }
         }
 
         #endregion (Properties)
@@ -75,7 +62,7 @@ namespace CustomControls
 
             _frame = (Control)Template.FindName("PART_CustomFrame", this);
 
-            UpdateFrameSettings();
+            UpdateFrameSettings(LayoutName);
         }
 
         private void OnFrameCommand(object sender, ExecutedRoutedEventArgs args)
@@ -88,7 +75,7 @@ namespace CustomControls
             {
                 WindowState = WindowState == WindowState.Maximized ? WindowState.Normal : WindowState.Maximized;
 
-                UpdateFrameSettings();
+                UpdateFrameSettings(LayoutName);
             }
             else if (args.Command == ApplicationCommands.Close)
             {
@@ -96,13 +83,17 @@ namespace CustomControls
             }
         }
 
-        private void UpdateFrameSettings()
+        private void UpdateFrameSettings(string styleName)
         {
             if (_frame != null)
             {
+                string format = "{0}{1}{2}.xaml";
+                string strFilePath = "/CustomControls;component/Themes/Skins/";
+                string strFrameStyle = styleName + "/resFrameStyle";
+
                 if (WindowState == WindowState.Normal)
                 {
-                    UpdateFrameAppearance(GetResourceDictionaryFileName(WindowState.Normal));
+                    UpdateFrameAppearance(String.Format(format, strFilePath, strFrameStyle, String.Empty));
 
                     // Make ASYNCHRONOUS call to method that can react to new style
                     // (new settings are NOT detected when you call the method directly)
@@ -114,24 +105,15 @@ namespace CustomControls
                     try
                     {
                         // Check for special frame style to support MAXIMIZED Window state
-                        UpdateFrameAppearance(GetResourceDictionaryFileName(WindowState.Maximized));
+                        UpdateFrameAppearance(String.Format(format, strFilePath, strFrameStyle, "Max"));
                     }
                     catch (System.IO.IOException)
                     {
                         // Revert to standard frame style if no special style was defined
-                        UpdateFrameAppearance(GetResourceDictionaryFileName(WindowState.Normal));
+                        UpdateFrameAppearance(String.Format(format, strFilePath, strFrameStyle, String.Empty));
                     }
                 }
             }
-        }
-
-        private string GetResourceDictionaryFileName(WindowState state)
-        {
-            string strFilePath = "/CustomControls;component/Themes/";
-            string strFrameStyle = "resFrameStyle" + _frameLayout.ToString();
-            string strMaximized = (state == WindowState.Maximized ? "Max" : String.Empty);
-
-            return string.Format("{0}{1}{2}.xaml", strFilePath, strFrameStyle, strMaximized);
         }
 
         private void UpdateFrameAppearance(string strResourceFile)
@@ -149,7 +131,6 @@ namespace CustomControls
 
             Resources = currentResources;
         }
-
 
         private void UpdateFrameBehavior()
         {
@@ -179,31 +160,9 @@ namespace CustomControls
 
             if (sizingBorderSegment != null)
             {
-                sizingBorderSegment.MouseLeftButtonDown += (sender, args) =>
-                {
-                    if (WindowState != WindowState.Maximized)
-                    {
-                        Path borderSegment = (Path)sender;
-                        _cursorOffset = GetCursorOffset(args.GetPosition(this), borderSegment);
-                        borderSegment.CaptureMouse();
-                    }
-                };
-
-                sizingBorderSegment.MouseLeftButtonUp += (sender, args) =>
-                {
-                    Path borderSegment = (Path)sender;
-                    borderSegment.ReleaseMouseCapture();
-                };
-
-                sizingBorderSegment.MouseMove += (sender, args) =>
-                {
-                    Path borderSegment = (Path)sender;
-
-                    if (borderSegment.IsMouseCaptured)
-                    {
-                        PerformResize(args.GetPosition(this), borderSegment);
-                    }
-                };
+                sizingBorderSegment.MouseLeftButtonDown += sizingBorderMouseLeftButtonDown;
+                sizingBorderSegment.MouseLeftButtonUp += sizingBorderMouseLeftButtonUp;
+                sizingBorderSegment.MouseMove += sizingBorderMouseMove;
             }
 
             return sizingBorderSegment;
