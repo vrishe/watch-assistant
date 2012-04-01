@@ -121,19 +121,11 @@
                     <ListBoxItem>Item2</ListBoxItem>
                 </ListBox>
 
+                <!-- Userbar -->
                 <ContentControl Style="{DynamicResource UserBarPlateStyle}" 
                                 Margin="0,0,5,0"
                                 HorizontalAlignment="Right"
-                                Grid.Row="2"/>
-                <!-- Userbar -->
-                <!--<StackPanel x:Name="userBarPlate"
-                        Grid.Row="2"
-                        Orientation="Horizontal"
-                        FlowDirection="RightToLeft">
-                    <ContentControl x:Name="userBarView"
-                                    Style="{DynamicResource UserBarPlateStyle}"
-                                    Margin="{StaticResource DefaultLeftRightMargin}" />
-                </StackPanel>-->
+                                Grid.Row="2"/> 
             </Grid>
         </custom:WindowPage>
     </Grid>
