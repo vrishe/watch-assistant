@@ -16,15 +16,7 @@
             <Label HorizontalAlignment="Center">Item name</Label>
         </custom:WindowPage.MidHeaderCell>
         <custom:WindowPage.RightHeaderCell>
-            <StackPanel Orientation="Horizontal" 
-                            FlowDirection="RightToLeft"
-                            Margin="{StaticResource DefaultLeftRightMargin}">
-                <Button Style="{DynamicResource CloseTitleBarButton}"
-                            HorizontalAlignment="Center"
-                            VerticalAlignment="Center"
-                            Command="Close"
-                            />
-            </StackPanel>
+            <ContentControl Style="{DynamicResource SystemButtonsContainerStyle}" Margin="0,0,5,0"/>
         </custom:WindowPage.RightHeaderCell>
 
         <Grid Grid.Row="1">

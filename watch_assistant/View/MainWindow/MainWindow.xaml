@@ -121,6 +121,10 @@
                     <ListBoxItem>Item2</ListBoxItem>
                 </ListBox>
 
+                <ContentControl Style="{DynamicResource UserBarPlateStyle}" 
+                                Margin="0,0,5,0"
+                                HorizontalAlignment="Right"
+                                Grid.Row="2"/>
                 <!-- Userbar -->
                 <!--<StackPanel x:Name="userBarPlate"
                         Grid.Row="2"

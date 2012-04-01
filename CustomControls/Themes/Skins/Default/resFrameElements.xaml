@@ -71,8 +71,8 @@
                                     <TextBlock x:Name="DetailsOpenLink" HorizontalAlignment="Left">Details</TextBlock>
                                 </StackPanel>
                                 <Border Background="{DynamicResource ImageBackgroundColor}"
-                        CornerRadius="{DynamicResource DefaultCornerRadius}">
-                                    <Image Margin="1,1,1,1"/>
+                                        CornerRadius="{DynamicResource DefaultCornerRadius}">
+                                    <Image x:Name="Avatar" Margin="1,1,1,1"/>
                                 </Border>
                     </StackPanel>
                 </ControlTemplate>
