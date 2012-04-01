@@ -87,7 +87,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Themes\Skins\Default\resFrameStyleMax.xaml">
+    <Page Include="Themes\Skins\Default\resFrameStyleMax%28Empty%29.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

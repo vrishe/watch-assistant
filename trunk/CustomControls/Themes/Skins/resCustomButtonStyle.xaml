@@ -3,7 +3,6 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="clr-namespace:CustomControls">
 
-
     <SolidColorBrush x:Key="brushClearGlass" Color="#2F000000" />
     <SolidColorBrush x:Key="brushOuterBorder" Color="#4CFFFDFF" />
     <SolidColorBrush x:Key="brushInnerBorder" Color="#99000000" />
