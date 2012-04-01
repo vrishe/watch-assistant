@@ -9,14 +9,14 @@
     * Note requirement to provide FULL PATH (not just file name) here, inside Generic.xaml
     -->
 
-    <ResourceDictionary.MergedDictionaries>
+    <ResourceDictionary.MergedDictionaries>      
         <ResourceDictionary Source="/CustomControls;component/Themes/resCustomWindow.xaml" />
         <ResourceDictionary Source="/CustomControls;component/Themes/resWindowPage.xaml" />
         
-        <ResourceDictionary Source="/CustomControls;component/Themes/Skins/Default/resFrameStyle.xaml" />
+        <!--<ResourceDictionary Source="/CustomControls;component/Themes/Skins/Default/resFrameStyle.xaml" />
         <ResourceDictionary Source="/CustomControls;component/Themes/Skins/Default/resFrameStyleMax.xaml" />
         <ResourceDictionary Source="/CustomControls;component/Themes/Skins/Default/resColors.xaml" />
-        <ResourceDictionary Source="/CustomControls;component/Themes/Skins/Default/resStandartControlsStyles.xaml" />
+        <ResourceDictionary Source="/CustomControls;component/Themes/Skins/Default/resStandartControlsStyles.xaml" />-->
     </ResourceDictionary.MergedDictionaries>
 
 </ResourceDictionary>

@@ -6,35 +6,55 @@ using System.Windows.Threading;
 using System.Threading;
 using System.Collections;
 using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Runtime.InteropServices;
 
 namespace CustomControls
 {
     public class CustomWindow : Window
     {
-        public enum Layout // Represents all available styles for this window
-        { 
-            OfficeButton, 
-            RoundMonitor 
+        private delegate void ResizeProcedure(Window owner, Point mousePosition, Point mouseOffset);
+        private delegate Point AnchorProcedure(Window owner, Point mousePosition);
+        private struct ResizeOperation
+        {
+            private ResizeProcedure _resizer;
+            private AnchorProcedure _binder;
+
+            public ResizeProcedure Resizer { get { return _resizer; } }
+            public AnchorProcedure Binder { get { return _binder; } }
+            public ResizeOperation(ResizeProcedure resizer, AnchorProcedure binder)
+            {
+                _resizer = resizer;
+                _binder = binder;
+            }
+        }
+        private struct ResizeAnchor
+        {
+            private ResizeProcedure _resizer;
+            private Point _anchor;
+
+            public ResizeProcedure Resizer { get { return _resizer; } }
+            public Point Anchor { get { return _anchor; } }
+            public ResizeAnchor(Window owner, Point mousePosition, ResizeOperation op)
+            {
+                 _resizer = op.Resizer;
+                _anchor = op.Binder(owner, mousePosition);
+            }
         }
 
         #region Fields
-        
+
         private Control _frame;
 
-        private Point _cursorOffset;
-        private FrameworkElement _sizingBorderTop;
-        private FrameworkElement _sizingBorderRight;
-        private FrameworkElement _sizingBorderLeft;
-        private FrameworkElement _sizingBorderBottom;
-        private FrameworkElement _sizingBorderTopRight;
-        private FrameworkElement _sizingBorderBottomRight;
-        private FrameworkElement _sizingBorderBottomLeft;
-        private FrameworkElement _sizingBorderTopLeft;
+        private readonly Dictionary<FrameworkElement, ResizeOperation> _resizeBorders = new Dictionary<FrameworkElement,ResizeOperation>();
+        private ResizeAnchor _resizeAnchor;
+
 
         // Using a DependencyProperty as the backing store for LayoutName.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty LayoutNameProperty =
             DependencyProperty.Register("LayoutName", typeof(string), typeof(CustomWindow), new UIPropertyMetadata(
-                    "Default", (s, e) => { ((CustomWindow)s).UpdateFrameSettings(e.NewValue as string); }
+                    "Default", (s, e) => { ((CustomWindow)s).UpdateFrameStyle(e.NewValue as string); }
                 )
             );
 
@@ -53,7 +73,7 @@ namespace CustomControls
         #region Methods
 
         public override void OnApplyTemplate()
-        { 
+        {
             base.OnApplyTemplate();
 
             CommandBindings.Add(new CommandBinding(CustomWindowCommands.Minimize, OnFrameCommand));
@@ -61,8 +81,13 @@ namespace CustomControls
             CommandBindings.Add(new CommandBinding(ApplicationCommands.Close, OnFrameCommand));
 
             _frame = (Control)Template.FindName("PART_CustomFrame", this);
+            UpdateFrameStyle(LayoutName);
+        }
+        protected override void OnPropertyChanged(DependencyPropertyChangedEventArgs e)
+        {
+            base.OnPropertyChanged(e);
 
-            UpdateFrameSettings(LayoutName);
+            if (e.Property == WindowStateProperty) UpdateFrameStyle(LayoutName); return;
         }
 
         private void OnFrameCommand(object sender, ExecutedRoutedEventArgs args)
@@ -73,9 +98,9 @@ namespace CustomControls
             } 
             else if (args.Command == CustomWindowCommands.Maximize)
             {
-                WindowState = WindowState == WindowState.Maximized ? WindowState.Normal : WindowState.Maximized;
-
-                UpdateFrameSettings(LayoutName);
+                WindowState = 
+                    WindowState == WindowState.Maximized ? 
+                        WindowState.Normal : WindowState.Maximized;
             }
             else if (args.Command == ApplicationCommands.Close)
             {
@@ -83,7 +108,9 @@ namespace CustomControls
             }
         }
 
-        private void UpdateFrameSettings(string styleName)
+        #region Frame styling
+
+        private void UpdateFrameStyle(string styleName)
         {
             if (_frame != null)
             {
@@ -97,7 +124,7 @@ namespace CustomControls
 
                     // Make ASYNCHRONOUS call to method that can react to new style
                     // (new settings are NOT detected when you call the method directly)
-                    new Thread(() => { UpdateFrameBehavior(); }).Start();
+                    new Thread(() => { UpdateFrameBehaviors(); }).Start();
                 }
 
                 else
@@ -115,7 +142,6 @@ namespace CustomControls
                 }
             }
         }
-
         private void UpdateFrameAppearance(string strResourceFile)
         {
             ResourceDictionary currentResources = new ResourceDictionary();
@@ -131,161 +157,194 @@ namespace CustomControls
 
             Resources = currentResources;
         }
-
-        private void UpdateFrameBehavior()
+        private void UpdateFrameBehaviors()
         {
             // Attach event handlers for elements in new layout (CaptionBar dragging, sizing borders...)
             // (because we were called from a different thread, we must also marshall back to the UI thread)
-
             Dispatcher.BeginInvoke(DispatcherPriority.ContextIdle, (ThreadStart)delegate
             {
                 FrameworkElement titleBar = (FrameworkElement)_frame.Template.FindName("PART_TitleBar", _frame);
-                if (titleBar != null) titleBar.MouseLeftButtonDown += (sender, args) => { DragMove(); };
+                if (titleBar != null) titleBar.MouseLeftButtonDown += (s, e) => { if ((s as FrameworkElement).IsMouseDirectlyOver) DragMove(); };
 
-                _sizingBorderLeft = GetSizableBorder("PART_ResizeBorderLeft");
-                _sizingBorderTopLeft = GetSizableBorder("PART_ResizeBorderTopLeft");
-                _sizingBorderTop = GetSizableBorder("PART_ResizeBorderTop");
-                _sizingBorderTopRight = GetSizableBorder("PART_ResizeBorderTopRight");
-                _sizingBorderRight = GetSizableBorder("PART_ResizeBorderRight");
-                _sizingBorderBottomRight = GetSizableBorder("PART_ResizeBorderBottomRight");
-                _sizingBorderBottom = GetSizableBorder("PART_ResizeBorderBottom");
-                _sizingBorderBottomLeft = GetSizableBorder("PART_ResizeBorderBottomLeft");
-
+                _resizeBorders.Clear();
+                FrameworkElement border;
+                if ((border = GetResizeBorder("PART_ResizeBorderLeft")) != null) _resizeBorders.Add(border, new ResizeOperation(ResizeLeft, GetOffsetLeft));
+                if ((border = GetResizeBorder("PART_ResizeBorderTopLeft")) != null) _resizeBorders.Add(border, new ResizeOperation(ResizeTopLeft, GetOffsetTopLeft));
+                if ((border = GetResizeBorder("PART_ResizeBorderTop")) != null) _resizeBorders.Add(border, new ResizeOperation(ResizeTop, GetOffsetTop));
+                if ((border = GetResizeBorder("PART_ResizeBorderTopRight")) != null) _resizeBorders.Add(border, new ResizeOperation(ResizeTopRight, GetOffsetTopRight));
+                if ((border = GetResizeBorder("PART_ResizeBorderRight")) != null) _resizeBorders.Add(border, new ResizeOperation(ResizeRight, GetOffsetRight));
+                if ((border = GetResizeBorder("PART_ResizeBorderBottomRight")) != null) _resizeBorders.Add(border, new ResizeOperation(ResizeBottomRight, GetOffsetBottomRight));
+                if ((border = GetResizeBorder("PART_ResizeBorderBottom")) != null) _resizeBorders.Add(border, new ResizeOperation(ResizeBottom, GetOffsetBottom));
+                if ((border = GetResizeBorder("PART_ResizeBorderBottomLeft")) != null) _resizeBorders.Add(border, new ResizeOperation(ResizeBottomLeft, GetOffsetBottomLeft));
             });
         }
 
-        private Path GetSizableBorder(string borderSegmentID)
-        {
-            Path sizingBorderSegment = (Path)_frame.Template.FindName(borderSegmentID, _frame);
+        #endregion (Frame styling)
 
-            if (sizingBorderSegment != null)
+        #region Utility
+
+        private FrameworkElement GetResizeBorder(string borderSegmentID)
+        {
+            FrameworkElement borderSegment = (FrameworkElement)_frame.Template.FindName(borderSegmentID, _frame);
+
+            if (borderSegment != null)
             {
-                sizingBorderSegment.MouseLeftButtonDown += sizingBorderMouseLeftButtonDown;
-                sizingBorderSegment.MouseLeftButtonUp += sizingBorderMouseLeftButtonUp;
-                sizingBorderSegment.MouseMove += sizingBorderMouseMove;
+                borderSegment.MouseLeftButtonDown += sizingBorderMouseLeftButtonDown;
+                borderSegment.MouseLeftButtonUp += sizingBorderMouseLeftButtonUp;
+                borderSegment.MouseMove += sizingBorderMouseMove;
             }
 
-            return sizingBorderSegment;
+            return borderSegment;
+        }
+        private void ReleaseResizeBorder(FrameworkElement borderSegment)
+        {
+            if (borderSegment != null)
+            {
+                borderSegment.MouseLeftButtonDown -= sizingBorderMouseLeftButtonDown;
+                borderSegment.MouseLeftButtonUp -= sizingBorderMouseLeftButtonUp;
+                borderSegment.MouseMove -= sizingBorderMouseMove;
+            }
         }
 
-        private Point GetCursorOffset(Point ptMousePosition, Path borderSegment)
-        {
-            Point ptOffset = new Point(0, 0);
-
-            if (borderSegment == _sizingBorderLeft)
-                ptOffset.X = ptMousePosition.X;
-
-            else if (borderSegment == _sizingBorderTopLeft)
-            {
-                ptOffset.Y = ptMousePosition.Y;
-                ptOffset.X = ptMousePosition.X;
-            }
-
-            else if (borderSegment == _sizingBorderTop)
-                ptOffset.Y = ptMousePosition.Y;
-
-            else if (borderSegment == _sizingBorderTopRight)
-            {
-                ptOffset.Y = ptMousePosition.Y;
-                ptOffset.X = (Width - ptMousePosition.X);
-            }
-
-            else if (borderSegment == _sizingBorderRight)
-                ptOffset.X = (Width - ptMousePosition.X);
-
-            else if (borderSegment == _sizingBorderBottomRight)
-            {
-                ptOffset.X = (Width - ptMousePosition.X);
-                ptOffset.Y = (Height - ptMousePosition.Y);
-            }
-
-            else if (borderSegment == _sizingBorderBottom)
-                ptOffset.Y = Height - ptMousePosition.Y;
-
-            else if (borderSegment == _sizingBorderBottomLeft)
-            {
-                ptOffset.Y = (Height - ptMousePosition.Y);
-                ptOffset.X = ptMousePosition.X;
-            }
-
-            return ptOffset;
-        }
-
-        private void PerformResize(Point ptMousePosition, Path borderSegment)
-        {
-            if (borderSegment == _sizingBorderLeft)
-            {
-                Left += (ptMousePosition.X - _cursorOffset.X);
-                Width -= (ptMousePosition.X - _cursorOffset.X);
-            }
-
-            else if (borderSegment == _sizingBorderTopLeft)
-            {
-                Left += (ptMousePosition.X - _cursorOffset.X);
-                Width -= (ptMousePosition.X - _cursorOffset.X);
-                Top += (ptMousePosition.Y - _cursorOffset.Y);
-                Height -= (ptMousePosition.Y - _cursorOffset.Y);
-            }
-
-            else if (borderSegment == _sizingBorderTop)
-            {
-                Top += (ptMousePosition.Y - _cursorOffset.Y);
-                Height -= (ptMousePosition.Y - _cursorOffset.Y);
-            }
-
-            else if (borderSegment == _sizingBorderTopRight)
-            {
-                Width = ptMousePosition.X + _cursorOffset.X;
-                Top += (ptMousePosition.Y - _cursorOffset.Y);
-                Height -= (ptMousePosition.Y - _cursorOffset.Y);
-            }
-
-            else if (borderSegment == _sizingBorderRight)
-                Width = ptMousePosition.X + _cursorOffset.X;
-
-            else if (borderSegment == _sizingBorderBottomRight)
-            {
-                Width = ptMousePosition.X + _cursorOffset.X;
-                Height = ptMousePosition.Y + _cursorOffset.Y;
-            }
-
-            else if (borderSegment == _sizingBorderBottom)
-                Height = ptMousePosition.Y + _cursorOffset.Y;
-
-            else if (borderSegment == _sizingBorderBottomLeft)
-            {
-                Left += (ptMousePosition.X - _cursorOffset.X);
-                Width -= (ptMousePosition.X - _cursorOffset.X);
-                Height = ptMousePosition.Y + _cursorOffset.Y;
-            }
-        }
+        #endregion (Utility)
 
         #region Sizing handlers
 
         private void sizingBorderMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-            if (this.WindowState != WindowState.Maximized)
+            if (WindowState == WindowState.Normal)
             {
-                Path borderSegment = (Path)sender;
-                _cursorOffset = GetCursorOffset(e.GetPosition(this), borderSegment);
-                borderSegment.CaptureMouse();
+                FrameworkElement borderSegment = (FrameworkElement)sender;
+                
+                ResizeOperation op;
+                if (_resizeBorders.TryGetValue(borderSegment, out op))
+                {
+                    _resizeAnchor = new ResizeAnchor(this, e.GetPosition(this), op);
+                    borderSegment.CaptureMouse();
+                }
             }
         }
-
         private static void sizingBorderMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
-            Path borderSegment = (Path)sender;
+            FrameworkElement borderSegment = (FrameworkElement)sender;
             borderSegment.ReleaseMouseCapture();
         }
-
         private  void sizingBorderMouseMove(object sender, MouseEventArgs e)
         {
-            Path borderSegment = (Path)sender;
+            FrameworkElement borderSegment = (FrameworkElement)sender;
             if (borderSegment.IsMouseCaptured)
             {
-                this.PerformResize(e.GetPosition(this), borderSegment);
+                _resizeAnchor.Resizer(this, e.GetPosition(this), _resizeAnchor.Anchor);
             }
         }
+
+        #region Resize binders
+        private static Point GetOffsetLeft(Window owner, Point mousePosition)
+        {
+            return new Point() { X = mousePosition.X };
+        }
+
+        private static Point GetOffsetTopLeft(Window owner, Point mousePosition)
+        {
+            return new Point() { X = mousePosition.X, Y = mousePosition.Y };
+        }
+
+        private static Point GetOffsetTop(Window owner, Point mousePosition)
+        {
+            return new Point() { Y = mousePosition.Y };
+        }
+
+        private static Point GetOffsetTopRight(Window owner, Point mousePosition)
+        {
+            return new Point() { X = owner.Width - mousePosition.X, Y = mousePosition.Y };
+        }
+
+        private static Point GetOffsetRight(Window owner, Point mousePosition)
+        {
+            return new Point() { X = owner.Width - mousePosition.X };
+        }
+
+        private static Point GetOffsetBottomRight(Window owner, Point mousePosition)
+        {
+            return new Point() { X = owner.Width - mousePosition.X, Y = owner.Height - mousePosition.Y };
+        }
+
+        private static Point GetOffsetBottom(Window owner, Point mousePosition)
+        {
+            return new Point() { Y = owner.Height - mousePosition.Y };
+        }
+
+        private static Point GetOffsetBottomLeft(Window owner, Point mousePosition)
+        {
+            return new Point() { X = mousePosition.X, Y = owner.Height - mousePosition.Y };
+        }
+        #endregion (Resize binders)
+
+        #region Resizers
+
+        private static void ResizeLeft(Window owner, Point mousePosition, Point mouseOffset)
+        {
+            double offset = mousePosition.X - mouseOffset.X;
+            double widthPreview = owner.Width - offset;
+
+            if (widthPreview > owner.MinWidth && widthPreview < owner.MaxWidth)
+            {
+                owner.Left += offset;
+                owner.Width -= offset;
+            }
+        }
+
+        private static void ResizeTopLeft(Window owner, Point mousePosition, Point mouseOffset)
+        {
+            ResizeLeft(owner, mousePosition, mouseOffset);
+            ResizeTop(owner, mousePosition, mouseOffset);
+        }
+
+        private static void ResizeTop(Window owner, Point mousePosition, Point mouseOffset)
+        {
+            double offset = mousePosition.Y - mouseOffset.Y;
+            double heightPreview = owner.Height - offset;
+
+            if (heightPreview > owner.MinHeight && heightPreview < owner.MaxHeight)
+            {
+                owner.Top += offset;
+                owner.Height -= offset;
+            }
+        }
+
+        private static void ResizeTopRight(Window owner, Point mousePosition, Point mouseOffset)
+        {
+            ResizeRight(owner, mousePosition, mouseOffset);
+            ResizeTop(owner, mousePosition, mouseOffset);
+        }
+
+        private static void ResizeRight(Window owner, Point mousePosition, Point mouseOffset)
+        {
+            double widthPreview = mousePosition.X + mouseOffset.X;
+            if ( widthPreview > owner.MinWidth && widthPreview < owner.MaxWidth) 
+                owner.Width = widthPreview;
+        }
+
+        private static void ResizeBottomRight(Window owner, Point mousePosition, Point mouseOffset)
+        {
+            ResizeRight(owner, mousePosition, mouseOffset);
+            ResizeBottom(owner, mousePosition, mouseOffset);
+        }
+
+        private static void ResizeBottom(Window owner, Point mousePosition, Point mouseOffset)
+        {
+            double heightPreview = mousePosition.Y + mouseOffset.Y;
+            if (heightPreview > owner.MinHeight && heightPreview < owner.MaxHeight)
+                owner.Height = mousePosition.Y + mouseOffset.Y;
+        }
+
+        private static void ResizeBottomLeft(Window owner, Point mousePosition, Point mouseOffset)
+        {
+            ResizeLeft(owner, mousePosition, mouseOffset);
+            ResizeBottom(owner, mousePosition, mouseOffset);
+        }
+
+        #endregion (Resizers)
 
         #endregion (Sizing handlers)
 
