@@ -18,15 +18,15 @@
                         <Border x:Name="WindowFrame" Style="{DynamicResource WindowFrameBorder}">
                             <Grid>
                                 <Grid.RowDefinitions>
-                                    <RowDefinition Height="{Binding ElementName=WindowFrame,Path=CornerRadius.TopLeft}"/>
+                                    <RowDefinition Height="{x:Static SystemParameters.BorderWidth}"/>
                                     <RowDefinition Height="*"/>
-                                    <RowDefinition Height="{Binding ElementName=WindowFrame,Path=CornerRadius.BottomRight}"/>
+                                    <RowDefinition Height="{x:Static SystemParameters.BorderWidth}"/>
                                 </Grid.RowDefinitions>
 
                                 <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="{Binding ElementName=WindowFrame,Path=CornerRadius.TopRight}"/>
+                                    <ColumnDefinition Width="{x:Static SystemParameters.BorderWidth}"/>
                                     <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="{Binding ElementName=WindowFrame,Path=CornerRadius.BottomLeft}"/>
+                                    <ColumnDefinition Width="{x:Static SystemParameters.BorderWidth}"/>
                                 </Grid.ColumnDefinitions>
 
                                 <!-- MouseMove && MouseLeftButtonDown -->
