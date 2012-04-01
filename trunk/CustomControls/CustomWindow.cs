@@ -283,12 +283,22 @@ namespace CustomControls
         private static void ResizeLeft(Window owner, Point mousePosition, Point mouseOffset)
         {
             double offset = mousePosition.X - mouseOffset.X;
-            double widthPreview = owner.Width - offset;
+            double horizontalPreview = owner.Width - offset;
 
-            if (widthPreview > owner.MinWidth && widthPreview < owner.MaxWidth)
+            if (horizontalPreview > owner.MinWidth && horizontalPreview < owner.MaxWidth)
             {
                 owner.Left += offset;
                 owner.Width -= offset;
+            }
+            else if (horizontalPreview < owner.MinWidth)
+            {
+                owner.Left += (owner.Width - owner.MinWidth);
+                owner.Width = owner.MinWidth;
+            }
+            else if (horizontalPreview > owner.MaxWidth)
+            {
+                owner.Left -= (owner.Width - owner.MaxWidth);
+                owner.Width = owner.MaxWidth;
             }
         }
 
@@ -301,12 +311,22 @@ namespace CustomControls
         private static void ResizeTop(Window owner, Point mousePosition, Point mouseOffset)
         {
             double offset = mousePosition.Y - mouseOffset.Y;
-            double heightPreview = owner.Height - offset;
+            double verticalPreview = owner.Height - offset;
 
-            if (heightPreview > owner.MinHeight && heightPreview < owner.MaxHeight)
+            if (verticalPreview > owner.MinHeight && verticalPreview < owner.MaxHeight)
             {
                 owner.Top += offset;
                 owner.Height -= offset;
+            }
+            else if (verticalPreview < owner.MinHeight)
+            {
+                owner.Top += (owner.Height - owner.MinHeight);
+                owner.Height = owner.MinHeight;
+            }
+            else if (verticalPreview > owner.MaxHeight)
+            {
+                owner.Left -= (owner.Height - owner.MaxHeight);
+                owner.Height = owner.MaxHeight;
             }
         }
 
@@ -318,9 +338,19 @@ namespace CustomControls
 
         private static void ResizeRight(Window owner, Point mousePosition, Point mouseOffset)
         {
-            double widthPreview = mousePosition.X + mouseOffset.X;
-            if ( widthPreview > owner.MinWidth && widthPreview < owner.MaxWidth) 
-                owner.Width = widthPreview;
+            double horizontalPreview = mousePosition.X + mouseOffset.X;
+            if (horizontalPreview > owner.MinWidth && horizontalPreview < owner.MaxWidth)
+            {
+                owner.Width = horizontalPreview;
+            }
+            else if (horizontalPreview <= owner.MinWidth)
+            {
+                owner.Width = owner.MinWidth;
+            }
+            else if (horizontalPreview >= owner.MaxWidth)
+            {
+                owner.Width = owner.MaxWidth;
+            }
         }
 
         private static void ResizeBottomRight(Window owner, Point mousePosition, Point mouseOffset)
@@ -331,9 +361,19 @@ namespace CustomControls
 
         private static void ResizeBottom(Window owner, Point mousePosition, Point mouseOffset)
         {
-            double heightPreview = mousePosition.Y + mouseOffset.Y;
-            if (heightPreview > owner.MinHeight && heightPreview < owner.MaxHeight)
+            double verticalPreview = mousePosition.Y + mouseOffset.Y;
+            if (verticalPreview > owner.MinHeight && verticalPreview < owner.MaxHeight)
+            {
                 owner.Height = mousePosition.Y + mouseOffset.Y;
+            }
+            else if (verticalPreview <= owner.MinHeight)
+            {
+                owner.Height = owner.MinHeight;
+            }
+            else if (verticalPreview >= owner.MaxHeight)
+            {
+                owner.Height = owner.MaxHeight;
+            }
         }
 
         private static void ResizeBottomLeft(Window owner, Point mousePosition, Point mouseOffset)

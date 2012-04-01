@@ -6,6 +6,7 @@
         xmlns:custom="clr-namespace:CustomControls;assembly=CustomControls"
         xmlns:mwv="clr-namespace:watch_assistant.View.MainWindow"
         
+        MinWidth="214" MinHeight="200"
         Height="350" Width="525">
 
     <custom:CustomWindow.Resources>
