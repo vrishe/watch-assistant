@@ -48,6 +48,8 @@ namespace CustomControls
         private readonly Dictionary<FrameworkElement, ResizeOperation> _resizeBorders = new Dictionary<FrameworkElement,ResizeOperation>();
         private ResizeAnchor _resizeAnchor;
 
+        private Rect _restoreBounds;
+
 
         // Using a DependencyProperty as the backing store for LayoutName.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty LayoutNameProperty =
@@ -66,27 +68,23 @@ namespace CustomControls
             set { SetValue(LayoutNameProperty, value); }
         }
 
-        #endregion (Properties)
-
-        #region Methods
-
-        public override void OnApplyTemplate()
-        {
-            base.OnApplyTemplate();
-
-            CommandBindings.Add(new CommandBinding(CustomWindowCommands.Minimize, OnFrameCommand));
-            CommandBindings.Add(new CommandBinding(CustomWindowCommands.Maximize, OnFrameCommand));
-            CommandBindings.Add(new CommandBinding(ApplicationCommands.Close, OnFrameCommand));
-
-            _frame = (Control)Template.FindName("PART_CustomFrame", this);
-            UpdateFrameStyle(LayoutName);
-        }
         protected override void OnPropertyChanged(DependencyPropertyChangedEventArgs e)
         {
             base.OnPropertyChanged(e);
 
-            if (e.Property == WindowStateProperty) UpdateFrameStyle(LayoutName); return;
+            if (e.Property == MaxWidthProperty)
+            {
+                MaxWidth = Math.Min(SystemParameters.WorkArea.Width + 2 * SystemParameters.BorderWidth, (double)e.NewValue);
+            }
+            if (e.Property == MaxHeightProperty)
+            {
+                MaxHeight = Math.Min(SystemParameters.WorkArea.Height + 2 * SystemParameters.BorderWidth, (double)e.NewValue);
+            }
         }
+
+        #endregion (Properties)
+
+        #region Methods
 
         private void OnFrameCommand(object sender, ExecutedRoutedEventArgs e)
         {
@@ -108,6 +106,18 @@ namespace CustomControls
 
         #region Frame styling
 
+        public override void OnApplyTemplate()
+        {
+            base.OnApplyTemplate();
+
+            CommandBindings.Add(new CommandBinding(CustomWindowCommands.Minimize, OnFrameCommand));
+            CommandBindings.Add(new CommandBinding(CustomWindowCommands.Maximize, OnFrameCommand));
+            CommandBindings.Add(new CommandBinding(ApplicationCommands.Close, OnFrameCommand));
+
+            _frame = (Control)Template.FindName("PART_CustomFrame", this);
+            UpdateFrameStyle(LayoutName);
+        }
+
         private void UpdateFrameStyle(string styleName)
         {
             if (_frame != null)
@@ -119,25 +129,19 @@ namespace CustomControls
                 if (WindowState == WindowState.Normal)
                 {
                     UpdateFrameAppearance(String.Format(format, strFilePath, strFrameStyle, String.Empty));
-
-                    // Make ASYNCHRONOUS call to method that can react to new style
-                    // (new settings are NOT detected when you call the method directly)
-                    new Thread(() => { UpdateFrameBehaviors(); }).Start();
                 }
-
                 else
                 {
                     try
                     {
-                        // Check for special frame style to support MAXIMIZED Window state
                         UpdateFrameAppearance(String.Format(format, strFilePath, strFrameStyle, "Max"));
                     }
                     catch (System.IO.IOException)
                     {
-                        // Revert to standard frame style if no special style was defined
                         UpdateFrameAppearance(String.Format(format, strFilePath, strFrameStyle, String.Empty));
                     }
                 }
+                new Thread(() => { UpdateFrameBehaviors(); }).Start();
             }
         }
         private void UpdateFrameAppearance(string strResourceFile)
@@ -162,22 +166,40 @@ namespace CustomControls
             Dispatcher.BeginInvoke(DispatcherPriority.ContextIdle, (ThreadStart)delegate
             {
                 FrameworkElement titleBar = (FrameworkElement)_frame.Template.FindName("PART_TitleBar", _frame);
-                if (titleBar != null) titleBar.MouseLeftButtonDown += (s, e) => { if ((s as FrameworkElement).IsMouseDirectlyOver) DragMove(); };
+                if (titleBar != null)
+                {
+                    switch (WindowState)
+                    {
+                        case System.Windows.WindowState.Normal:
+                            titleBar.MouseLeftButtonDown += titleBarMouseLeftButtonDown;
+                            break;
 
-                _resizeBorders.Clear();
-                FrameworkElement border;
-                if ((border = GetResizeBorder("PART_ResizeBorderLeft")) != null) _resizeBorders.Add(border, new ResizeOperation(ResizeLeft, GetOffsetLeft));
-                if ((border = GetResizeBorder("PART_ResizeBorderTopLeft")) != null) _resizeBorders.Add(border, new ResizeOperation(ResizeTopLeft, GetOffsetTopLeft));
-                if ((border = GetResizeBorder("PART_ResizeBorderTop")) != null) _resizeBorders.Add(border, new ResizeOperation(ResizeTop, GetOffsetTop));
-                if ((border = GetResizeBorder("PART_ResizeBorderTopRight")) != null) _resizeBorders.Add(border, new ResizeOperation(ResizeTopRight, GetOffsetTopRight));
-                if ((border = GetResizeBorder("PART_ResizeBorderRight")) != null) _resizeBorders.Add(border, new ResizeOperation(ResizeRight, GetOffsetRight));
-                if ((border = GetResizeBorder("PART_ResizeBorderBottomRight")) != null) _resizeBorders.Add(border, new ResizeOperation(ResizeBottomRight, GetOffsetBottomRight));
-                if ((border = GetResizeBorder("PART_ResizeBorderBottom")) != null) _resizeBorders.Add(border, new ResizeOperation(ResizeBottom, GetOffsetBottom));
-                if ((border = GetResizeBorder("PART_ResizeBorderBottomLeft")) != null) _resizeBorders.Add(border, new ResizeOperation(ResizeBottomLeft, GetOffsetBottomLeft));
+                        case System.Windows.WindowState.Maximized:
+                            titleBar.MouseMove += titleBarMouseMove;
+                            break;
+                    }
+                }
+
+                if (WindowState == System.Windows.WindowState.Normal)
+                {
+                    foreach (KeyValuePair<FrameworkElement, ResizeOperation> item in _resizeBorders)
+                    {
+                        ReleaseResizeBorder(item.Key);
+                    }
+
+                    _resizeBorders.Clear();
+                    FrameworkElement border;
+                    if ((border = GetResizeBorder("PART_ResizeBorderLeft")) != null) _resizeBorders.Add(border, new ResizeOperation(ResizeLeft, GetOffsetLeft));
+                    if ((border = GetResizeBorder("PART_ResizeBorderTopLeft")) != null) _resizeBorders.Add(border, new ResizeOperation(ResizeTopLeft, GetOffsetTopLeft));
+                    if ((border = GetResizeBorder("PART_ResizeBorderTop")) != null) _resizeBorders.Add(border, new ResizeOperation(ResizeTop, GetOffsetTop));
+                    if ((border = GetResizeBorder("PART_ResizeBorderTopRight")) != null) _resizeBorders.Add(border, new ResizeOperation(ResizeTopRight, GetOffsetTopRight));
+                    if ((border = GetResizeBorder("PART_ResizeBorderRight")) != null) _resizeBorders.Add(border, new ResizeOperation(ResizeRight, GetOffsetRight));
+                    if ((border = GetResizeBorder("PART_ResizeBorderBottomRight")) != null) _resizeBorders.Add(border, new ResizeOperation(ResizeBottomRight, GetOffsetBottomRight));
+                    if ((border = GetResizeBorder("PART_ResizeBorderBottom")) != null) _resizeBorders.Add(border, new ResizeOperation(ResizeBottom, GetOffsetBottom));
+                    if ((border = GetResizeBorder("PART_ResizeBorderBottomLeft")) != null) _resizeBorders.Add(border, new ResizeOperation(ResizeBottomLeft, GetOffsetBottomLeft));
+                }
             });
         }
-
-        #endregion (Frame styling)
 
         #region Utility
 
@@ -206,7 +228,93 @@ namespace CustomControls
 
         #endregion (Utility)
 
+        #endregion (Frame styling)
+
+        #region Behaviors 
+
+        #region Moving handlers
+
+        private void titleBarMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            if ((sender as FrameworkElement).IsMouseDirectlyOver) DragMove();
+        }
+
+        private void titleBarMouseMove(object sender, MouseEventArgs e)
+        {
+            if ((sender as FrameworkElement).IsMouseDirectlyOver 
+                && e.LeftButton == MouseButtonState.Pressed 
+                && WindowState == System.Windows.WindowState.Maximized)
+            {
+                _restoreBounds = new Rect(e.GetPosition(this), _restoreBounds.Size);
+                double restoreOffsetX = _restoreBounds.X / Width;
+                double restoreOffsetY = _restoreBounds.Y / Height;
+
+                if (restoreOffsetX >= .25 && restoreOffsetX <= .75)
+                {
+                    restoreOffsetX = _restoreBounds.Width * .5;
+                }
+                else
+                {
+                    double tempOffsetX = _restoreBounds.X;
+                    if (restoreOffsetX < .25)
+                    {
+                        restoreOffsetX = Math.Min(_restoreBounds.Width * .5, tempOffsetX);
+                    }
+                    else
+                    {
+                        restoreOffsetX = Math.Max(_restoreBounds.Width * .5, _restoreBounds.Width - ActualWidth + tempOffsetX);
+                    }
+                }
+
+                if (restoreOffsetY >= .25 && restoreOffsetY <= .75)
+                {
+                    restoreOffsetY = _restoreBounds.Height * .5;
+                }
+                else
+                {
+                    double tempOffsetY = _restoreBounds.Y;
+                    if (restoreOffsetY < .25)
+                    {
+                        restoreOffsetY = Math.Min(_restoreBounds.Height * .5, tempOffsetY);
+                    }
+                    else
+                    {
+                        restoreOffsetY = Math.Max(_restoreBounds.Height * .5, _restoreBounds.Height - ActualHeight + tempOffsetY);
+                    }
+                }
+                _restoreBounds.Offset(-restoreOffsetX, -restoreOffsetY);
+                WindowState = System.Windows.WindowState.Normal;
+
+                DragMove();
+            }
+        }
+
+        #endregion (Moving handlers)
+
         #region Sizing handlers
+
+        protected override void OnStateChanged(EventArgs e)
+        {
+            base.OnStateChanged(e);
+            UpdateFrameStyle(LayoutName);
+
+            switch (WindowState)
+            {
+                case WindowState.Maximized:
+                    _restoreBounds = RestoreBounds;
+                    MaxWidth = Double.PositiveInfinity;
+                    MaxHeight = Double.PositiveInfinity;
+                    break;
+
+                case WindowState.Normal:
+                    Top = _restoreBounds.Top;
+                    Left = _restoreBounds.Left;
+                    Width = _restoreBounds.Width;
+                    Height = _restoreBounds.Height;
+                    Focus();
+                    break;
+            }
+        }
 
         private void sizingBorderMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
@@ -227,7 +335,7 @@ namespace CustomControls
             FrameworkElement borderSegment = (FrameworkElement)sender;
             borderSegment.ReleaseMouseCapture();
         }
-        private  void sizingBorderMouseMove(object sender, MouseEventArgs e)
+        private void sizingBorderMouseMove(object sender, MouseEventArgs e)
         {
             FrameworkElement borderSegment = (FrameworkElement)sender;
             if (borderSegment.IsMouseCaptured)
@@ -386,6 +494,8 @@ namespace CustomControls
 
         #endregion (Sizing handlers)
 
+        #endregion (Behaviors)
+
         #endregion (Methods)
 
         #region Constructors
@@ -393,6 +503,12 @@ namespace CustomControls
         static CustomWindow()
         {
             DefaultStyleKeyProperty.OverrideMetadata(typeof(CustomWindow), new FrameworkPropertyMetadata(typeof(CustomWindow)));
+        }
+
+        public CustomWindow()
+        {
+            MaxWidth = Double.PositiveInfinity;
+            MaxHeight = Double.PositiveInfinity;
         }
 
         #endregion (Constructors)
