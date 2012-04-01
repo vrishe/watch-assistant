@@ -16,8 +16,8 @@
         <Setter Property="WindowStyle" Value="None"/>
         <Setter Property="AllowsTransparency" Value="True"/>
         <!--<Setter Property="Background" Value="Transparent" />-->
-        <Setter Property="MinHeight" Value="150"/>
-        <Setter Property="MinWidth" Value="250"/>
+        <!--<Setter Property="MinHeight" Value="150"/>
+        <Setter Property="MinWidth" Value="250"/>-->
 
         <Setter Property="Template">
             <Setter.Value>

@@ -312,11 +312,11 @@
 
     <Color x:Key="GridSplitterBackgroundBrushGradient1">#FF4F4F4F</Color>
     <Color x:Key="GridSplitterBackgroundBrushGradient2">#3F000000</Color>
-
+    
     <LinearGradientBrush x:Key="GridSplitterBackgroundBrush" StartPoint="0,0.5" EndPoint="1,0.5">
-        <GradientStop Color="{DynamicResource GridSplitterBackgroundBrushGradient1}" Offset=".2"/>
+        <GradientStop Color="{DynamicResource GridSplitterBackgroundBrushGradient1}" Offset="0.2"/>
         <GradientStop Color="{DynamicResource GridSplitterBackgroundBrushGradient2}" Offset="0.5"/>
-        <GradientStop Color="{DynamicResource GridSplitterBackgroundBrushGradient1}" Offset=".8"/>
+        <GradientStop Color="{DynamicResource GridSplitterBackgroundBrushGradient1}" Offset="0.8"/>
     </LinearGradientBrush>
 
 </ResourceDictionary>
