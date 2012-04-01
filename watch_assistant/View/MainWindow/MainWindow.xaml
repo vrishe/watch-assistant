@@ -10,13 +10,34 @@
 
     <custom:CustomWindow.Resources>
         <Thickness x:Key="DefaultLeftRightMargin">5,0,5,0</Thickness>
+
+        <DataTemplate x:Key="ListViewItemTemplate">
+            <Border x:Name="Basement"
+                        Background="Transparent"
+                        CornerRadius="{DynamicResource DefaultCornerRadius}">
+                <StackPanel Orientation="Horizontal" 
+                                FlowDirection="LeftToRight"
+                                HorizontalAlignment="Stretch"
+                                Margin="1,1,1,1"
+                                MaxHeight="40">
+                    <Border Background="{DynamicResource ImageBackgroundColor}"
+                                CornerRadius="{DynamicResource DefaultCornerRadius}">
+                        <Image Margin="1,1,1,1"/>
+                    </Border>
+                    <StackPanel Orientation="Vertical">
+                        <Label x:Name="MovieName" HorizontalAlignment="Left" Margin="3,2,0,0">Movie name sample</Label>
+                        <TextBlock x:Name="MovieDescription" Margin="3,0,0,0">Movie description sample</TextBlock>
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+        </DataTemplate>
     </custom:CustomWindow.Resources>
     
     <Grid x:Name="MainWindowResizableGrid">
         <Grid.ColumnDefinitions>
-            <ColumnDefinition />
+            <ColumnDefinition MinWidth="100"/>
             <ColumnDefinition Width="4"/>
-            <ColumnDefinition />
+            <ColumnDefinition MinWidth="100"/>
         </Grid.ColumnDefinitions>
 
         <!-- Search window part -->
@@ -47,9 +68,9 @@
                 <ListBox x:Name="searchView" 
                          Grid.Row="1" 
                          Margin="5,3,5,3.5"
-                         ItemContainerStyle="{DynamicResource ListViewItemStyle}">
-                    <ListBoxItem></ListBoxItem>
-                    <ListBoxItem></ListBoxItem>
+                         ItemTemplate="{StaticResource ListViewItemTemplate}">
+                    <ListBoxItem>Item1</ListBoxItem>
+                    <ListBoxItem>Item2</ListBoxItem>
                 </ListBox>
             </Grid>
         </custom:WindowPage>
@@ -66,15 +87,7 @@
                 <Label HorizontalAlignment="Center">Watch Assistant</Label>
             </custom:WindowPage.MidHeaderCell>
             <custom:WindowPage.RightHeaderCell>
-                <StackPanel Orientation="Horizontal" 
-                            FlowDirection="RightToLeft"
-                            Margin="{StaticResource DefaultLeftRightMargin}">
-                    <!--<custom:CustomButton Style="{DynamicResource CloseTitleBarButton}"
-                            HorizontalAlignment="Center"
-                            VerticalAlignment="Center"
-                            Command="Close"
-                            />-->
-                </StackPanel>
+                <ContentControl Style="{DynamicResource SystemButtonsContainerStyle}" Margin="0,0,5,0"/>
             </custom:WindowPage.RightHeaderCell>
 
             <Grid VerticalAlignment="Stretch">
@@ -102,9 +115,9 @@
                 <ListBox x:Name="listView" 
                      Grid.Row="1" 
                      Margin="5,3,5,3.5"
-                     ItemContainerStyle="{DynamicResource ListViewItemStyle}">
-                    <ListBoxItem MouseDoubleClick="ListBoxItem_MouseDoubleClick"></ListBoxItem>
-                    <ListBoxItem></ListBoxItem>
+                     ItemTemplate="{StaticResource ListViewItemTemplate}">
+                    <ListBoxItem MouseDoubleClick="ListBoxItem_MouseDoubleClick">Item1</ListBoxItem>
+                    <ListBoxItem>Item2</ListBoxItem>
                 </ListBox>
 
                 <!-- Userbar -->

@@ -57,7 +57,6 @@
                         <Trigger Property="IsPressed" Value="True">
                             <Setter TargetName="OuterBorder" Property="Opacity" Value="0.9" />
                             <Setter TargetName="InnerBorder" Property="Opacity" Value="0.9"/>
-                            <Setter TargetName="content" Property="Margin" Value="2,2,0,0"/>
                             <Setter TargetName="Glow" Property="Opacity" Value="0.5" />
                             <Setter TargetName="Highlight" Property="Opacity" Value="0.5"/>
                         </Trigger>

@@ -3289,23 +3289,23 @@
                 <ControlTemplate TargetType="{x:Type ListViewItem}">
                     <ControlTemplate.Resources>
                         <Storyboard x:Key="HoverOn">
-                            <DoubleAnimation Duration="00:00:00.1000000" Storyboard.TargetName="BackgroundGradientOver" Storyboard.TargetProperty="Opacity" To="0.73" />
+                            <DoubleAnimation Duration="00:00:00.0009999" Storyboard.TargetName="BackgroundGradientOver" Storyboard.TargetProperty="Opacity" To="1" />
                         </Storyboard>
                         <Storyboard x:Key="HoverOff">
-                            <DoubleAnimation Duration="00:00:00.4000000" Storyboard.TargetName="BackgroundGradientOver" Storyboard.TargetProperty="Opacity" To="0" />
+                            <DoubleAnimation Duration="00:00:00.1000000" Storyboard.TargetName="BackgroundGradientOver" Storyboard.TargetProperty="Opacity" To="0" />
                         </Storyboard>
                         <Storyboard x:Key="SelectedOn">
-                            <DoubleAnimation Duration="00:00:00.1000000" Storyboard.TargetName="BackgroundGradientSelected" Storyboard.TargetProperty="Opacity" To="0.84" />
-                            <DoubleAnimation Duration="00:00:00.1000000" Storyboard.TargetName="BackgroundGradientSelectedDisabled" Storyboard.TargetProperty="Opacity" To="0.55" />
+                            <DoubleAnimation Duration="00:00:00.0009999" Storyboard.TargetName="BackgroundGradientSelected" Storyboard.TargetProperty="Opacity" To="0.84" />
+                            <DoubleAnimation Duration="00:00:00.0009999" Storyboard.TargetName="BackgroundGradientSelectedDisabled" Storyboard.TargetProperty="Opacity" To="0.55" />
                         </Storyboard>
                         <Storyboard x:Key="SelectedOff">
-                            <DoubleAnimation Duration="00:00:00.4000000" Storyboard.TargetName="BackgroundGradientSelected" Storyboard.TargetProperty="Opacity" To="0" />
-                            <DoubleAnimation Duration="00:00:00.4000000" Storyboard.TargetName="BackgroundGradientSelectedDisabled" Storyboard.TargetProperty="Opacity" To="0" />
+                            <DoubleAnimation Duration="00:00:00.1000000" Storyboard.TargetName="BackgroundGradientSelected" Storyboard.TargetProperty="Opacity" To="0" />
+                            <DoubleAnimation Duration="00:00:00.1000000" Storyboard.TargetName="BackgroundGradientSelectedDisabled" Storyboard.TargetProperty="Opacity" To="0" />
                         </Storyboard>
                     </ControlTemplate.Resources>
                     <Border SnapsToDevicePixels="true" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="2" x:Name="border">
 
-                        <Grid Margin="2,0,2,0">
+                        <Grid Margin="2">
                             <Rectangle x:Name="BackgroundGradientOver" RadiusX="1" RadiusY="1" Stroke="{DynamicResource MouseOverBorderBrush}" Opacity="0" Fill="{DynamicResource MouseOverBrush}"/>
                             <Rectangle x:Name="BackgroundGradientSelectedDisabled" RadiusX="1" RadiusY="1" Opacity="0" Fill="{DynamicResource ListItemSelectedBrush}" Stroke="{DynamicResource ListItemSelectedBorderBrush}"/>
                             <Rectangle x:Name="BackgroundGradientSelected" StrokeThickness="1" RadiusX="1" RadiusY="1" Opacity="0" Fill="{DynamicResource PressedBrush}" Stroke="{DynamicResource PressedBorderBrush}"/>
