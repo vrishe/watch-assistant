@@ -3,36 +3,10 @@
                     xmlns:local="clr-namespace:CustomControls">
 
     <ResourceDictionary.MergedDictionaries>
-        <ResourceDictionary Source="resColors.xaml" />
-        <ResourceDictionary Source="..\resSharedStyles.xaml" />
+        <ResourceDictionary Source="resFrameElements.xaml" />
+        <ResourceDictionary Source="resStandardControlStyles.xaml" />
+        <ResourceDictionary Source="../resSharedStyles.xaml" />
     </ResourceDictionary.MergedDictionaries>
-
-    <CornerRadius x:Key="DefaultCornerRadius">5</CornerRadius>
-
-    <!--<Style x:Key="WindowRoot" TargetType="{x:Type Grid}">
-        <Style.Triggers>
-            <DataTrigger Binding="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=WindowState}" Value="Maximized">
-                <Setter Property="Margin" Value="{DynamicResource WindowRootMargin}" />
-            </DataTrigger>
-        </Style.Triggers>
-    </Style>-->
-
-    <!--<Style x:Key="WindowBorderBase" TargetType="{x:Type Border}">
-        <Style.Triggers>
-            <DataTrigger Binding="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=WindowState}" Value="Maximized">
-                <Setter Property="CornerRadius" Value="0"/>
-            </DataTrigger>
-        </Style.Triggers>
-    </Style>-->
-
-    <Style x:Key="WindowFrameBorder" TargetType="{x:Type Border}" BasedOn="{x:Null}">
-        <Setter Property="CornerRadius" Value="{StaticResource DefaultCornerRadius}" />
-        <Setter Property="Background" Value="{StaticResource WindowFrameBrush}" />
-        <Setter Property="BorderBrush" Value="DimGray" />
-        <Setter Property="BorderThickness" Value="1" />
-        <Setter Property="HorizontalAlignment" Value="Stretch" />
-        <Setter Property="VerticalAlignment" Value="Stretch" />
-    </Style>
 
     <Style TargetType="{x:Type ContentControl}" x:Key="FrameLayout" >
 
@@ -84,23 +58,5 @@
             </Setter.Value>
         </Setter>
     </Style>
-
-    <!--<Style x:Key="TitleBarBackgroundBorder" TargetType="{x:Type Border}" BasedOn="{StaticResource WindowBorderBase}">
-        <Setter Property="Background" Value="{DynamicResource TitleBarBackgroundBrush}" />
-        <Setter Property="HorizontalAlignment" Value="Stretch" />
-        <Setter Property="Height" Value="30" />
-    </Style>-->
-
-    <!-- Window Style -->
-    <!--<Style x:Key="SkinWindowStyle" TargetType="Window">
-        <Setter Property="WindowStyle" Value="None" />
-        <Setter Property="AllowsTransparency" Value="True" />
-        <Setter Property="ResizeMode" Value="CanResize" />
-        <Setter Property="Background" Value="Transparent" />
-        <Setter Property="MinHeight" Value="150"/>
-        <Setter Property="MinWidth" Value="250"/>
-        <Setter Property="Opacity" Value="1.0" />
-        <Setter Property="Template" Value="{StaticResource WindowTemplate}" />
-    </Style>-->
-
+    
 </ResourceDictionary>

@@ -63,18 +63,11 @@
     <Compile Include="View\DetailsWindow\DetailsWindow.xaml.cs">
       <DependentUpon>DetailsWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\MainWindow\UserNamePlate.xaml.cs">
-      <DependentUpon>UserNamePlate.xaml</DependentUpon>
-    </Compile>
     <Compile Include="ViewModel\MainWindow\MainWindowViewModel.cs" />
     <Compile Include="ViewModel\WindowViewModel.cs" />
     <Compile Include="ViewModel\ViewModelBase.cs" />
     <Compile Include="View\WindowPage.cs" />
     <Page Include="View\DetailsWindow\DetailsWindow.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="View\MainWindow\UserNamePlate.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

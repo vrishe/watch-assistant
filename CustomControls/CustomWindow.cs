@@ -1,14 +1,11 @@
-﻿using System.Windows;
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Threading;
+using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Shapes;
 using System.Windows.Input;
 using System.Windows.Threading;
-using System.Threading;
-using System.Collections;
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Runtime.InteropServices;
 
 namespace CustomControls
 {
@@ -16,6 +13,7 @@ namespace CustomControls
     {
         private delegate void ResizeProcedure(Window owner, Point mousePosition, Point mouseOffset);
         private delegate Point AnchorProcedure(Window owner, Point mousePosition);
+
         private struct ResizeOperation
         {
             private ResizeProcedure _resizer;
@@ -90,19 +88,19 @@ namespace CustomControls
             if (e.Property == WindowStateProperty) UpdateFrameStyle(LayoutName); return;
         }
 
-        private void OnFrameCommand(object sender, ExecutedRoutedEventArgs args)
+        private void OnFrameCommand(object sender, ExecutedRoutedEventArgs e)
         {
-            if (args.Command == CustomWindowCommands.Minimize)
+            if (e.Command == CustomWindowCommands.Minimize)
             {
                 WindowState = WindowState.Minimized;
             } 
-            else if (args.Command == CustomWindowCommands.Maximize)
+            else if (e.Command == CustomWindowCommands.Maximize)
             {
                 WindowState = 
                     WindowState == WindowState.Maximized ? 
                         WindowState.Normal : WindowState.Maximized;
             }
-            else if (args.Command == ApplicationCommands.Close)
+            else if (e.Command == ApplicationCommands.Close)
             {
                 this.Close();
             }
