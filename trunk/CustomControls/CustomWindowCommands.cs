@@ -1,15 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Windows.Input;
-
+﻿using System.Windows.Input;
 namespace CustomControls
 {
     public static class CustomWindowCommands
     {
-        public static readonly RoutedUICommand Maximize = new RoutedUICommand();
-        public static RoutedUICommand Minimize = new RoutedUICommand();
-        public static RoutedUICommand DisplaySystemButtons = new RoutedUICommand();
+        public static readonly RoutedUICommand Maximize = new RoutedUICommand("Maximize command", "Maximize", typeof(CustomWindow));
+        public static readonly RoutedUICommand Minimize = new RoutedUICommand("Minimize command", "Minimize", typeof(CustomWindow));
+        //public static RoutedUICommand DisplaySystemButtons = new RoutedUICommand();
     }
 }

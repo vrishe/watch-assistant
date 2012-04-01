@@ -1,7 +1,7 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
-    <SolidColorBrush x:Key="UserAvatarBackgroundColor"  Color="#FFA0A0A0" />
+    <SolidColorBrush x:Key="ImageBackgroundColor"  Color="#FFA0A0A0" />
     <SolidColorBrush x:Key="WindowLabelTextColor" Color="Beige" />
     <SolidColorBrush x:Key="OutsideFontColor" Color="#FFFFFFFF" />
     <SolidColorBrush x:Key="TextBrush" Color="#FFFFFFFF" />

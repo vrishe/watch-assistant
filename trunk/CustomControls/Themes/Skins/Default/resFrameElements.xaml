@@ -1,0 +1,110 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:local="clr-namespace:CustomControls">
+    
+    <ResourceDictionary.MergedDictionaries>
+        <ResourceDictionary Source="resColors.xaml" />
+    </ResourceDictionary.MergedDictionaries>
+
+    <CornerRadius x:Key="DefaultCornerRadius">5</CornerRadius>
+
+    <Style x:Key="WindowFrameBorder" TargetType="{x:Type Border}" BasedOn="{x:Null}">
+        <Setter Property="CornerRadius" Value="{StaticResource DefaultCornerRadius}" />
+        <Setter Property="Background" Value="{StaticResource WindowFrameBrush}" />
+        <Setter Property="BorderBrush" Value="DimGray" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="HorizontalAlignment" Value="Stretch" />
+        <Setter Property="VerticalAlignment" Value="Stretch" />
+    </Style>
+
+    <Style x:Key="ControlButtonStyle" TargetType="{x:Type local:CustomButton}"
+           BasedOn="{StaticResource {ComponentResourceKey {x:Type local:CustomButton}, Diffuse}}">
+        <Setter Property="Height" Value="24" />
+        <Setter Property="Width" Value="24" />
+        <Setter Property="CornerRadius" Value="4" />
+        <Setter Property="Background" Value="{StaticResource brushControlButton}" />
+        <Setter Property="GlowColor" Value="{StaticResource brushControlButtonGlow}" />
+        <Setter Property="HighlightBrightness" Value="120" />
+    </Style>
+
+    <Style x:Key="SystemButtonsContainerStyle" TargetType="{x:Type Control}" >
+        <Setter Property="HorizontalAlignment" Value="Right" />
+        <Setter Property="VerticalAlignment" Value="Top" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type Control}" >
+                    <StackPanel Orientation="Horizontal">
+                        <local:CustomButton Command="{x:Static local:CustomWindowCommands.Minimize}"
+                						        Style="{StaticResource ControlButtonStyle}" >
+                            <Line Stroke="{StaticResource brushControlButtonStroke}" StrokeThickness="2" X2="10" Y1="10" Y2="10" />
+                        </local:CustomButton>
+                        <local:CustomButton Command="{x:Static local:CustomWindowCommands.Maximize}"
+                						        Style="{StaticResource ControlButtonStyle}" >
+                            <Rectangle Stroke="{StaticResource brushControlButtonStroke}" StrokeThickness="2" Width="12" Height="12" />
+                        </local:CustomButton>
+                        <local:CustomButton Content="X" Command="ApplicationCommands.Close"
+                						        Style="{StaticResource ControlButtonStyle}"
+                						        Background="{StaticResource brushCloseButton}"
+                						        GlowColor="{StaticResource brushCloseButtonGlow}"
+                						        Foreground="{StaticResource brushCloseButtonForeground}" />
+                    </StackPanel>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="ListViewItemStyle" TargetType="{x:Type ListBoxItem}">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type ListBoxItem}">
+                    <Border x:Name="Basement"
+                                Background="Transparent"
+                                CornerRadius="{StaticResource DefaultCornerRadius}">
+                        <StackPanel Orientation="Horizontal" 
+                                        FlowDirection="LeftToRight"
+                                        HorizontalAlignment="Stretch"
+                                        Margin="1,1,1,1"
+                                        MaxHeight="40">
+                            <Border Background="{StaticResource ImageBackgroundColor}"
+                                        CornerRadius="{StaticResource DefaultCornerRadius}">
+                                <Image Margin="1,1,1,1"/>
+                            </Border>
+                            <StackPanel Orientation="Vertical">
+                                <Label x:Name="MovieName" HorizontalAlignment="Left" Margin="3,2,0,0">Movie name sample</Label>
+                                <TextBlock x:Name="MovieDescription" Margin="3,0,0,0">Movie description sample</TextBlock>
+                            </StackPanel>
+                        </StackPanel>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsSelected" Value="true">
+                            <Setter TargetName="Basement" Property="Background" Value="{StaticResource ListItemSelectedBorderBrush}" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+    
+    <Style x:Key="UserBarPlateStyle" TargetType="{x:Type ContentControl}">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type ContentControl}">
+                    <StackPanel Orientation="Horizontal" 
+                        FlowDirection="LeftToRight"
+                        MaxHeight="40"
+                        MaxWidth="120">
+                                <StackPanel Orientation="Vertical" Margin="0,0,2,0">
+                                    <Label x:Name="Nickname" HorizontalAlignment="Left">A2 Inc.</Label>
+                                    <TextBlock x:Name="DetailsOpenLink" HorizontalAlignment="Left">Details</TextBlock>
+                                </StackPanel>
+                                <Border Background="{DynamicResource ImageBackgroundColor}"
+                        CornerRadius="{DynamicResource DefaultCornerRadius}">
+                                    <Image Margin="1,1,1,1"/>
+                                </Border>
+                    </StackPanel>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+</ResourceDictionary>

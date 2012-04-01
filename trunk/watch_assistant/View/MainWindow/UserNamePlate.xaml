@@ -13,7 +13,7 @@
             <Label x:Name="Nickname" HorizontalAlignment="Left">A2 Inc.</Label>
             <TextBlock x:Name="DetailsOpenLink" HorizontalAlignment="Left">Details</TextBlock>
         </StackPanel>
-        <Border Background="{DynamicResource UserAvatarBackgroundColor}"
+        <Border Background="{DynamicResource ImageBackgroundColor}"
                 CornerRadius="{DynamicResource DefaultCornerRadius}">
             <Image Source="\Resources\App.ico" Margin="1,1,1,1"/>
         </Border>

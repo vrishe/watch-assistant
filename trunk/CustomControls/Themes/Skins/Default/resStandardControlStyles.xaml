@@ -4,6 +4,10 @@
                     mc:Ignorable="d"
                     xmlns:d="http://schemas.microsoft.com/expression/blend/2008">
 
+    <ResourceDictionary.MergedDictionaries>
+        <ResourceDictionary Source="resColors.xaml" />
+    </ResourceDictionary.MergedDictionaries>
+
     <Style TargetType="{x:Type GridSplitter}" BasedOn="{x:Null}">
         <Setter Property="Background" Value="{DynamicResource GridSplitterBackgroundBrush}" />
     </Style>

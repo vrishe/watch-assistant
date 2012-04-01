@@ -8,44 +8,10 @@
         
         Height="350" Width="525">
 
-    <Window.Resources>
+    <custom:CustomWindow.Resources>
         <Thickness x:Key="DefaultLeftRightMargin">5,0,5,0</Thickness>
-
-        <!-- List view style -->
-        <Style x:Key="ListViewItemStyle" TargetType="{x:Type ListBoxItem}">
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="{x:Type ListBoxItem}">
-                        <Border x:Name="Basement"
-                                Background="Transparent"
-                                CornerRadius="{StaticResource DefaultCornerRadius}">
-                            <StackPanel Orientation="Horizontal" 
-                                        FlowDirection="LeftToRight"
-                                        HorizontalAlignment="Stretch"
-                                        Margin="1,1,1,1"
-                                        MaxHeight="40">
-                                <Border Background="{DynamicResource UserAvatarBackgroundColor}"
-                                        CornerRadius="{StaticResource DefaultCornerRadius}">
-                                    <Image Source="\Resources\App.ico" Margin="1,1,1,1"/>
-                                </Border>
-                                <StackPanel Orientation="Vertical">
-                                    <Label x:Name="MovieName" HorizontalAlignment="Left" Margin="3,2,0,0">Movie name sample</Label>
-                                    <TextBlock x:Name="MovieDescription" Margin="3,0,0,0">Movie description sample</TextBlock>
-                                </StackPanel>
-                            </StackPanel>
-                        </Border>
-                        <ControlTemplate.Triggers>
-                            <Trigger Property="IsSelected" Value="true">
-                                <Setter TargetName="Basement" Property="Background" Value="{StaticResource ListItemSelectedBorderBrush}" />
-                            </Trigger>
-                        </ControlTemplate.Triggers>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
-        <!-- End of list view style -->
-    </Window.Resources>
-
+    </custom:CustomWindow.Resources>
+    
     <Grid x:Name="MainWindowResizableGrid">
         <Grid.ColumnDefinitions>
             <ColumnDefinition />
@@ -81,7 +47,7 @@
                 <ListBox x:Name="searchView" 
                          Grid.Row="1" 
                          Margin="5,3,5,3.5"
-                         ItemContainerStyle="{StaticResource ListViewItemStyle}">
+                         ItemContainerStyle="{DynamicResource ListViewItemStyle}">
                     <ListBoxItem></ListBoxItem>
                     <ListBoxItem></ListBoxItem>
                 </ListBox>
@@ -103,11 +69,11 @@
                 <StackPanel Orientation="Horizontal" 
                             FlowDirection="RightToLeft"
                             Margin="{StaticResource DefaultLeftRightMargin}">
-                    <Button Style="{DynamicResource CloseTitleBarButton}"
+                    <!--<custom:CustomButton Style="{DynamicResource CloseTitleBarButton}"
                             HorizontalAlignment="Center"
                             VerticalAlignment="Center"
                             Command="Close"
-                            />
+                            />-->
                 </StackPanel>
             </custom:WindowPage.RightHeaderCell>
 
@@ -136,20 +102,21 @@
                 <ListBox x:Name="listView" 
                      Grid.Row="1" 
                      Margin="5,3,5,3.5"
-                     ItemContainerStyle="{StaticResource ListViewItemStyle}">
+                     ItemContainerStyle="{DynamicResource ListViewItemStyle}">
                     <ListBoxItem MouseDoubleClick="ListBoxItem_MouseDoubleClick"></ListBoxItem>
                     <ListBoxItem></ListBoxItem>
                 </ListBox>
 
                 <!-- Userbar -->
-                <StackPanel x:Name="userBar"
+                <!--<StackPanel x:Name="userBarPlate"
                         Grid.Row="2"
                         Orientation="Horizontal"
                         FlowDirection="RightToLeft">
-                    <mwv:UserNamePlate Margin="{StaticResource DefaultLeftRightMargin}" />
-                </StackPanel>
+                    <ContentControl x:Name="userBarView"
+                                    Style="{DynamicResource UserBarPlateStyle}"
+                                    Margin="{StaticResource DefaultLeftRightMargin}" />
+                </StackPanel>-->
             </Grid>
-
         </custom:WindowPage>
     </Grid>
-    </custom:CustomWindow>
+</custom:CustomWindow>
