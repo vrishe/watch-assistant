@@ -59,6 +59,9 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Model\Graph.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="ViewModel\DetailsWindow\DetailsWindowViewModel.cs" />
     <Compile Include="View\DetailsWindow\DetailsWindow.xaml.cs">
       <DependentUpon>DetailsWindow.xaml</DependentUpon>
@@ -103,7 +106,7 @@
     <Resource Include="Resources\App.ico" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Model\" />
+    <Folder Include="Test\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\CustomControls\CustomControls.csproj">

@@ -250,14 +250,14 @@ namespace CustomControls
                 double restoreOffsetX = _restoreBounds.X / Width;
                 double restoreOffsetY = _restoreBounds.Y / Height;
 
-                if (restoreOffsetX >= .25 && restoreOffsetX <= .75)
+                if (restoreOffsetX >= .45 && restoreOffsetX <= .55)
                 {
                     restoreOffsetX = _restoreBounds.Width * .5;
                 }
                 else
                 {
                     double tempOffsetX = _restoreBounds.X;
-                    if (restoreOffsetX < .25)
+                    if (restoreOffsetX < .45)
                     {
                         restoreOffsetX = Math.Min(_restoreBounds.Width * .5, tempOffsetX);
                     }
@@ -267,14 +267,14 @@ namespace CustomControls
                     }
                 }
 
-                if (restoreOffsetY >= .25 && restoreOffsetY <= .75)
+                if (restoreOffsetY >= .45 && restoreOffsetY <= .55)
                 {
                     restoreOffsetY = _restoreBounds.Height * .5;
                 }
                 else
                 {
                     double tempOffsetY = _restoreBounds.Y;
-                    if (restoreOffsetY < .25)
+                    if (restoreOffsetY < .45)
                     {
                         restoreOffsetY = Math.Min(_restoreBounds.Height * .5, tempOffsetY);
                     }
