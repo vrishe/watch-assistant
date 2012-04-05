@@ -5,11 +5,9 @@
     <ResourceDictionary.MergedDictionaries>
         <ResourceDictionary Source="resColors.xaml" />
     </ResourceDictionary.MergedDictionaries>
-
-    <CornerRadius x:Key="DefaultCornerRadius">5</CornerRadius>
    
     <Style x:Key="WindowFrameBorder" TargetType="{x:Type Border}" BasedOn="{x:Null}">
-        <Setter Property="CornerRadius" Value="{StaticResource DefaultCornerRadius}"/>
+        <Setter Property="CornerRadius" Value="{Binding Source={x:Static SystemParameters.BorderWidth}}"/>
         <Setter Property="Background" Value="{StaticResource WindowFrameBrush}" />
         <Setter Property="BorderBrush" Value="Transparent" />
         <Setter Property="HorizontalAlignment" Value="Stretch" />

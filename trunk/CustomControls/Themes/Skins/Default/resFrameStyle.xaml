@@ -8,6 +8,7 @@
         <ResourceDictionary Source="../resSharedStyles.xaml" />
     </ResourceDictionary.MergedDictionaries>
 
+    <GridLengthConverter x:Key="GridLengthConverter"/>
     <Style TargetType="{x:Type ContentControl}" x:Key="FrameLayout" >
 
         <Setter Property="Template">
@@ -18,15 +19,15 @@
                         <Border x:Name="WindowFrame" Style="{DynamicResource WindowFrameBorder}">
                             <Grid>
                                 <Grid.RowDefinitions>
-                                    <RowDefinition Height="{x:Static SystemParameters.BorderWidth}"/>
+                                    <RowDefinition Height="{Binding Source={x:Static SystemParameters.BorderWidth}}"/>
                                     <RowDefinition Height="*"/>
-                                    <RowDefinition Height="{x:Static SystemParameters.BorderWidth}"/>
+                                    <RowDefinition Height="{Binding Source={x:Static SystemParameters.BorderWidth}}"/>
                                 </Grid.RowDefinitions>
 
                                 <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="{x:Static SystemParameters.BorderWidth}"/>
+                                    <ColumnDefinition Width="{Binding Source={x:Static SystemParameters.BorderWidth}}"/>
                                     <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="{x:Static SystemParameters.BorderWidth}"/>
+                                    <ColumnDefinition Width="{Binding Source={x:Static SystemParameters.BorderWidth}}"/>
                                 </Grid.ColumnDefinitions>
 
                                 <!-- MouseMove && MouseLeftButtonDown -->
