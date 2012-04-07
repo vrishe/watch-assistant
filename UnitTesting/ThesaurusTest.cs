@@ -73,7 +73,8 @@ namespace UnitTesting
         public void ThesaurusConstructorTest()
         {
             Thesaurus target = new Thesaurus();
-            Assert.IsTrue(!String.IsNullOrEmpty(target.Name), target.Name);
+            Assert.IsTrue(!String.IsNullOrEmpty(target.Name));
+            Console.WriteLine(target.Name);
         }
 
         /// <summary>
@@ -87,8 +88,8 @@ namespace UnitTesting
             string meaning = string.Empty; // TODO: инициализация подходящего значения
             bool mutual = false; // TODO: инициализация подходящего значения
             bool expected = false; // TODO: инициализация подходящего значения
-            bool actual;
-            actual = target.AddDefinition(key, meaning, mutual);
+            bool actual = false;
+            target.AddDefinition(key, meaning, mutual);
             Assert.AreEqual(expected, actual);
         }
 
