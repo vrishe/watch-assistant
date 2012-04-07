@@ -9,9 +9,10 @@ namespace watch_assistant.Model.Dictionary
     class Thesaurus : ISerializable, IDeserializationCallback
     {
         #region Fields
-        private static List<WeakReference> _instances;
-        private readonly Dictionary<string, HashSet<string>> _dictionary = new Dictionary<string, HashSet<string>>();
+        private static List<WeakReference> _instances = new List<WeakReference>();
+
         private string _name;
+        private readonly Dictionary<string, HashSet<string>> _dictionary = new Dictionary<string, HashSet<string>>();
         #endregion (Fields)
 
         #region Properties
@@ -20,10 +21,15 @@ namespace watch_assistant.Model.Dictionary
             get { return _name; }
             set
             {
-                if (String.IsNullOrEmpty(value)) value = String.Format("Thesaurus{0}", _instances.Count);
+                if (String.IsNullOrEmpty(value))
+                {
+                    _instances.RemoveAll((obj) => { return !(obj as WeakReference).IsAlive; });
+                    value = String.Format("Thesaurus{0}", _instances.Count);
+                }
                 _name = value;
             }
         }
+        public int Count { get { return _dictionary.Count; } }
         #endregion (Properties)
 
         #region Events
@@ -94,7 +100,7 @@ namespace watch_assistant.Model.Dictionary
                     if (currentDefinition.Remove(meaning))
                     {
                         if (currentDefinition.Count == 0) _dictionary.Remove(key);
-                        RemoveDefinition(meaning, false);
+                        if (mutual) RemoveDefinition(meaning, false);
                         return true;
                     }
                 }
@@ -123,6 +129,26 @@ namespace watch_assistant.Model.Dictionary
             }
         }
 
+        public bool HasDefinitionFor(string key)
+        {
+            return _dictionary.ContainsKey(key);
+        }
+
+        public string[] GetPhraseVariations(string phrase)
+        {
+            List<string> variations = new List<string>();
+
+            string separators = " ,.\"!@#$%^&*()-=_+|\\}{][;:`~<>?/";
+            for (int i = 0, max = phrase.Length; i < max; i++)
+            {
+                int splitIndex = phrase.IndexOf(separators, i);
+                if (splitIndex == -1) break;
+                // 
+            }
+
+            return variations.ToArray();
+        }
+
 
         #region ISerializable methods
         public virtual void GetObjectData(SerializationInfo info, StreamingContext context) 
@@ -142,7 +168,6 @@ namespace watch_assistant.Model.Dictionary
         #region Constructors
         public Thesaurus()
         {
-            if ( _instances == null ) _instances = new List<WeakReference>();
             _instances.Add(new WeakReference(this));
             Name = null;
         }

@@ -84,13 +84,13 @@ namespace UnitTesting
         public void AddDefinitionTest()
         {
             Thesaurus target = new Thesaurus(); // TODO: инициализация подходящего значения
-            string key = string.Empty; // TODO: инициализация подходящего значения
-            string meaning = string.Empty; // TODO: инициализация подходящего значения
-            bool mutual = false; // TODO: инициализация подходящего значения
-            bool expected = false; // TODO: инициализация подходящего значения
-            bool actual = false;
-            target.AddDefinition(key, meaning, mutual);
-            Assert.AreEqual(expected, actual);
+            target.AddDefinition("Красный", "Красивый", true);
+            target.AddDefinition("Красный", "Красивый", true);
+            target.AddDefinition("Красивый", "Красный", false);
+            target.AddDefinition("Красивый", "Красный", true);
+            Assert.IsTrue(target.Count == 2);
+            target.AddDefinition("Кровавый", "Красный", true);
+            Assert.IsTrue(target.Count == 3);
         }
 
         /// <summary>
@@ -100,37 +100,35 @@ namespace UnitTesting
         public void AddDefinitionTest1()
         {
             Thesaurus target = new Thesaurus(); // TODO: инициализация подходящего значения
-            string key = string.Empty; // TODO: инициализация подходящего значения
-            IEnumerable<string> definition = null; // TODO: инициализация подходящего значения
-            bool mutual = false; // TODO: инициализация подходящего значения
-            target.AddDefinition(key, definition, mutual);
-            Assert.Inconclusive("Невозможно проверить метод, не возвращающий значение.");
+            target.AddDefinition("Красный", new string[] { "Кровавый", "Красивый" }, true);
+            target.AddDefinition("Красный", new string[] { "Кровавый", "Красивый" }, true);
+            Assert.IsTrue(target.Count == 3);
         }
 
-        /// <summary>
-        ///Тест для GetObjectData
-        ///</summary>
-        [TestMethod()]
-        public void GetObjectDataTest()
-        {
-            Thesaurus target = new Thesaurus(); // TODO: инициализация подходящего значения
-            SerializationInfo info = null; // TODO: инициализация подходящего значения
-            StreamingContext context = new StreamingContext(); // TODO: инициализация подходящего значения
-            target.GetObjectData(info, context);
-            Assert.Inconclusive("Невозможно проверить метод, не возвращающий значение.");
-        }
+        ///// <summary>
+        /////Тест для GetObjectData
+        /////</summary>
+        //[TestMethod()]
+        //public void GetObjectDataTest()
+        //{
+        //    Thesaurus target = new Thesaurus(); // TODO: инициализация подходящего значения
+        //    SerializationInfo info = null; // TODO: инициализация подходящего значения
+        //    StreamingContext context = new StreamingContext(); // TODO: инициализация подходящего значения
+        //    target.GetObjectData(info, context);
+        //    Assert.Inconclusive("Невозможно проверить метод, не возвращающий значение.");
+        //}
 
-        /// <summary>
-        ///Тест для OnDeserialization
-        ///</summary>
-        [TestMethod()]
-        public void OnDeserializationTest()
-        {
-            Thesaurus target = new Thesaurus(); // TODO: инициализация подходящего значения
-            object sender = null; // TODO: инициализация подходящего значения
-            target.OnDeserialization(sender);
-            Assert.Inconclusive("Невозможно проверить метод, не возвращающий значение.");
-        }
+        ///// <summary>
+        /////Тест для OnDeserialization
+        /////</summary>
+        //[TestMethod()]
+        //public void OnDeserializationTest()
+        //{
+        //    Thesaurus target = new Thesaurus(); // TODO: инициализация подходящего значения
+        //    object sender = null; // TODO: инициализация подходящего значения
+        //    target.OnDeserialization(sender);
+        //    Assert.Inconclusive("Невозможно проверить метод, не возвращающий значение.");
+        //}
 
         /// <summary>
         ///Тест для RemoveDefinition
@@ -139,59 +137,42 @@ namespace UnitTesting
         public void RemoveDefinitionTest()
         {
             Thesaurus target = new Thesaurus(); // TODO: инициализация подходящего значения
-            string key = string.Empty; // TODO: инициализация подходящего значения
-            bool mutual = false; // TODO: инициализация подходящего значения
-            bool expected = false; // TODO: инициализация подходящего значения
-            bool actual;
-            actual = target.RemoveDefinition(key, mutual);
+            target.AddDefinition("Красный", new string[] { "Кровавый", "Красивый" }, true);
+            bool expected = true; // TODO: инициализация подходящего значения
+            bool actual = target.RemoveDefinition("Кровавый", true);
             Assert.AreEqual(expected, actual);
-            Assert.Inconclusive("Проверьте правильность этого метода теста.");
+            Assert.IsTrue(target.Count == 2);
         }
 
-        /// <summary>
-        ///Тест для RemoveDefinition
-        ///</summary>
-        [TestMethod()]
-        public void RemoveDefinitionTest1()
-        {
-            Thesaurus target = new Thesaurus(); // TODO: инициализация подходящего значения
-            string key = string.Empty; // TODO: инициализация подходящего значения
-            string meaning = string.Empty; // TODO: инициализация подходящего значения
-            bool mutual = false; // TODO: инициализация подходящего значения
-            bool expected = false; // TODO: инициализация подходящего значения
-            bool actual;
-            actual = target.RemoveDefinition(key, meaning, mutual);
-            Assert.AreEqual(expected, actual);
-            Assert.Inconclusive("Проверьте правильность этого метода теста.");
-        }
+        ///// <summary>
+        /////Тест для RemoveDefinition
+        /////</summary>
+        //[TestMethod()]
+        //public void RemoveDefinitionTest1()
+        //{
+        //    Thesaurus target = new Thesaurus(); // TODO: инициализация подходящего значения
+        //    string key = string.Empty; // TODO: инициализация подходящего значения
+        //    string meaning = string.Empty; // TODO: инициализация подходящего значения
+        //    bool mutual = false; // TODO: инициализация подходящего значения
+        //    bool expected = false; // TODO: инициализация подходящего значения
+        //    bool actual;
+        //    actual = target.RemoveDefinition(key, meaning, mutual);
+        //    Assert.AreEqual(expected, actual);
+        //    Assert.Inconclusive("Проверьте правильность этого метода теста.");
+        //}
 
-        /// <summary>
-        ///Тест для SetDefinition
-        ///</summary>
-        [TestMethod()]
-        public void SetDefinitionTest()
-        {
-            Thesaurus target = new Thesaurus(); // TODO: инициализация подходящего значения
-            string key = string.Empty; // TODO: инициализация подходящего значения
-            IEnumerable<string> definition = null; // TODO: инициализация подходящего значения
-            bool mutual = false; // TODO: инициализация подходящего значения
-            target.SetDefinition(key, definition, mutual);
-            Assert.Inconclusive("Невозможно проверить метод, не возвращающий значение.");
-        }
-
-        /// <summary>
-        ///Тест для Name
-        ///</summary>
-        [TestMethod()]
-        public void NameTest()
-        {
-            Thesaurus target = new Thesaurus(); // TODO: инициализация подходящего значения
-            string expected = string.Empty; // TODO: инициализация подходящего значения
-            string actual;
-            target.Name = expected;
-            actual = target.Name;
-            Assert.AreEqual(expected, actual);
-            Assert.Inconclusive("Проверьте правильность этого метода теста.");
-        }
+        ///// <summary>
+        /////Тест для SetDefinition
+        /////</summary>
+        //[TestMethod()]
+        //public void SetDefinitionTest()
+        //{
+        //    Thesaurus target = new Thesaurus(); // TODO: инициализация подходящего значения
+        //    string key = string.Empty; // TODO: инициализация подходящего значения
+        //    IEnumerable<string> definition = null; // TODO: инициализация подходящего значения
+        //    bool mutual = false; // TODO: инициализация подходящего значения
+        //    target.SetDefinition(key, definition, mutual);
+        //    Assert.Inconclusive("Невозможно проверить метод, не возвращающий значение.");
+        //}
     }
 }
