@@ -9,6 +9,7 @@ namespace watch_assistant.Model.Dictionary
     class Thesaurus : ISerializable, IDeserializationCallback
     {
         #region Fields
+        private static List<WeakReference> _instances = new List<WeakReference>();
         private readonly Dictionary<string, HashSet<string>> _dictionary = new Dictionary<string, HashSet<string>>();
         #endregion (Fields)
 
@@ -124,14 +125,14 @@ namespace watch_assistant.Model.Dictionary
 
 
         #region ISerializable methods
-        protected virtual void GetObjectData(SerializationInfo info, StreamingContext context) 
+        public virtual void GetObjectData(SerializationInfo info, StreamingContext context) 
         { 
-            // Some serialization logic. Coming soon. April '12th...
+            // Some serialization logic. Coming soon. April 2012th...
         }
         #endregion (ISerializable methods)
 
         #region IDeserializationCallback methods
-        protected virtual void OnDeserialization(object sender) 
+        public virtual void OnDeserialization(object sender) 
         {
             if (Deserialized != null) Deserialized(sender, new EventArgs());
         }
@@ -145,7 +146,8 @@ namespace watch_assistant.Model.Dictionary
         #region Constructors
         public Thesaurus()
         {
-            Name = "Thesaurus";
+            _instances.Add(new WeakReference(this));
+            Name = String.Format("Thesaurus{0}", _instances.Count);
         }
         #endregion (Constructors)
     }
