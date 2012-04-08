@@ -1,5 +1,6 @@
 ﻿using System.Windows;
 using CustomControls;
+using System.Data;
 
 namespace watch_assistant.View.MainWindow
 {
@@ -20,6 +21,20 @@ namespace watch_assistant.View.MainWindow
         {
             DetailsWindow.DetailsWindow tempPreview = new DetailsWindow.DetailsWindow();
             tempPreview.ShowDialog();
+        }
+
+        // Delete this when AOSInterviewer is seted up
+        Model.Search.AOSInterviewer testSpamer = new Model.Search.AOSInterviewer();
+        private void bSearch_Click(object sender, RoutedEventArgs e)
+        {
+            testSpamer.ClearInterviewResults();
+            testSpamer.InterviewSite(tbSearch.Text);
+
+            searchView.Items.Clear();
+            foreach (DataRow tmp in testSpamer.InterviewResult.Rows) 
+            {
+                searchView.Items.Add(tmp.ItemArray[0].ToString());
+            }
         }
     }
 }
