@@ -1,6 +1,7 @@
 ﻿using System.Windows;
 using CustomControls;
 using System.Data;
+using System;
 
 namespace watch_assistant.View.MainWindow
 {
@@ -28,7 +29,15 @@ namespace watch_assistant.View.MainWindow
         private void bSearch_Click(object sender, RoutedEventArgs e)
         {
             testSpamer.ClearInterviewResults();
-            testSpamer.InterviewSite(tbSearch.Text);
+            try
+            {
+                testSpamer.InterviewSite(tbSearch.Text);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+                
 
             searchView.Items.Clear();
             foreach (DataRow tmp in testSpamer.InterviewResult.Rows) 
