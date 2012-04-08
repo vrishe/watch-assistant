@@ -105,31 +105,6 @@ namespace UnitTesting
             Assert.IsTrue(target.Count == 3);
         }
 
-        ///// <summary>
-        /////Тест для GetObjectData
-        /////</summary>
-        //[TestMethod()]
-        //public void GetObjectDataTest()
-        //{
-        //    Thesaurus target = new Thesaurus(); // TODO: инициализация подходящего значения
-        //    SerializationInfo info = null; // TODO: инициализация подходящего значения
-        //    StreamingContext context = new StreamingContext(); // TODO: инициализация подходящего значения
-        //    target.GetObjectData(info, context);
-        //    Assert.Inconclusive("Невозможно проверить метод, не возвращающий значение.");
-        //}
-
-        ///// <summary>
-        /////Тест для OnDeserialization
-        /////</summary>
-        //[TestMethod()]
-        //public void OnDeserializationTest()
-        //{
-        //    Thesaurus target = new Thesaurus(); // TODO: инициализация подходящего значения
-        //    object sender = null; // TODO: инициализация подходящего значения
-        //    target.OnDeserialization(sender);
-        //    Assert.Inconclusive("Невозможно проверить метод, не возвращающий значение.");
-        //}
-
         /// <summary>
         ///Тест для RemoveDefinition
         ///</summary>
@@ -144,35 +119,33 @@ namespace UnitTesting
             Assert.IsTrue(target.Count == 2);
         }
 
-        ///// <summary>
-        /////Тест для RemoveDefinition
-        /////</summary>
-        //[TestMethod()]
-        //public void RemoveDefinitionTest1()
-        //{
-        //    Thesaurus target = new Thesaurus(); // TODO: инициализация подходящего значения
-        //    string key = string.Empty; // TODO: инициализация подходящего значения
-        //    string meaning = string.Empty; // TODO: инициализация подходящего значения
-        //    bool mutual = false; // TODO: инициализация подходящего значения
-        //    bool expected = false; // TODO: инициализация подходящего значения
-        //    bool actual;
-        //    actual = target.RemoveDefinition(key, meaning, mutual);
-        //    Assert.AreEqual(expected, actual);
-        //    Assert.Inconclusive("Проверьте правильность этого метода теста.");
-        //}
+        /// <summary>
+        ///Тест для GetPhraseVariations
+        ///</summary>
+        [TestMethod()]
+        public void GetPhraseVariationsTest()
+        {
+            Thesaurus target = new Thesaurus(); // TODO: инициализация подходящего значения
+            target.AddDefinition("красный", new string[] { "кровавый", "красивый" }, true);
+            target.AddDefinition("вертолет", new string[] { "геликоптер", "хели" }, true);
+            target.AddDefinition("быстрый", new string[] { "молниеносный", "скоростной" },true);
+            string[] phrases = target.GetPhraseVariations("Огромный чебурек");
+            Assert.IsTrue(phrases.Length > 0);
+        }
 
-        ///// <summary>
-        /////Тест для SetDefinition
-        /////</summary>
-        //[TestMethod()]
-        //public void SetDefinitionTest()
-        //{
-        //    Thesaurus target = new Thesaurus(); // TODO: инициализация подходящего значения
-        //    string key = string.Empty; // TODO: инициализация подходящего значения
-        //    IEnumerable<string> definition = null; // TODO: инициализация подходящего значения
-        //    bool mutual = false; // TODO: инициализация подходящего значения
-        //    target.SetDefinition(key, definition, mutual);
-        //    Assert.Inconclusive("Невозможно проверить метод, не возвращающий значение.");
-        //}
+        /// <summary>
+        ///Тест для Serialize/Deserialize
+        ///</summary>
+        [TestMethod()]
+        public void SerializeDeserializeTest()
+        {
+            Thesaurus target = new Thesaurus(); // TODO: инициализация подходящего значения
+            target.AddDefinition("красный", new string[] { "кровавый", "красивый" }, true);
+            target.AddDefinition("вертолет", new string[] { "геликоптер", "хели" }, true);
+            target.AddDefinition("быстрый", new string[] { "молниеносный", "скоростной" }, true);
+            target.Serialize(target.Name);
+            Thesaurus deserialized = new Thesaurus(target.Name);
+            Assert.AreEqual(target.Count, deserialized.Count);
+        }
     }
 }
