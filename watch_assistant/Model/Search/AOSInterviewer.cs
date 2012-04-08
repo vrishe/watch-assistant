@@ -1,16 +1,34 @@
 ﻿using System;
-using watch_assistant.Properties;
-using System.Text;
-using System.Net;
-using System.IO;
+using System.Collections.Generic;
 using System.Data;
+using System.IO;
+using System.Net;
+using System.Text;
 using System.Text.RegularExpressions;
+using watch_assistant.Properties;
+using System.Collections;
+using System.Windows;
 
 namespace watch_assistant.Model.Search
 {
     class AOSInterviewer : IInterviewer
     {
+        #region Fields
+
         private DataTable _interviewResult;
+        private ResourceDictionary _dictionary;
+
+        #endregion // Fields
+
+        #region Constructors
+
+        public AOSInterviewer()
+        {
+            _dictionary = new ResourceDictionary();
+            _dictionary.Source = new Uri("..\\Resources\\resAOS.xaml", UriKind.Relative);
+        }
+
+        #endregion // Constructors
 
         #region IInterviewer implementation
 
@@ -21,9 +39,17 @@ namespace watch_assistant.Model.Search
                 FormNewResultTable();
 
             // Try to get response from AOS server
-            // Pick out every concern result
+            string answerContent = GetResponce(query, 1);
+            // Find out how many results are found
+            Match resNumDefinigMatch = Regex.Match(answerContent, @"По\sВашему\sзапросу\sнайдено\s([0-9]*)\sответов\s\(Результаты\sзапроса\s1\s-\s([0-9]*)\)");
+            int resultsPages = (Int32)Math.Ceiling(Double.Parse(resNumDefinigMatch.Groups[1].ToString()) / Double.Parse(resNumDefinigMatch.Groups[2].ToString()));
+            answerContent = answerContent.Substring(resNumDefinigMatch.Index + resNumDefinigMatch.Length);
 
-            GetResultsFromContent(query, GetResponce(query, 1));
+            // Pick out every concern result
+            GetResultsFromContent(query, answerContent);
+            for (int page = 2; page <= resultsPages; page++)
+                GetResultsFromContent(query, GetResponce(query, page));
+                
         }
 
         public void ClearInterviewResults()
@@ -50,26 +76,24 @@ namespace watch_assistant.Model.Search
         {
             do
             {
-                {
-                    String videoItemBeginingString = "<div class='new_'>\r\n\t<div class='head_'><a href=\"";
-                    int i = answerContent.IndexOf(videoItemBeginingString);
-                    if (i < 0) break;
-                    answerContent = answerContent.Substring(i + videoItemBeginingString.Length);
-                }
+                string videoItemBeginingString = "<div class='new_'>\r\n\t<div class='head_'><a href=\"([^\"]*)\"";
+                Match videoItemRef = Regex.Match(answerContent, videoItemBeginingString);
+                if (!videoItemRef.Success) break;
+                answerContent = answerContent.Substring(videoItemRef.Index + videoItemRef.Length);
 
                 DataRow videoItem = _interviewResult.NewRow();
                 videoItem["Name"] = Regex.Match(answerContent, @"<b>(.*)</b>").Groups[1];
                 if (!((String)videoItem["Name"]).Contains(query)) continue;
                 // If category is not Video then go to the next search result
-                var tmp = Regex.Match(answerContent, @"\sКатегория:\s[^A-ZА-Я]*([^<]*)<");
-                if (!tmp.Groups[1].ToString().Contains("Аниме")) continue;
-                videoItem["HRef"] = answerContent.Substring(0, answerContent.IndexOf("\" >"));
+                Match itemLocalMatch = Regex.Match(answerContent, @"\sКатегория:\s[^A-ZА-Я]*([^<]*)<");
+                if (!itemLocalMatch.Groups[1].ToString().Contains("Аниме")) continue;
+                videoItem["HRef"] = videoItemRef.Groups[1];
                 videoItem["RussianAudio"] = (((String)videoItem["Name"]).Contains("(RUS)") ? true : false);
                 videoItem["RussianSub"] = (((String)videoItem["Name"]).Contains("(SUB)") ? true : false);
                 videoItem["Poster"] = Regex.Match(answerContent, "<div class='img_'><a href=\"([^\"]*)\"").Groups[1];
                 videoItem["Ganre"] = Regex.Match(answerContent, "Жанр: ([^<]*)").Groups[1];
-                tmp = Regex.Match(answerContent, "style=\"color: [^>]*>([0-9]{4})<");
-                videoItem["Year"] = Int32.Parse(tmp.Groups[1].ToString());
+                itemLocalMatch = Regex.Match(answerContent, "style=\"color: [^>]*>([0-9]{4})<");
+                videoItem["Year"] = Int32.Parse(itemLocalMatch.Groups[1].ToString());
 
                 _interviewResult.Rows.Add(videoItem);
             }
@@ -110,23 +134,27 @@ namespace watch_assistant.Model.Search
             _interviewResult.Columns.Add("RussianSub", typeof(Boolean));
         }
 
-        private HttpWebResponse PostSearchQuery(String searchLine, int requestTimeout, int page)
+        private HttpWebResponse PostSearchQuery(String query, int requestTimeout, int page)
         {
-            HttpWebRequest request = (HttpWebRequest)WebRequest.Create("http://animeonline.su/");
-            request.Method = "POST";
-            request.ContentType = "application/x-www-form-urlencoded";
-            request.Accept = "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8";
-            request.UserAgent = "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/535.7 (KHTML, like Gecko) Chrome/16.0.912.77 Safari/535.7";
-            request.Headers.Add("Origin", request.RequestUri.ToString());
-            request.Headers.Add("Cache-Control", "max-age=0");
-            request.Headers.Add("Accept-Language", "ru-RU,ru;q=0.8,en-US;q=0.6,en;q=0.4");
-            request.Headers.Add("Accept-Charset", "windows-1251,utf-8;q=0.7,*;q=0.3");
-            request.Headers.Add("Accept-Encoding", "gzip,deflate");
+            List<KeyValuePair<string, string>> headers = new List<KeyValuePair<string, string>>();
+            headers.Add(new KeyValuePair<string,string>("reqHeaderOrigin", (string)_dictionary["reqHeaderOrigin"]));
+            headers.Add(new KeyValuePair<string,string>("reqHeaderCache-Control", (string)_dictionary["reqHeaderCache-Control"]));
+            headers.Add(new KeyValuePair<string,string>("reqHeaderAccept-Language", (string)_dictionary["reqHeaderAccept-Language"]));
+            headers.Add(new KeyValuePair<string,string>("reqHeaderAccept-Charset", (string)_dictionary["reqHeaderAccept-Charset"]));
+            headers.Add(new KeyValuePair<string,string>("reqHeaderAccept-Encoding", (string)_dictionary["reqHeaderAccept-Encoding"]));
+
+            HttpWebRequest request = HttpQueryCreator.FormPostRequest(
+                (string)_dictionary["reqUri"],
+                (string)_dictionary["reqContentType"],
+                (string)_dictionary["reqAccept"],
+                (string)_dictionary["reqUserAgent"],
+                headers,
+                (int)_dictionary["reqTimeout"]
+                );
+
             request.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
             request.ServicePoint.Expect100Continue = false;
-            request.KeepAlive = true;
-
-            request.Timeout = requestTimeout;
+            request.KeepAlive = true;           
 
             Byte[] byteArr;
             if (page > 1)
@@ -135,10 +163,10 @@ namespace watch_assistant.Model.Search
                     "do=search&subaction=search&search_start=" + 
                     page.ToString() + 
                     "&full_search=0&result_from=1&result_from=1&story=" + 
-                    searchLine.Replace(' ', '+') + 
+                    query.Replace(' ', '+') + 
                     "&x=1&y=1");
             else
-                byteArr = Encoding.GetEncoding(1251).GetBytes("do=search&subaction=search&story=" + searchLine.Replace(' ', '+') + "&x=1&y=1");
+                byteArr = Encoding.GetEncoding(1251).GetBytes("do=search&subaction=search&story=" + query.Replace(' ', '+') + "&x=1&y=1");
             request.GetRequestStream().Write(byteArr, 0, byteArr.Length);
 
             HttpWebResponse response = (HttpWebResponse)request.GetResponse();
