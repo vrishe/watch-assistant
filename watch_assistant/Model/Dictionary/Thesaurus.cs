@@ -3,16 +3,20 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Runtime.Serialization;
+using System.Security.Permissions;
+using System.IO;
+using System.Runtime.Serialization.Formatters.Binary;
 
 namespace watch_assistant.Model.Dictionary
 {
-    class Thesaurus : ISerializable, IDeserializationCallback
+    [Serializable]
+    public sealed class Thesaurus/* : ISerializable, IDeserializationCallback*/
     {
         #region Fields
         private static List<WeakReference> _instances = new List<WeakReference>();
 
         private string _name;
-        private readonly Dictionary<string, HashSet<string>> _dictionary = new Dictionary<string, HashSet<string>>();
+        private Dictionary<string, HashSet<string>> _dictionary = new Dictionary<string, HashSet<string>>();
         #endregion (Fields)
 
         #region Properties
@@ -32,9 +36,9 @@ namespace watch_assistant.Model.Dictionary
         public int Count { get { return _dictionary.Count; } }
         #endregion (Properties)
 
-        #region Events
-        public event EventHandler Deserialized;
-        #endregion (Events)
+        //#region Events
+        //public event EventHandler Deserialized;
+        //#endregion (Events)
 
         #region Methods
         /// <summary>
@@ -136,41 +140,86 @@ namespace watch_assistant.Model.Dictionary
 
         public string[] GetPhraseVariations(string phrase)
         {
-            List<string> variations = new List<string>();
+            HashSet<string> variations = new HashSet<string>();
 
-            string separators = " ,.\"!@#$%^&*()-=_+|\\}{][;:`~<>?/";
-            for (int i = 0, max = phrase.Length; i < max; i++)
+            lock (this)
             {
-                int splitIndex = phrase.IndexOf(separators, i);
-                if (splitIndex == -1) break;
-                // 
+                Queue<KeyValuePair<string, List<string>>> processQueue = new Queue<KeyValuePair<string, List<string>>>();
+                processQueue.Enqueue(new KeyValuePair<string, List<string>>(phrase.ToLower(), new List<string>()));
+                do
+                {
+                    KeyValuePair<string, List<string>> blank = processQueue.Dequeue();
+                    List<string> rest = new List<string>(_dictionary.Keys.Except(blank.Value));
+                    foreach (string key in rest)
+                    {
+                        if (blank.Key.Contains(key))
+                        {
+                            IEnumerable<string> replacement = _dictionary[key].Except(blank.Value);
+                            foreach (string substitution in replacement)
+                            {
+                                List<string> exclusion = new List<string>(blank.Value);
+                                exclusion.Add(substitution);
+                                string expression = blank.Key.Replace(key, substitution);
+                                processQueue.Enqueue(new KeyValuePair<string, List<string>>(expression, exclusion));
+                            }
+                        }
+                    }
+                    variations.Add(blank.Key);
+                } while (processQueue.Count > 0);
             }
-
             return variations.ToArray();
         }
 
-
-        #region ISerializable methods
-        public virtual void GetObjectData(SerializationInfo info, StreamingContext context) 
-        { 
-            // Some serialization logic. Coming soon. April 2012th...
-        }
-        #endregion (ISerializable methods)
-
-        #region IDeserializationCallback methods
-        public virtual void OnDeserialization(object sender) 
+        public void Serialize(string filePath)
         {
-            if (Deserialized != null) Deserialized(sender, new EventArgs());
+            FileStream fs = new FileStream(filePath, FileMode.Create);
+
+            BinaryFormatter bf = new BinaryFormatter(null, new StreamingContext(StreamingContextStates.File));
+            bf.Serialize(fs, _dictionary);
+            fs.Close();
         }
-        #endregion (IDeserializationCallback methods)
+
+        public void Deserialize(string filePath)
+        {
+            FileStream fs = new FileStream(filePath, FileMode.Open);
+
+            BinaryFormatter bf = new BinaryFormatter(null, new StreamingContext(StreamingContextStates.File));
+            _dictionary = (Dictionary<string, HashSet<string>>)bf.Deserialize(fs);
+            fs.Close();
+        }
+
+        //#region ISerializable methods
+        //[SecurityPermissionAttribute(SecurityAction.Demand, SerializationFormatter = true)]
+        //public void GetObjectData(SerializationInfo info, StreamingContext context) 
+        //{
+        //    info.AddValue("Name", Name);
+        //    _dictionary.GetObjectData(info, context);
+        //}
+        //#endregion (ISerializable methods)
+
+        //#region IDeserializationCallback methods
+        //public void OnDeserialization(object sender) 
+        //{
+        //    if (Deserialized != null) Deserialized(sender, new EventArgs());
+        //}
+        //#endregion (IDeserializationCallback methods)
         #endregion (Methods)
 
         #region Constructors
+        [SecurityPermissionAttribute(SecurityAction.Demand, SerializationFormatter = true)]
         public Thesaurus()
         {
             _instances.Add(new WeakReference(this));
+
+            _dictionary = new Dictionary<string, HashSet<string>>();
             Name = null;
         }
+        public Thesaurus(string filePath)
+            : this()
+        {
+            Deserialize(filePath);
+        }
+
         #endregion (Constructors)
     }
 }
