@@ -60,6 +60,8 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Model\Dictionary\Thesaurus.cs" />
+    <Compile Include="Model\Search\AOSInterviewer.cs" />
+    <Compile Include="Model\Search\IInterviewer.cs" />
     <Compile Include="ViewModel\DetailsWindow\DetailsWindowViewModel.cs" />
     <Compile Include="View\DetailsWindow\DetailsWindow.xaml.cs">
       <DependentUpon>DetailsWindow.xaml</DependentUpon>
@@ -104,7 +106,6 @@
     <Resource Include="Resources\App.ico" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Model\Search\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\CustomControls\CustomControls.csproj">

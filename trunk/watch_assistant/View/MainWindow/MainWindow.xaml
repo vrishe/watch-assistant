@@ -59,19 +59,17 @@
                         <ColumnDefinition Width="3*" />
                         <ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
-                    <TextBox Foreground="LightGray"
-                            Grid.Column="0">
-                        Type search query here
+                    <TextBox x:Name="tbSearch"
+                            Grid.Column="0" >
+                        Genshiken
                     </TextBox>
-                    <Button Grid.Column="1" Margin="2,0,0,0">Search</Button>
+                    <Button x:Name="bSearch" Grid.Column="1" Margin="2,0,0,0" Click="bSearch_Click">Search</Button>
                 </Grid>
 
                 <ListBox x:Name="searchView" 
                          Grid.Row="1" 
-                         Margin="5,3,5,3.5"
-                         ItemTemplate="{StaticResource ListViewItemTemplate}">
-                    <ListBoxItem>Item1</ListBoxItem>
-                    <ListBoxItem>Item2</ListBoxItem>
+                         Margin="5,3,5,3.5">
+                    <!--ItemTemplate="{StaticResource ListViewItemTemplate}"-->
                 </ListBox>
             </Grid>
         </custom:WindowPage>
