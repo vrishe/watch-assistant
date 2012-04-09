@@ -84,7 +84,7 @@ namespace UnitTesting
         public void AddDefinitionTest()
         {
             Thesaurus target = new Thesaurus(); // TODO: инициализация подходящего значения
-            target.AddDefinition("Красный", "Красивый", true);
+            target.AddDefinition("Красный", "Кровавый", true);
             target.AddDefinition("Красный", "Красивый", true);
             target.AddDefinition("Красивый", "Красный", false);
             target.AddDefinition("Красивый", "Красный", true);
@@ -129,7 +129,7 @@ namespace UnitTesting
             target.AddDefinition("красный", new string[] { "кровавый", "красивый" }, true);
             target.AddDefinition("вертолет", new string[] { "геликоптер", "хели" }, true);
             target.AddDefinition("быстрый", new string[] { "молниеносный", "скоростной" },true);
-            string[] phrases = target.GetPhraseVariations("Огромный чебурек");
+            string[] phrases = target.GetPhrasePermutations("Огромный чебурек");
             Assert.IsTrue(phrases.Length > 0);
         }
 

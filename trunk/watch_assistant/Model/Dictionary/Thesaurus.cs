@@ -10,7 +10,7 @@ using System.Runtime.Serialization.Formatters.Binary;
 namespace watch_assistant.Model.Dictionary
 {
     [Serializable]
-    public sealed class Thesaurus/* : ISerializable, IDeserializationCallback*/
+    public sealed class Thesaurus
     {
         #region Fields
         private static List<WeakReference> _instances = new List<WeakReference>();
@@ -36,19 +36,19 @@ namespace watch_assistant.Model.Dictionary
         public int Count { get { return _dictionary.Count; } }
         #endregion (Properties)
 
-        //#region Events
-        //public event EventHandler Deserialized;
-        //#endregion (Events)
-
         #region Methods
         /// <summary>
         /// Appens another description group to an existent definition of the key.
         /// </summary>
-        /// <param name="key">Dictionary key that may have a definition</param>
-        /// <param name="definition">Dictionary definition that opens sense of the key</param>
-        /// <param name="mutual">Tells if it has to append the 'key' as a meaning with each of the corresponding 'meaning' values as keys within the thesaurus</param>
+        /// <param name="key">Dictionary key that may have a definition.</param>
+        /// <param name="definition">Dictionary definition that opens sense of the key.</param>
+        /// <param name="mutual">Tells if it has to append the 'key' as a meaning with each of the corresponding 'meaning' values as keys within the thesaurus.</param>
         public void AddDefinition(string key, IEnumerable<string> definition, bool mutual)
         {
+            if (definition.Contains(key))
+                throw new ArgumentException("Definition set should not contain the 'key' meaning.");
+            if (definition.Contains(String.Empty))
+                throw new ArgumentException("Definition set should not contain empty tokens.");
             lock (this)
             {
                 if (!_dictionary.ContainsKey(key)) _dictionary.Add(key, new HashSet<string>());
@@ -67,9 +67,9 @@ namespace watch_assistant.Model.Dictionary
         /// <summary>
         /// Appens another description to an existent definition of the key.
         /// </summary>
-        /// <param name="key">Dictionary key that may have a definition</param>
-        /// <param name="meaning">Dictionary meaning that opens sense of the key</param>
-        /// <param name="mutual">Tells if it has to append the 'key' as a meaning to corresponding 'meaning' key mutually</param>
+        /// <param name="key">Dictionary key that may have a definition.</param>
+        /// <param name="meaning">Dictionary meaning that opens sense of the key.</param>
+        /// <param name="mutual">Tells if it has to append the 'key' as a meaning to corresponding 'meaning' key mutually.</param>
         public void AddDefinition(string key, string meaning, bool mutual)
         {
             AddDefinition(key, new string[] { meaning }, mutual);
@@ -77,9 +77,9 @@ namespace watch_assistant.Model.Dictionary
         /// <summary>
         /// Overrides currently existent key definition.
         /// </summary>
-        /// <param name="key">Dictionary key that may have a definition</param>
-        /// <param name="meaning">Dictionary meaning that opens sense of the key</param>
-        /// <param name="mutual">Tells if it has to append the 'key' as a meaning with each of the corresponding 'meaning' values as keys within the thesaurus</param>
+        /// <param name="key">Dictionary key that may have a definition.</param>
+        /// <param name="meaning">Dictionary meaning that opens sense of the key.</param>
+        /// <param name="mutual">Tells if it has to append the 'key' as a meaning with each of the corresponding 'meaning' values as keys within the thesaurus.</param>
         public void SetDefinition(string key, IEnumerable<string> definition, bool mutual)
         {
             lock (this)
@@ -89,11 +89,11 @@ namespace watch_assistant.Model.Dictionary
             }
         }
         /// <summary>
-        /// Removes the definition of a key specified
+        /// Removes the definition of a key specified.
         /// </summary>
-        /// <param name="key">Dictionary key whose definition is about to remove</param>
-        /// <param name="mutual">Tells if it has to remove each of 'meaning' values as a keys within the current Thesaurus</param>
-        /// <returns>True - if key removal was successfull; False - otherwise</returns>
+        /// <param name="key">Dictionary key whose definition is about to remove.</param>
+        /// <param name="mutual">Tells if it has to remove each of 'meaning' values as a keys within the current Thesaurus.</param>
+        /// <returns>True - if key removal was successfull; False - otherwise.</returns>
         public bool RemoveDefinition(string key, string meaning, bool mutual)
         {
             lock (this)
@@ -112,11 +112,11 @@ namespace watch_assistant.Model.Dictionary
             }
         }
         /// <summary>
-        /// Removes the definition of a key specified
+        /// Removes the definition of a key specified.
         /// </summary>
-        /// <param name="key">Dictionary key whose definition is about to remove</param>
-        /// <param name="mutual">Tells if it has to remove each of 'meaning' values as a keys within the current Thesaurus</param>
-        /// <returns>True - if key removal was successfull; False - otherwise</returns>
+        /// <param name="key">Dictionary key whose definition is about to remove.</param>
+        /// <param name="mutual">Tells if it has to remove each of 'meaning' values as a keys within the current Thesaurus.</param>
+        /// <returns>True - if key removal was successfull; False - otherwise.</returns>
         public bool RemoveDefinition(string key, bool mutual)
         {
             lock (this)
@@ -132,13 +132,31 @@ namespace watch_assistant.Model.Dictionary
                 return _dictionary.Remove(key);
             }
         }
-
+        /// <summary>
+        /// Defines the Thesaurus' definition existence for the key specified.
+        /// </summary>
+        /// <param name="key">Dictionary key whose definition existence is intended to be specified.</param>
+        /// <returns>True - if key definition exists; False - otherwise.</returns>
         public bool HasDefinitionFor(string key)
         {
             return _dictionary.ContainsKey(key);
         }
-
-        public string[] GetPhraseVariations(string phrase)
+        /// <summary>
+        /// Defines the Thesaurus' meaning existence within the definition for the key specified.
+        /// </summary>
+        /// <param name="key">Dictionary key whose definition woulf be inspected for the 'meaning' inclusion.</param>
+        /// <param name="meaning">Meaning token whose existence within the definition of the 'key' would be inspected</param>
+        /// <returns>True - if key meaning exists; False - otherwise.</returns>
+        public bool HasMeaningFor(string key, string meaning)
+        {
+            return _dictionary.ContainsKey(key) && _dictionary[key].Contains(meaning);
+        }
+        /// <summary>
+        /// Gets a complete set of all possible permutations within the given phrase with definitions included.
+        /// </summary>
+        /// <param name="phrase">The phrase whose permutations will be found for.</param>
+        /// <returns>The string array that contains all possible permutations within the given phrase inside of the Thesaurus context.</returns>
+        public string[] GetPhrasePermutations(string phrase)
         {
             HashSet<string> variations = new HashSet<string>();
 
@@ -169,7 +187,10 @@ namespace watch_assistant.Model.Dictionary
             }
             return variations.ToArray();
         }
-
+        /// <summary>
+        /// Provides a file serialization for Thesaurus dictionary.
+        /// </summary>
+        /// <param name="filePath">File path which will contain Thesaurus content data.</param>
         public void Serialize(string filePath)
         {
             FileStream fs = new FileStream(filePath, FileMode.Create);
@@ -178,7 +199,10 @@ namespace watch_assistant.Model.Dictionary
             bf.Serialize(fs, _dictionary);
             fs.Close();
         }
-
+        /// <summary>
+        /// Provides deserialization from a file for Thesaurus dictionary.
+        /// </summary>
+        /// <param name="filePath">File path which contains Thesaurus content data.</param>
         public void Deserialize(string filePath)
         {
             FileStream fs = new FileStream(filePath, FileMode.Open);
@@ -187,26 +211,9 @@ namespace watch_assistant.Model.Dictionary
             _dictionary = (Dictionary<string, HashSet<string>>)bf.Deserialize(fs);
             fs.Close();
         }
-
-        //#region ISerializable methods
-        //[SecurityPermissionAttribute(SecurityAction.Demand, SerializationFormatter = true)]
-        //public void GetObjectData(SerializationInfo info, StreamingContext context) 
-        //{
-        //    info.AddValue("Name", Name);
-        //    _dictionary.GetObjectData(info, context);
-        //}
-        //#endregion (ISerializable methods)
-
-        //#region IDeserializationCallback methods
-        //public void OnDeserialization(object sender) 
-        //{
-        //    if (Deserialized != null) Deserialized(sender, new EventArgs());
-        //}
-        //#endregion (IDeserializationCallback methods)
         #endregion (Methods)
 
         #region Constructors
-        [SecurityPermissionAttribute(SecurityAction.Demand, SerializationFormatter = true)]
         public Thesaurus()
         {
             _instances.Add(new WeakReference(this));
