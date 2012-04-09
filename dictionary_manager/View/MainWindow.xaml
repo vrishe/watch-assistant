@@ -1,0 +1,39 @@
+﻿<Window x:Class="dictionary_manager.View.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="clr-namespace:dictionary_manager.ViewModel"
+        
+        Title="{Binding Path=DisplayName}" 
+        MinWidth="300" 
+        MinHeight="300"
+        Width="400"
+        Height="300">
+<!-- Window layout description begin-->    
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <Menu Name="mainMenu" Grid.Row="0" HorizontalAlignment="Stretch" VerticalAlignment="Top">            
+            <MenuItem Header="F_ile"/>
+            <MenuItem Header="E_dit"/>
+        </Menu>
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <ComboBox Name="comboBox" Grid.Column="0" Margin="3,2,1.5,2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" ForceCursor="False" IsEditable="True" 
+                      ItemsSource="{Binding Path=Keys,Mode=OneWay,UpdateSourceTrigger=PropertyChanged}" 
+                      SelectedValue="{Binding Path=SelectedKey, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                      Text="{Binding Path=TextEntered, Mode=OneWayToSource, UpdateSourceTrigger=LostFocus}"/>
+            <Button Name="EditButton" Grid.Column="1" Margin="1.5,2,3,2" Content="Edit" Width="75" HorizontalAlignment="Center" VerticalAlignment="Stretch" />            
+        </Grid>
+        
+        <ListBox Name="listBox1" Grid.Row="2" Margin="3,0,3,2" VerticalAlignment="Stretch" HorizontalAlignment="Stretch"/>
+
+    </Grid>
+    <!-- Window layout description end-->
+</Window>
