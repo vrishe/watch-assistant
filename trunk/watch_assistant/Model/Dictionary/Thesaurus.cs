@@ -9,7 +9,6 @@ using System.Runtime.Serialization.Formatters.Binary;
 
 namespace watch_assistant.Model.Dictionary
 {
-    [Serializable]
     public sealed class Thesaurus
     {
         #region Fields
@@ -34,6 +33,7 @@ namespace watch_assistant.Model.Dictionary
             }
         }
         public int Count { get { return _dictionary.Count; } }
+        public IEnumerable<string> Keys { get { return _dictionary.Keys; } }
         #endregion (Properties)
 
         #region Methods
@@ -45,6 +45,8 @@ namespace watch_assistant.Model.Dictionary
         /// <param name="mutual">Tells if it has to append the 'key' as a meaning with each of the corresponding 'meaning' values as keys within the thesaurus.</param>
         public void AddDefinition(string key, IEnumerable<string> definition, bool mutual)
         {
+            if (definition.Count() == 0)
+                throw new ArgumentException("Definition set cannot be empty.");
             if (definition.Contains(key))
                 throw new ArgumentException("Definition set should not contain the 'key' meaning.");
             if (definition.Contains(String.Empty))
@@ -87,6 +89,16 @@ namespace watch_assistant.Model.Dictionary
                 _dictionary.Remove(key);
                 AddDefinition(key, definition, mutual);
             }
+        }
+        public bool TryGetDefinition(string key, out IEnumerable<string> definition)
+        {
+            definition = null;
+            HashSet<string> tempDefinition;
+            if (_dictionary.TryGetValue(key, out tempDefinition))
+            {
+                definition = new List<string>(tempDefinition);
+            }
+            return definition != null;
         }
         /// <summary>
         /// Removes the definition of a key specified.

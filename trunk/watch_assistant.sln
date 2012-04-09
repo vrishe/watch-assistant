@@ -14,6 +14,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		watch_assistant.vsmdi = watch_assistant.vsmdi
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "dictionary_manager", "dictionary_manager\dictionary_manager.csproj", "{7C49BD66-04AB-4DC4-80DB-1A45D459DEB4}"
+EndProject
 Global
 	GlobalSection(TestCaseManagementSettings) = postSolution
 		CategoryFile = watch_assistant.vsmdi
@@ -57,6 +59,16 @@ Global
 		{EFEA18C2-CFF7-4536-BA38-F54A7476B52E}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{EFEA18C2-CFF7-4536-BA38-F54A7476B52E}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{EFEA18C2-CFF7-4536-BA38-F54A7476B52E}.Release|x86.ActiveCfg = Release|Any CPU
+		{7C49BD66-04AB-4DC4-80DB-1A45D459DEB4}.Debug|Any CPU.ActiveCfg = Debug|x86
+		{7C49BD66-04AB-4DC4-80DB-1A45D459DEB4}.Debug|Mixed Platforms.ActiveCfg = Debug|x86
+		{7C49BD66-04AB-4DC4-80DB-1A45D459DEB4}.Debug|Mixed Platforms.Build.0 = Debug|x86
+		{7C49BD66-04AB-4DC4-80DB-1A45D459DEB4}.Debug|x86.ActiveCfg = Debug|x86
+		{7C49BD66-04AB-4DC4-80DB-1A45D459DEB4}.Debug|x86.Build.0 = Debug|x86
+		{7C49BD66-04AB-4DC4-80DB-1A45D459DEB4}.Release|Any CPU.ActiveCfg = Release|x86
+		{7C49BD66-04AB-4DC4-80DB-1A45D459DEB4}.Release|Mixed Platforms.ActiveCfg = Release|x86
+		{7C49BD66-04AB-4DC4-80DB-1A45D459DEB4}.Release|Mixed Platforms.Build.0 = Release|x86
+		{7C49BD66-04AB-4DC4-80DB-1A45D459DEB4}.Release|x86.ActiveCfg = Release|x86
+		{7C49BD66-04AB-4DC4-80DB-1A45D459DEB4}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
