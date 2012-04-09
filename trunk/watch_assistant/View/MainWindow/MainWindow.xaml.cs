@@ -25,7 +25,7 @@ namespace watch_assistant.View.MainWindow
         }
 
         // Delete this when AOSInterviewer is seted up
-        Model.Search.AOSInterviewer testSpamer = new Model.Search.AOSInterviewer();
+        Model.Search.ASeeInterviewer testSpamer = new Model.Search.ASeeInterviewer();
         private void bSearch_Click(object sender, RoutedEventArgs e)
         {
             testSpamer.ClearInterviewResults();
@@ -36,8 +36,7 @@ namespace watch_assistant.View.MainWindow
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message);
-            }
-                
+            }   
 
             searchView.Items.Clear();
             foreach (DataRow tmp in testSpamer.InterviewResult.Rows) 

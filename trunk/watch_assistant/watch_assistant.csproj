@@ -63,6 +63,7 @@
     <Compile Include="Model\Search\AOSInterviewer.cs" />
     <Compile Include="Model\Search\HttpQueryCreator.cs" />
     <Compile Include="Model\Search\IInterviewer.cs" />
+    <Compile Include="Model\Search\ASeeInterviewer.cs" />
     <Compile Include="ViewModel\DetailsWindow\DetailsWindowViewModel.cs" />
     <Compile Include="View\DetailsWindow\DetailsWindow.xaml.cs">
       <DependentUpon>DetailsWindow.xaml</DependentUpon>
@@ -74,6 +75,10 @@
     <Page Include="Resources\resAOS.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Resources\resASee.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="View\DetailsWindow\DetailsWindow.xaml">
       <SubType>Designer</SubType>

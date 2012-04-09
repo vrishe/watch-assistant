@@ -9,7 +9,7 @@ using System.Windows;
 
 namespace watch_assistant.Model.Search
 {
-    class AOSInterviewer : IInterviewer
+    class ASeeInterviewer : IInterviewer
     {
         #region Fields
 
@@ -20,10 +20,10 @@ namespace watch_assistant.Model.Search
 
         #region Constructors
 
-        public AOSInterviewer()
+        public ASeeInterviewer()
         {
             _dictionary = new ResourceDictionary();
-            _dictionary.Source = new Uri("..\\Resources\\resAOS.xaml", UriKind.Relative);
+            _dictionary.Source = new Uri("..\\Resources\\resASee.xaml", UriKind.Relative);
         }
 
         #endregion // Constructors
@@ -76,24 +76,23 @@ namespace watch_assistant.Model.Search
         {
             do
             {
-                string videoItemBeginingString = "<div class='new_'>\r\n\t<div class='head_'><a href=\"([^\"]*)\"";
+                string videoItemBeginingString = "<h2><a href=\"([^\"]*)\"";
                 Match videoItemRef = Regex.Match(answerContent, videoItemBeginingString);
                 if (!videoItemRef.Success) break;
                 answerContent = answerContent.Substring(videoItemRef.Index + videoItemRef.Length);
 
                 DataRow videoItem = _interviewResult.NewRow();
-                videoItem["Name"] = Regex.Match(answerContent, @"<b>(.*)</b>").Groups[1];
-                if (!((String)videoItem["Name"]).ToLower().Contains(query.ToLower())) continue;
                 // If category is not Video then go to the next search result
-                Match itemLocalMatch = Regex.Match(answerContent, @"\sКатегория:\s[^A-ZА-Я]*([^<]*)<");
-                if (!itemLocalMatch.Groups[1].ToString().Contains("Аниме")) continue;
+                Match itemLocalMatch = Regex.Match(answerContent, @">(.*)</a></h2>");
+                videoItem["Name"] = itemLocalMatch.Groups[1];
+                if (!((String)videoItem["Name"]).ToLower().Contains(query.ToLower())) continue;
+                if (!((String)videoItem["Name"]).Contains("Онлайн: ")) continue;
                 videoItem["HRef"] = videoItemRef.Groups[1];
                 videoItem["RussianAudio"] = (((String)videoItem["Name"]).Contains("(RUS)") ? true : false);
                 videoItem["RussianSub"] = (((String)videoItem["Name"]).Contains("(SUB)") ? true : false);
-                videoItem["Poster"] = Regex.Match(answerContent, "<div class='img_'><a href=\"([^\"]*)\"").Groups[1];
-                videoItem["Ganre"] = Regex.Match(answerContent, "Жанр: ([^<]*)").Groups[1];
-                itemLocalMatch = Regex.Match(answerContent, "style=\"color: [^>]*>([0-9]{4})<");
-                videoItem["Year"] = Int32.Parse(itemLocalMatch.Groups[1].ToString());
+                videoItem["Poster"] = Regex.Match(answerContent, "<!--TBegin--><a href=\"([^\"]*)\"").Groups[1];
+                videoItem["Ganre"] = Regex.Match(answerContent, @"<b>Жанр:\s*</b>\s*([^<]*)").Groups[1];
+                videoItem["Year"] = Int32.Parse(Regex.Match(answerContent, "<!--/colorstart-->[^0-9]*([0-9]{4})[^0-9]*<!--colorend-->").Groups[1].ToString());
 
                 _interviewResult.Rows.Add(videoItem);
             }
@@ -107,14 +106,14 @@ namespace watch_assistant.Model.Search
             // Pick out html page from server response if possible
             if (serverResponse.StatusCode != HttpStatusCode.OK)
                 throw new WebException(
-                    String.Format("AOS server doesn't responce as expected. Recieved StatusCode is {0}.",
+                    String.Format("AnimeSee.com server doesn't responce as expected. Recieved StatusCode is {0}.",
                     serverResponse.StatusCode.ToString()));
             String answerContent;
             using (Stream initStream = serverResponse.GetResponseStream())
-            using (StreamReader answerContentStream = new StreamReader(initStream, System.Text.Encoding.GetEncoding(serverResponse.CharacterSet)))
+            using (StreamReader answerContentStream = new StreamReader(initStream, System.Text.Encoding.GetEncoding(1251)))
                 answerContent = answerContentStream.ReadToEnd();
             if (answerContent.Length <= 0)
-                throw new WebException("AOS server hasn't returned any content.");
+                throw new WebException("AnimeSee.com server hasn't returned any content.");
 
             return answerContent;
         }
@@ -152,6 +151,8 @@ namespace watch_assistant.Model.Search
                 (int)_dictionary["Timeout"]
                 );
 
+            string tmp = Regex.Match(request.RequestUri.ToString(), @"http://([^/]*)").Groups[1].ToString();
+            request.Host = tmp; //
             request.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
             request.ServicePoint.Expect100Continue = false;
             request.KeepAlive = true;           
@@ -166,9 +167,9 @@ namespace watch_assistant.Model.Search
                     query.Replace(' ', '+') + 
                     "&x=1&y=1");
             else
-                byteArr = Encoding.GetEncoding(1251).GetBytes("do=search&subaction=search&story=" + query.Replace(' ', '+') + "&x=1&y=1");
+                byteArr = Encoding.GetEncoding(1251).GetBytes("do=search&subaction=search&story=" + query.Replace(' ', '+'));
+            request.ContentLength = byteArr.LongLength; //
             request.GetRequestStream().Write(byteArr, 0, byteArr.Length);
-
             HttpWebResponse response = (HttpWebResponse)request.GetResponse();
             request.ServicePoint.CloseConnectionGroup(request.ConnectionGroupName);
             GC.Collect();
