@@ -6,6 +6,7 @@ using System.Windows;
 using watch_assistant.Model.Dictionary;
 using System.Windows.Controls;
 using System.Windows.Input;
+using Microsoft.Win32;
 
 namespace dictionary_manager.ViewModel
 {
@@ -16,6 +17,9 @@ namespace dictionary_manager.ViewModel
         private readonly Window _owner;
         private Thesaurus _thesaurus = new Thesaurus();
         private Dictionary<string, IEnumerable<string>> _thesaurusView = new Dictionary<string, IEnumerable<string>>();
+
+        public static RoutedUICommand AddDefinitionCommand = new RoutedUICommand("Adds new thesaurus definition", "AddDefinition", typeof(MainWindowViewModel));
+        public static RoutedUICommand RemoveDefinitionCommand = new RoutedUICommand("Removes thesaurus definition", "RemoveDefinition", typeof(MainWindowViewModel));
         #endregion (Fields)
 
         #region Properties
@@ -29,17 +33,17 @@ namespace dictionary_manager.ViewModel
 
         // Using a DependencyProperty as the backing store for Keys.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty KeysProperty =
-            DependencyProperty.Register("Keys", typeof(IEnumerable<string>), typeof(MainWindowViewModel), new UIPropertyMetadata(null));
+            DependencyProperty.Register("Keys", typeof(IEnumerable<string>), typeof(MainWindowViewModel), new UIPropertyMetadata(new List<string>()));
 
-        public IEnumerable<string> ActiveDefinition
+        public string ActiveDefinition
         {
-            get { return (IEnumerable<string>)GetValue(ActiveDefinitionProperty); }
+            get { return (string)GetValue(ActiveDefinitionProperty); }
             set { SetValue(ActiveDefinitionProperty, value); }
         }
 
         // Using a DependencyProperty as the backing store for ActiveDefinition.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty ActiveDefinitionProperty =
-            DependencyProperty.Register("ActiveDefinition", typeof(IEnumerable<string>), typeof(MainWindowViewModel), new UIPropertyMetadata(null));
+            DependencyProperty.Register("ActiveDefinition", typeof(string), typeof(MainWindowViewModel), new UIPropertyMetadata(String.Empty));
 
         
 
@@ -62,7 +66,7 @@ namespace dictionary_manager.ViewModel
 
         // Using a DependencyProperty as the backing store for TextEntered.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty TextEnteredProperty =
-            DependencyProperty.Register("TextEntered", typeof(string), typeof(MainWindowViewModel), new UIPropertyMetadata(String.Empty));      
+            DependencyProperty.Register("TextEntered", typeof(string), typeof(MainWindowViewModel), new UIPropertyMetadata(String.Empty, ComboBoxTextChanged));      
 
         
         #endregion (Properties)
@@ -71,9 +75,29 @@ namespace dictionary_manager.ViewModel
         private static void ComboBoxSelectionChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
         {
             MainWindowViewModel vm = sender as MainWindowViewModel;
-           
-            IEnumerable<string> temp;
-            if ( vm._thesaurus.TryGetDefinition(vm.TextEntered, out temp) ) vm.ActiveDefinition = temp;
+            vm.TextEntered = vm.SelectedKey;
+        }
+
+        private static void ComboBoxTextChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
+        {
+            MainWindowViewModel vm = sender as MainWindowViewModel;
+
+            if (!String.IsNullOrEmpty((string)e.NewValue))
+            {
+                IEnumerable<string> temp;
+                if (vm._thesaurus.TryGetDefinition((string)e.NewValue, out temp))
+                {
+                    StringBuilder sb = new StringBuilder();
+                    string separator = ", ";
+                    foreach (string str in temp)
+                    {
+                        sb.Append(String.Format("{0}{1}", str, separator));
+                    }
+                    vm.ActiveDefinition = sb.Remove(sb.Length - separator.Length, separator.Length).ToString();
+                    return;
+                }
+            }
+            vm.ActiveDefinition = (string)ActiveDefinitionProperty.DefaultMetadata.DefaultValue;
         }
         #endregion (Methods)
 
@@ -82,6 +106,71 @@ namespace dictionary_manager.ViewModel
         {
             _owner = owner;
             DisplayName = "Dictionary management";
+
+            _owner.CommandBindings.Add(new CommandBinding(ApplicationCommands.Close, (s, e) => { _owner.Close(); }));
+            _owner.CommandBindings.Add(new CommandBinding(
+                ApplicationCommands.Open, (s, e) => 
+                {
+                    OpenFileDialog dlg = new OpenFileDialog();
+                    dlg.CheckFileExists = true;
+                    dlg.Multiselect = false;
+                    if ( dlg.ShowDialog(_owner) == true )
+                    {
+                        _thesaurus.Deserialize(dlg.FileName);
+                        Keys = new List<string>(_thesaurus.Keys);
+                        SelectedKey = Keys.First();
+                    }
+                }
+            ));
+            _owner.CommandBindings.Add(new CommandBinding(
+                ApplicationCommands.Save, (s, e) =>
+                {
+                    SaveFileDialog dlg = new SaveFileDialog();
+                    dlg.CheckPathExists = true;
+                    dlg.OverwritePrompt = true;
+                    if (dlg.ShowDialog(_owner) == true)
+                    {
+                        _thesaurus.Serialize(dlg.FileName);
+                    }
+                },
+                (s, e) => { e.CanExecute = _thesaurus.Count > 0; }
+            ));
+
+            _owner.CommandBindings.Add(new CommandBinding(
+                AddDefinitionCommand,
+                (s, e) => 
+                {
+                    try
+                    {
+                        string separator = "\t\n, ";
+                        string[] definitionSplit = ActiveDefinition.Split(separator.ToArray(), StringSplitOptions.RemoveEmptyEntries);
+                        _thesaurus.SetDefinition(TextEntered, definitionSplit, false);
+                        Keys = new List<string>(_thesaurus.Keys);
+                        SelectedKey = TextEntered;
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show(ex.Message);
+                    }
+                },
+                (s, e) => { e.CanExecute = !(String.IsNullOrEmpty(TextEntered) || String.IsNullOrEmpty(ActiveDefinition)); }
+            ));
+            _owner.CommandBindings.Add(new CommandBinding(
+                RemoveDefinitionCommand, (s, e) =>
+                {
+                    try
+                    {
+                        _thesaurus.RemoveDefinition(TextEntered, false);
+                        Keys = new List<string>(_thesaurus.Keys);
+                        SelectedKey = Keys.First();
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show(ex.Message);
+                    }
+                },
+                (s, e) => { e.CanExecute = Keys != null && Keys.Contains(TextEntered); }
+            ));
         }
         #endregion (Constructors)
     }
