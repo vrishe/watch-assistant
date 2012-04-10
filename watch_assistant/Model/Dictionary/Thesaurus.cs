@@ -9,6 +9,13 @@ namespace watch_assistant.Model.Dictionary
 {
     public sealed class Thesaurus
     {
+        public enum PermutationMethod
+        {
+            NONE,
+            SINGLE,
+            FULL
+        }
+
         #region Fields
         private static List<WeakReference> _instances = new List<WeakReference>();
 
