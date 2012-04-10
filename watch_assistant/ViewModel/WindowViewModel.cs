@@ -59,10 +59,7 @@ namespace watch_assistant.ViewModel
                 throw new ArgumentNullException("owner");
 
             this._owner = owner;
-            //this.RequestClose += new EventHandler((s, e) => { owner.Close(); });
-
-            //Commands = new Dictionary<string, ICommand>();
-            //Commands.Add("CloseWindow", this.CloseCommand);
+            this._owner.CommandBindings.Add(new CommandBinding(ApplicationCommands.Close, (s, e) => { _owner.Close(); }));
         }
 
         #endregion // Constructors

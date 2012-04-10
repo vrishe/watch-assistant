@@ -126,7 +126,7 @@ namespace watch_assistant.Model.Search
             _interviewResult.Columns.Add("Name", typeof(String));
             _interviewResult.Columns.Add("HRef", typeof(String));
             _interviewResult.Columns.Add("Poster", typeof(String));
-            _interviewResult.Columns.Add("Ganre", typeof(String));
+            _interviewResult.Columns.Add("Genre", typeof(String));
             _interviewResult.Columns.Add("Year", typeof(Int32));
             _interviewResult.Columns.Add("Description", typeof(String));
             _interviewResult.Columns.Add("VideoQuality", typeof(String));

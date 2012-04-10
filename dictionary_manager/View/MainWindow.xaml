@@ -24,7 +24,9 @@
                 <MenuItem Header="C_lose" Command="Close" />
             </MenuItem>
             <MenuItem Header="_Edit" TabIndex="5">
-                <MenuItem Header="A_dd" Command="vm:MainWindowViewModel.AddDefinitionCommand"/>
+                <MenuItem Header="A_dd" Command="vm:MainWindowViewModel.AddDefinitionCommand">
+                    <MenuItem Name="mutualFlag"  Header="M_utual" IsCheckable="True" IsChecked="True" />
+                </MenuItem>
                 <MenuItem Header="R_emove" Command="vm:MainWindowViewModel.RemoveDefinitionCommand"/>
             </MenuItem>
         </Menu>
@@ -37,7 +39,7 @@
             <ComboBox Name="comboBox" Grid.Column="0" Margin="3,2,1.5,2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" ForceCursor="False" IsEditable="True" 
                       ItemsSource="{Binding Path=Keys, Mode=OneWay}" SelectedValue="{Binding Path=SelectedKey, Mode=OneWayToSource}" Text="{Binding Path=TextEntered, Mode=TwoWay}" TabIndex="0" />
             <Button Name="AddButton" Grid.Column="1" Margin="1.5,2,3,2" Content="Add" Width="37" HorizontalAlignment="Center" VerticalAlignment="Stretch" 
-                    Command="{x:Static vm:MainWindowViewModel.AddDefinitionCommand}" TabIndex="2" />
+                    Command="{x:Static vm:MainWindowViewModel.AddDefinitionCommand}" CommandParameter="{Binding ElementName=mutualFlag, Path=IsChecked, Mode=OneWay}" TabIndex="2" />
             <Button Name="RemoveButton" Grid.Column="2" Margin="1.5,2,3,2" Content="Rem" Width="37" HorizontalAlignment="Center" VerticalAlignment="Stretch" 
                     Command="{x:Static vm:MainWindowViewModel.RemoveDefinitionCommand}" TabIndex="3" />
         </Grid>

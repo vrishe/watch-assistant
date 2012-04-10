@@ -3,10 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Windows;
-using watch_assistant.Model.Dictionary;
-using System.Windows.Controls;
 using System.Windows.Input;
 using Microsoft.Win32;
+using watch_assistant.Model.Dictionary;
 
 namespace dictionary_manager.ViewModel
 {
@@ -144,7 +143,7 @@ namespace dictionary_manager.ViewModel
                     {
                         string separator = "\t\n, ";
                         string[] definitionSplit = ActiveDefinition.Split(separator.ToArray(), StringSplitOptions.RemoveEmptyEntries);
-                        _thesaurus.SetDefinition(TextEntered, definitionSplit, false);
+                        _thesaurus.SetDefinition(TextEntered, definitionSplit, (bool)e.Parameter);
                         Keys = new List<string>(_thesaurus.Keys);
                         SelectedKey = TextEntered;
                     }
