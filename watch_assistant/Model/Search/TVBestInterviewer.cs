@@ -40,20 +40,25 @@ namespace watch_assistant.Model.Search
             if (String.IsNullOrEmpty(query))
                 return;
 
-            // Try to get response from AOS server
-            string answerContent = GetResponce(query, 1, 0);
+            // Try to get response from TVBest server
+            string answerContent = GetResponce(query, 0);
+
             // Find out how many results are found
-            Match resNumDefinigMatch = Regex.Match(answerContent, 
-                @"По\sВашему\sзапросу\sнайдено\s([0-9]*)\sответов\s\(Результаты\sзапроса\s1\s-\s([0-9]*)\)");
+            string resNumString = @"По\sВашему\sзапросу\sнайдено\s([0-9]*)\sответов\s\(Результаты\sзапроса\s1\s-\s([0-9]*)\)";
+            Match resNumDefinigMatch = Regex.Match(answerContent, resNumString);
             if (String.IsNullOrEmpty(resNumDefinigMatch.Groups[1].ToString()))
                 return;
-            int resultsPages = (Int32)Math.Ceiling(Double.Parse(resNumDefinigMatch.Groups[1].ToString()) / Double.Parse(resNumDefinigMatch.Groups[2].ToString()));
+            int resNum = Int32.Parse(resNumDefinigMatch.Groups[1].ToString());
+            int resPerPage = Int32.Parse(resNumDefinigMatch.Groups[2].ToString());
+            if (resNum > resPerPage)
+            {
+                GetResponce(query, resNum);
+                resNumDefinigMatch = Regex.Match(answerContent, resNumString);
+            }
             answerContent = answerContent.Substring(resNumDefinigMatch.Index + resNumDefinigMatch.Length);
 
             // Pick out every concern result
             GetResultsFromContent(query, answerContent);
-            for (int page = 2; page <= resultsPages; page++)
-                GetResultsFromContent(query, GetResponce(query, page, Int32.Parse(resNumDefinigMatch.Groups[2].ToString())));
         }
 
         public void ClearInterviewResults()
@@ -80,30 +85,41 @@ namespace watch_assistant.Model.Search
         {
             do
             {
-                string videoItemBeginingString = "<a href=\"([^\"]*)[^>]*>([^<]*)</a></div>";
+                string videoItemBeginingString = "<div class=\"story_title\">";
+                answerContent = answerContent.Substring(answerContent.IndexOf(videoItemBeginingString) + videoItemBeginingString.Length);
+                videoItemBeginingString = "<a href=\"([^\"]*)[^>]*>([^<]*)</a></div>";
                 Match videoItemRef = Regex.Match(answerContent, videoItemBeginingString);
                 if (!videoItemRef.Success) break;
-      //          answerContent = answerContent.Substring(videoItemRef.Index + videoItemRef.Length);
                 if (!videoItemRef.Groups[2].ToString().ToLower().Contains(query.ToLower())) continue;
 
                 DataRow videoItem = _interviewResult.NewRow();
                 videoItem["HRef"] = videoItemRef.Groups[1];
-                Match nameAndYear = Regex.Match(videoItemRef.Groups[2].ToString(), @"(.*)\((([0-9]{4})\))\Z");
-                videoItem["Name"] = nameAndYear.Groups[1].ToString().Trim();
-                videoItem["Year"] = Int32.Parse(nameAndYear.Groups[3].ToString());
+                Match tmp = Regex.Match(videoItemRef.Groups[2].ToString(), @"(.*)\((([0-9]{4})\))\Z");
+                videoItem["Name"] = tmp.Groups[1].ToString().Trim();
+                videoItem["Year"] = Int32.Parse(tmp.Groups[3].ToString());
                 videoItem["RussianAudio"] = true;
                 videoItem["RussianSub"] = false;
-                videoItem["Poster"] = Regex.Match(answerContent, "<div class='img_'><a href=\"([^\"]*)\"").Groups[1];
-                videoItem["Genre"] = Regex.Match(answerContent, "Жанр: ([^<]*)").Groups[1];         
+                tmp = Regex.Match(answerContent, "<!--TBegin--><a href=\"([^\"]*).*<!--TEnd-->(.*)</div>");
+                videoItem["Poster"] = tmp.Groups[1];
+                videoItem["Description"] = tmp.Groups[2];
+                answerContent = answerContent.Substring(videoItemRef.Index + videoItemRef.Length);
+
+                Match current = Regex.Match(answerContent, @"<a href=[^>]*>([^<]*)</a>");
+                Match end = Regex.Match(answerContent, @"<a href=[^>]*>([^<]*)</a><br />");
+                do
+                {
+                    current = current.NextMatch();
+                    videoItem["Genre"] = videoItem["Genre"].ToString() + current.Groups[1].ToString();
+                } while (current.Groups[1].ToString() != end.Groups[1].ToString());
 
                 _interviewResult.Rows.Add(videoItem);
             }
             while (true);
         }
 
-        private String GetResponce(string query, int page, int resPerPage)
+        private String GetResponce(string query, int resNumber)
         {
-            HttpWebResponse serverResponse = PostSearchQuery(query, 1000, page, resPerPage);
+            HttpWebResponse serverResponse = PostSearchQuery(query, 1000, resNumber);
 
             // Pick out html page from server response if possible
             if (serverResponse.StatusCode != HttpStatusCode.OK)
@@ -135,7 +151,7 @@ namespace watch_assistant.Model.Search
             _interviewResult.Columns.Add("RussianSub", typeof(Boolean));
         }
 
-        private HttpWebResponse PostSearchQuery(String query, int requestTimeout, int page, int resPerPage)
+        private HttpWebResponse PostSearchQuery(String query, int requestTimeout, int resNumber)
         {
             List<KeyValuePair<string, string>> headers = new List<KeyValuePair<string, string>>();
             headers.Add(new KeyValuePair<string,string>("Origin", (string)_dictionary["Origin"]));
@@ -158,18 +174,12 @@ namespace watch_assistant.Model.Search
             request.ServicePoint.Expect100Continue = false;
             request.KeepAlive = true;           
 
-            Byte[] byteArr;
-            if (page > 1)
-                //do=search&subaction=search&search_start=2&full_search=0&result_from=21&result_num=20&story=Love
-                byteArr = Encoding.GetEncoding(1251).GetBytes(
-                    "do=search&subaction=search&search_start=" + 
-                    page.ToString() + 
-                    "&full_search=0&result_from=1&result_from=1&story=" + 
-                    query.Replace(' ', '+') + 
-                    "&x=1&y=1");
-            else
-                //do=search&subaction=search&x=0&y=0&story=Bag+Bang
-                byteArr = Encoding.GetEncoding(1251).GetBytes("do=search&subaction=search&x=0&y=0&story=" + query.Replace(' ', '+'));
+            Byte[] byteArr = Encoding.GetEncoding(1251).GetBytes(
+                    "do=search&subaction=search&x=0&y=0&story=" 
+                    + query.Replace(' ', '+') +
+                    "&result_num=" +
+                    (resNumber / 100) * 100 + 100);
+
             request.ContentLength = byteArr.LongLength; //
             request.GetRequestStream().Write(byteArr, 0, byteArr.Length);
 
