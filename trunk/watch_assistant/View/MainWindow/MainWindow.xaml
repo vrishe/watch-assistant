@@ -64,7 +64,13 @@
                             Grid.Column="0" >
                         Bakuman
                     </TextBox>
-                    <Button x:Name="bSearch" Grid.Column="1" Margin="2,0,0,0" Command="{x:Static mwvm:MainWindowViewModel.SearchCommand}">Search</Button>
+                    <Button x:Name="bSearch" 
+                            Grid.Column="1" 
+                            Margin="2,0,0,0" 
+                            Command="{x:Static mwvm:MainWindowViewModel.SearchCommand}"
+                            CommandParameter="{Binding ElementName=tbSearch, Path=Text, Mode=OneWay}">
+                        Search
+                    </Button>
                 </Grid>
 
                 <ListBox x:Name="searchView" 
