@@ -2,12 +2,12 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:system="clr-namespace:System;assembly=mscorlib">
     
-    <!-- Resourses, that are used by ASeeInterviewer to post queries, etc. -->
-    <system:String x:Key="Uri">http://animesee.com/</system:String>
+    <!-- Resourses, that are used by FilminInterviewer to post queries, etc. -->
+    <system:String x:Key="Uri">http://filmin.ru/</system:String>
+    <system:String x:Key="Origin">http://filmin.ru/</system:String>
     <system:String x:Key="ContentType">application/x-www-form-urlencoded</system:String>
     <system:String x:Key="Accept">text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8</system:String>
     <system:String x:Key="UserAgent">Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/535.7 (KHTML, like Gecko) Chrome/16.0.912.77 Safari/535.7</system:String>
-    <system:String x:Key="Origin">http://animeonline.su/</system:String>
     <system:String x:Key="Cache-Control">max-age=0</system:String>
     <system:String x:Key="Accept-Language">ru-RU,ru;q=0.8,en-US;q=0.6,en;q=0.4</system:String>
     <system:String x:Key="Accept-Charset">windows-1251,utf-8;q=0.7,*;q=0.3</system:String>
