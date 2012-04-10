@@ -64,6 +64,7 @@
     <Compile Include="Model\Search\HttpQueryCreator.cs" />
     <Compile Include="Model\Search\IInterviewer.cs" />
     <Compile Include="Model\Search\ASeeInterviewer.cs" />
+    <Compile Include="Model\Search\TVBestInterviewer.cs" />
     <Compile Include="ViewModel\DetailsWindow\DetailsWindowViewModel.cs" />
     <Compile Include="View\DetailsWindow\DetailsWindow.xaml.cs">
       <DependentUpon>DetailsWindow.xaml</DependentUpon>
@@ -77,6 +78,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Resources\resASee.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Resources\resTVBest.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

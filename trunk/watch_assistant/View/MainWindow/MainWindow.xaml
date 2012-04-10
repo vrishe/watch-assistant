@@ -62,7 +62,7 @@
                     </Grid.ColumnDefinitions>
                     <TextBox x:Name="tbSearch"
                             Grid.Column="0" >
-                        Bakuman
+                        Love
                     </TextBox>
                     <Button x:Name="bSearch" 
                             Grid.Column="1" 

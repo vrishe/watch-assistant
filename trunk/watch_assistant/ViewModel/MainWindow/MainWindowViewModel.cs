@@ -8,7 +8,7 @@ namespace watch_assistant.ViewModel.MainWindow
     class MainWindowViewModel : WindowViewModel
     {
         #region Fields
-        private readonly Model.Search.AOSInterviewer _interviewer = new Model.Search.AOSInterviewer();
+        private readonly Model.Search.TVBestInterviewer _interviewer = new Model.Search.TVBestInterviewer();
         private readonly Dictionary<string, DataTable> _userLists = new Dictionary<string, DataTable>();
 
         #region Commands

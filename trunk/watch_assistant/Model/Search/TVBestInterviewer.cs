@@ -9,24 +9,24 @@ using System.Windows;
 
 namespace watch_assistant.Model.Search
 {
-    class ASeeInterviewer : IInterviewer
+    class TVBestInterviewer : IInterviewer
     {
         #region Fields
 
         private DataTable _interviewResult;
         private ResourceDictionary _dictionary;
 
-        #endregion // Fields
+        #endregion (Fields)
 
         #region Constructors
 
-        public ASeeInterviewer()
+        public TVBestInterviewer()
         {
             _dictionary = new ResourceDictionary();
-            _dictionary.Source = new Uri("..\\Resources\\resASee.xaml", UriKind.Relative);
+            _dictionary.Source = new Uri("..\\Resources\\resTVBest.xaml", UriKind.Relative);
         }
 
-        #endregion // Constructors
+        #endregion (Constructors)
 
         #region IInterviewer implementation
 
@@ -41,7 +41,7 @@ namespace watch_assistant.Model.Search
                 return;
 
             // Try to get response from AOS server
-            string answerContent = GetResponce(query, 1);
+            string answerContent = GetResponce(query, 1, 0);
             // Find out how many results are found
             Match resNumDefinigMatch = Regex.Match(answerContent, 
                 @"По\sВашему\sзапросу\sнайдено\s([0-9]*)\sответов\s\(Результаты\sзапроса\s1\s-\s([0-9]*)\)");
@@ -53,7 +53,7 @@ namespace watch_assistant.Model.Search
             // Pick out every concern result
             GetResultsFromContent(query, answerContent);
             for (int page = 2; page <= resultsPages; page++)
-                GetResultsFromContent(query, GetResponce(query, page));
+                GetResultsFromContent(query, GetResponce(query, page, Int32.Parse(resNumDefinigMatch.Groups[2].ToString())));
         }
 
         public void ClearInterviewResults()
@@ -67,7 +67,7 @@ namespace watch_assistant.Model.Search
             {
                 if (_interviewResult != null)
                     return _interviewResult;
-                _interviewResult = new DataTable("ASee");
+                _interviewResult = new DataTable("TVBest");
                 return _interviewResult;
             } 
         }
@@ -80,51 +80,49 @@ namespace watch_assistant.Model.Search
         {
             do
             {
-                string videoItemBeginingString = "<h2><a href=\"([^\"]*)\"";
+                string videoItemBeginingString = "<a href=\"([^\"]*)[^>]*>([^<]*)</a></div>";
                 Match videoItemRef = Regex.Match(answerContent, videoItemBeginingString);
                 if (!videoItemRef.Success) break;
-                answerContent = answerContent.Substring(videoItemRef.Index + videoItemRef.Length);
+      //          answerContent = answerContent.Substring(videoItemRef.Index + videoItemRef.Length);
+                if (!videoItemRef.Groups[2].ToString().ToLower().Contains(query.ToLower())) continue;
 
                 DataRow videoItem = _interviewResult.NewRow();
-                // If category is not Video then go to the next search result
-                Match itemLocalMatch = Regex.Match(answerContent, @">(.*)</a></h2>");
-                videoItem["Name"] = itemLocalMatch.Groups[1];
-                if (!((String)videoItem["Name"]).ToLower().Contains(query.ToLower())) continue;
-                if (!((String)videoItem["Name"]).Contains("Онлайн: ")) continue;
                 videoItem["HRef"] = videoItemRef.Groups[1];
-                videoItem["RussianAudio"] = (((String)videoItem["Name"]).Contains("(RUS)") ? true : false);
-                videoItem["RussianSub"] = (((String)videoItem["Name"]).Contains("(SUB)") ? true : false);
-                videoItem["Poster"] = Regex.Match(answerContent, "<!--TBegin--><a href=\"([^\"]*)\"").Groups[1];
-                videoItem["Genre"] = Regex.Match(answerContent, @"<b>Жанр:\s*</b>\s*([^<]*)").Groups[1];
-                videoItem["Year"] = Int32.Parse(Regex.Match(answerContent, "<!--/colorstart-->[^0-9]*([0-9]{4})[^0-9]*<!--colorend-->").Groups[1].ToString());
+                Match nameAndYear = Regex.Match(videoItemRef.Groups[2].ToString(), @"(.*)\((([0-9]{4})\))\Z");
+                videoItem["Name"] = nameAndYear.Groups[1].ToString().Trim();
+                videoItem["Year"] = Int32.Parse(nameAndYear.Groups[3].ToString());
+                videoItem["RussianAudio"] = true;
+                videoItem["RussianSub"] = false;
+                videoItem["Poster"] = Regex.Match(answerContent, "<div class='img_'><a href=\"([^\"]*)\"").Groups[1];
+                videoItem["Genre"] = Regex.Match(answerContent, "Жанр: ([^<]*)").Groups[1];         
 
                 _interviewResult.Rows.Add(videoItem);
             }
             while (true);
         }
 
-        private String GetResponce(string query, int page)
+        private String GetResponce(string query, int page, int resPerPage)
         {
-            HttpWebResponse serverResponse = PostSearchQuery(query, 1000, page);
+            HttpWebResponse serverResponse = PostSearchQuery(query, 1000, page, resPerPage);
 
             // Pick out html page from server response if possible
             if (serverResponse.StatusCode != HttpStatusCode.OK)
                 throw new WebException(
-                    String.Format("AnimeSee.com server doesn't responce as expected. Recieved StatusCode is {0}.",
+                    String.Format("TVBest server doesn't responce as expected. Recieved StatusCode is {0}.",
                     serverResponse.StatusCode.ToString()));
             String answerContent;
             using (Stream initStream = serverResponse.GetResponseStream())
             using (StreamReader answerContentStream = new StreamReader(initStream, System.Text.Encoding.GetEncoding(1251)))
                 answerContent = answerContentStream.ReadToEnd();
             if (answerContent.Length <= 0)
-                throw new WebException("AnimeSee.com server hasn't returned any content.");
+                throw new WebException("TVBest server hasn't returned any content.");
 
             return answerContent;
         }
 
         private void FormNewResultTable()
         {
-            _interviewResult = new DataTable("ASee");
+            _interviewResult = new DataTable("TVBest");
 
             _interviewResult.Columns.Add("Name", typeof(String));
             _interviewResult.Columns.Add("HRef", typeof(String));
@@ -137,7 +135,7 @@ namespace watch_assistant.Model.Search
             _interviewResult.Columns.Add("RussianSub", typeof(Boolean));
         }
 
-        private HttpWebResponse PostSearchQuery(String query, int requestTimeout, int page)
+        private HttpWebResponse PostSearchQuery(String query, int requestTimeout, int page, int resPerPage)
         {
             List<KeyValuePair<string, string>> headers = new List<KeyValuePair<string, string>>();
             headers.Add(new KeyValuePair<string,string>("Origin", (string)_dictionary["Origin"]));
@@ -162,7 +160,7 @@ namespace watch_assistant.Model.Search
 
             Byte[] byteArr;
             if (page > 1)
-                //do=search&subaction=search&search_start=2&full_search=0&result_from=1&result_from=1&story=Bakuman
+                //do=search&subaction=search&search_start=2&full_search=0&result_from=21&result_num=20&story=Love
                 byteArr = Encoding.GetEncoding(1251).GetBytes(
                     "do=search&subaction=search&search_start=" + 
                     page.ToString() + 
@@ -170,7 +168,8 @@ namespace watch_assistant.Model.Search
                     query.Replace(' ', '+') + 
                     "&x=1&y=1");
             else
-                byteArr = Encoding.GetEncoding(1251).GetBytes("do=search&subaction=search&story=" + query.Replace(' ', '+'));
+                //do=search&subaction=search&x=0&y=0&story=Bag+Bang
+                byteArr = Encoding.GetEncoding(1251).GetBytes("do=search&subaction=search&x=0&y=0&story=" + query.Replace(' ', '+'));
             request.ContentLength = byteArr.LongLength; //
             request.GetRequestStream().Write(byteArr, 0, byteArr.Length);
 
