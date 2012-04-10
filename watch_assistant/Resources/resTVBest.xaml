@@ -2,7 +2,7 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:system="clr-namespace:System;assembly=mscorlib">
     
-    <!-- Resourses, that are used by AOSInterviewer to post queries, etc. -->
+    <!-- Resourses, that are used by TVBestInterviewer to post queries, etc. -->
     <system:String x:Key="Uri">http://tvbest.com.ua/</system:String>
     <system:String x:Key="Origin">http://tvbest.com.ua/</system:String>
     <system:String x:Key="ContentType">application/x-www-form-urlencoded</system:String>
