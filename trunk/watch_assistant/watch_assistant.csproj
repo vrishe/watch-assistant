@@ -61,9 +61,9 @@
     </ApplicationDefinition>
     <Compile Include="Model\Dictionary\Thesaurus.cs" />
     <Compile Include="Model\Search\AOSInterviewer.cs" />
-    <Compile Include="Model\Search\HttpQueryCreator.cs" />
     <Compile Include="Model\Search\IInterviewer.cs" />
     <Compile Include="Model\Search\ASeeInterviewer.cs" />
+    <Compile Include="Model\Search\InterviewerBase.cs" />
     <Compile Include="Model\Search\TVBestInterviewer.cs" />
     <Compile Include="Model\Search\FilminInterviewer.cs" />
     <Compile Include="ViewModel\DetailsWindow\DetailsWindowViewModel.cs" />
