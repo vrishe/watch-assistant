@@ -36,6 +36,10 @@ namespace watch_assistant.Model.Search
             if (_interviewResult == null)
                 FormNewResultTable();
 
+            // Do we need to interview server
+            if (String.IsNullOrEmpty(query))
+                return;
+
             // Try to get response from AOS server
             string answerContent = GetResponce(query, 1);
             // Find out how many results are found
