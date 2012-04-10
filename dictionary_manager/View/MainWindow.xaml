@@ -17,22 +17,43 @@
         </Grid.RowDefinitions>
 
         <Menu Name="mainMenu" Grid.Row="0" HorizontalAlignment="Stretch" VerticalAlignment="Top">            
-            <MenuItem Header="F_ile"/>
-            <MenuItem Header="E_dit"/>
+            <MenuItem Header="_File" TabIndex="4">
+                <MenuItem Header="O_pen" Command="Open"/>
+                <MenuItem Header="S_ave" Command="Save"/>
+                <Separator/>
+                <MenuItem Header="C_lose" Command="Close" />
+            </MenuItem>
+            <MenuItem Header="_Edit" TabIndex="5">
+                <MenuItem Header="A_dd" Command="vm:MainWindowViewModel.AddDefinitionCommand"/>
+                <MenuItem Header="R_emove" Command="vm:MainWindowViewModel.RemoveDefinitionCommand"/>
+            </MenuItem>
         </Menu>
         <Grid Grid.Row="1">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
             <ComboBox Name="comboBox" Grid.Column="0" Margin="3,2,1.5,2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" ForceCursor="False" IsEditable="True" 
-                      ItemsSource="{Binding Path=Keys,Mode=OneWay,UpdateSourceTrigger=PropertyChanged}" 
-                      SelectedValue="{Binding Path=SelectedKey, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                      Text="{Binding Path=TextEntered, Mode=OneWayToSource, UpdateSourceTrigger=LostFocus}"/>
-            <Button Name="EditButton" Grid.Column="1" Margin="1.5,2,3,2" Content="Edit" Width="75" HorizontalAlignment="Center" VerticalAlignment="Stretch" />            
+                      ItemsSource="{Binding Path=Keys, Mode=OneWay}" SelectedValue="{Binding Path=SelectedKey, Mode=OneWayToSource}" Text="{Binding Path=TextEntered, Mode=TwoWay}" TabIndex="0" />
+            <Button Name="AddButton" Grid.Column="1" Margin="1.5,2,3,2" Content="Add" Width="37" HorizontalAlignment="Center" VerticalAlignment="Stretch" 
+                    Command="{x:Static vm:MainWindowViewModel.AddDefinitionCommand}" TabIndex="2" />
+            <Button Name="RemoveButton" Grid.Column="2" Margin="1.5,2,3,2" Content="Rem" Width="37" HorizontalAlignment="Center" VerticalAlignment="Stretch" 
+                    Command="{x:Static vm:MainWindowViewModel.RemoveDefinitionCommand}" TabIndex="3" />
         </Grid>
         
-        <ListBox Name="listBox1" Grid.Row="2" Margin="3,0,3,2" VerticalAlignment="Stretch" HorizontalAlignment="Stretch"/>
+        <TextBox Name="meaningBox" Grid.Row="2" Margin="3,0,3,2" VerticalAlignment="Stretch" HorizontalAlignment="Stretch"
+                 Text="{Binding Path=ActiveDefinition, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" TabIndex="1">
+            <TextBox.Style>
+                <Style TargetType="{x:Type TextBox}">
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding ElementName=comboBox,Path=Text,Mode=OneWay}" Value="">
+                            <Setter Property="IsEnabled" Value="False" />
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </TextBox.Style>
+        </TextBox>
 
     </Grid>
     <!-- Window layout description end-->
