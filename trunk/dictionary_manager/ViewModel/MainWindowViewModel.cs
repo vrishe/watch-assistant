@@ -6,9 +6,35 @@ using System.Windows;
 using System.Windows.Input;
 using Microsoft.Win32;
 using watch_assistant.Model.Dictionary;
+using System.Windows.Data;
 
 namespace dictionary_manager.ViewModel
 {
+    public class DoubleToPermutationMethodConverter : IValueConverter
+    {
+        #region Implementation
+
+        public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            double val = (double)value / (double)parameter;
+
+            PermutationMethod result = PermutationMethod.NONE;
+            if  ( val > 1.0/3.0 && val <= 2.0/3.0 )
+                result = PermutationMethod.SINGLE;
+            else if (val > 2.0 / 3.0) 
+                result = PermutationMethod.FULL;
+            return result;
+        }
+
+
+        public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            throw new NotImplementedException();
+        }
+
+        #endregion
+    }
+
     class MainWindowViewModel : watch_assistant.ViewModel.ViewModelBase
     {
         #region Fields
@@ -143,7 +169,7 @@ namespace dictionary_manager.ViewModel
                     {
                         string separator = "\t\n, ";
                         string[] definitionSplit = ActiveDefinition.Split(separator.ToArray(), StringSplitOptions.RemoveEmptyEntries);
-                        _thesaurus.SetDefinition(TextEntered, definitionSplit, (bool)e.Parameter);
+                        _thesaurus.SetDefinition(TextEntered, definitionSplit, (PermutationMethod)e.Parameter);
                         Keys = new List<string>(_thesaurus.Keys);
                         SelectedKey = TextEntered;
                     }
@@ -159,7 +185,7 @@ namespace dictionary_manager.ViewModel
                 {
                     try
                     {
-                        _thesaurus.RemoveDefinition(TextEntered, false);
+                        _thesaurus.RemoveDefinition(TextEntered, (PermutationMethod)e.Parameter);
                         Keys = new List<string>(_thesaurus.Keys);
                         SelectedKey = Keys.First();
                     }

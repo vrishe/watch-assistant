@@ -7,15 +7,15 @@ using System.Runtime.Serialization.Formatters.Binary;
 
 namespace watch_assistant.Model.Dictionary
 {
+    public enum PermutationMethod
+    {
+        NONE,
+        SINGLE,
+        FULL
+    }
+
     public sealed class Thesaurus
     {
-        public enum PermutationMethod
-        {
-            NONE,
-            SINGLE,
-            FULL
-        }
-
         #region Fields
         private static List<WeakReference> _instances = new List<WeakReference>();
 
@@ -48,7 +48,7 @@ namespace watch_assistant.Model.Dictionary
         /// <param name="key">Dictionary key that may have a definition.</param>
         /// <param name="definition">Dictionary definition that opens sense of the key.</param>
         /// <param name="mutual">Tells if it has to append the 'key' as a meaning with each of the corresponding 'meaning' values as keys within the thesaurus.</param>
-        public void AddDefinition(string key, IEnumerable<string> definition, bool mutual)
+        public void AddDefinition(string key, IEnumerable<string> definition, PermutationMethod mutual)
         {
             if (definition.Count() == 0)
                 throw new ArgumentException("Definition set cannot be empty.");
@@ -60,13 +60,14 @@ namespace watch_assistant.Model.Dictionary
             {
                 if (!_dictionary.ContainsKey(key)) _dictionary.Add(key, new HashSet<string>());
                 _dictionary[key].UnionWith(definition);
-                if (mutual)
+                if (mutual != PermutationMethod.NONE)
                 {
                     foreach (string meaning in definition)
                     {
                         HashSet<string> extensibleDefinition;
                         if (!_dictionary.TryGetValue(meaning, out extensibleDefinition)) _dictionary.Add(meaning, (extensibleDefinition = new HashSet<string>()));
                         extensibleDefinition.Add(key);
+                        if (mutual == PermutationMethod.FULL) extensibleDefinition.UnionWith(_dictionary[key].Except(new string[] { meaning }));
                     }
                 }
             }
@@ -77,33 +78,9 @@ namespace watch_assistant.Model.Dictionary
         /// <param name="key">Dictionary key that may have a definition.</param>
         /// <param name="meaning">Dictionary meaning that opens sense of the key.</param>
         /// <param name="mutual">Tells if it has to append the 'key' as a meaning to corresponding 'meaning' key mutually.</param>
-        public void AddDefinition(string key, string meaning, bool mutual)
+        public void AddDefinition(string key, string meaning, PermutationMethod mutual)
         {
             AddDefinition(key, new string[] { meaning }, mutual);
-        }
-        /// <summary>
-        /// Overrides currently existent key definition.
-        /// </summary>
-        /// <param name="key">Dictionary key that may have a definition.</param>
-        /// <param name="meaning">Dictionary meaning that opens sense of the key.</param>
-        /// <param name="mutual">Tells if it has to append the 'key' as a meaning with each of the corresponding 'meaning' values as keys within the thesaurus.</param>
-        public void SetDefinition(string key, IEnumerable<string> definition, bool mutual)
-        {
-            lock (this)
-            {
-                _dictionary.Remove(key);
-                AddDefinition(key, definition, mutual);
-            }
-        }
-        public bool TryGetDefinition(string key, out IEnumerable<string> definition)
-        {
-            definition = null;
-            HashSet<string> tempDefinition;
-            if (_dictionary.TryGetValue(key, out tempDefinition))
-            {
-                definition = new List<string>(tempDefinition);
-            }
-            return definition != null;
         }
         /// <summary>
         /// Removes the definition of a key specified.
@@ -111,7 +88,7 @@ namespace watch_assistant.Model.Dictionary
         /// <param name="key">Dictionary key whose definition is about to remove.</param>
         /// <param name="mutual">Tells if it has to remove each of 'meaning' values as a keys within the current Thesaurus.</param>
         /// <returns>True - if key removal was successfull; False - otherwise.</returns>
-        public bool RemoveDefinition(string key, string meaning, bool mutual)
+        public bool RemoveDefinition(string key, string meaning, PermutationMethod mutual)
         {
             lock (this)
             {
@@ -121,7 +98,7 @@ namespace watch_assistant.Model.Dictionary
                     if (currentDefinition.Remove(meaning))
                     {
                         if (currentDefinition.Count == 0) _dictionary.Remove(key);
-                        if (mutual) RemoveDefinition(meaning, false);
+                        if (mutual != PermutationMethod.NONE) RemoveDefinition(meaning, mutual == PermutationMethod.SINGLE ? PermutationMethod.NONE : PermutationMethod.SINGLE);
                         return true;
                     }
                 }
@@ -134,20 +111,50 @@ namespace watch_assistant.Model.Dictionary
         /// <param name="key">Dictionary key whose definition is about to remove.</param>
         /// <param name="mutual">Tells if it has to remove each of 'meaning' values as a keys within the current Thesaurus.</param>
         /// <returns>True - if key removal was successfull; False - otherwise.</returns>
-        public bool RemoveDefinition(string key, bool mutual)
+        public bool RemoveDefinition(string key, PermutationMethod mutual)
         {
             lock (this)
             {
                 HashSet<string> currentDefinition;
-                if (mutual && _dictionary.TryGetValue(key, out currentDefinition))
+                if (mutual != PermutationMethod.NONE && _dictionary.TryGetValue(key, out currentDefinition))
                 {
                     foreach (string meaning in currentDefinition)
                     {
-                        RemoveDefinition(meaning, key, false);
+                        RemoveDefinition(meaning, key, mutual == PermutationMethod.SINGLE ? PermutationMethod.NONE : PermutationMethod.SINGLE);
                     }
                 }
                 return _dictionary.Remove(key);
             }
+        }
+        /// <summary>
+        /// Overrides currently existent key definition.
+        /// </summary>
+        /// <param name="key">Dictionary key that may have a definition.</param>
+        /// <param name="meaning">Dictionary meaning that opens sense of the key.</param>
+        /// <param name="mutual">Tells if it has to append the 'key' as a meaning with each of the corresponding 'meaning' values as keys within the thesaurus.</param>
+        public void SetDefinition(string key, IEnumerable<string> definition, PermutationMethod mutual)
+        {
+            lock (this)
+            {
+                RemoveDefinition(key, mutual);
+                AddDefinition(key, definition, mutual);
+            }
+        }
+        /// <summary>
+        /// Tries to get a definition for the key specified.
+        /// </summary>
+        /// <param name="key">the key whose definition is intended to retrieve.</param>
+        /// <param name="definition">in case of success recieves a shallow copy of a definition's meanings list.</param>
+        /// <returns>True - if definition was retrieved successfully; False - otherwise.</returns>
+        public bool TryGetDefinition(string key, out IEnumerable<string> definition)
+        {
+            definition = null;
+            HashSet<string> tempDefinition;
+            if (_dictionary.TryGetValue(key, out tempDefinition))
+            {
+                definition = new List<string>(tempDefinition);
+            }
+            return definition != null;
         }
         /// <summary>
         /// Defines the Thesaurus' definition existence for the key specified.
