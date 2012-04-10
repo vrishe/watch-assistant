@@ -95,7 +95,7 @@ namespace watch_assistant.Model.Search
                 videoItem["RussianAudio"] = (((String)videoItem["Name"]).Contains("(RUS)") ? true : false);
                 videoItem["RussianSub"] = (((String)videoItem["Name"]).Contains("(SUB)") ? true : false);
                 videoItem["Poster"] = Regex.Match(answerContent, "<div class='img_'><a href=\"([^\"]*)\"").Groups[1];
-                videoItem["Ganre"] = Regex.Match(answerContent, "Жанр: ([^<]*)").Groups[1];
+                videoItem["Genre"] = Regex.Match(answerContent, "Жанр: ([^<]*)").Groups[1];
                 itemLocalMatch = Regex.Match(answerContent, "style=\"color: [^>]*>([0-9]{4})<");
                 videoItem["Year"] = Int32.Parse(itemLocalMatch.Groups[1].ToString());
 
