@@ -18,17 +18,21 @@
         <DataTemplate x:Key="ListViewItemTemplate">
             <DataTemplate.Resources>
                 <mwvm:FormatStringConverter x:Key="StringValueModifier" />
+                <sys:String x:Key="ListViewItemGenreLabel">Genre: {0}</sys:String>
                 <sys:String x:Key="ListViewItemYearLabel">Year: {0}</sys:String>
             </DataTemplate.Resources>
             
             <Border x:Name="Basement" Background="Transparent" CornerRadius="{DynamicResource DefaultCornerRadius}">
-                <StackPanel MaxHeight="40" Orientation="Horizontal" FlowDirection="LeftToRight" HorizontalAlignment="Stretch" Margin="1,1,1,1">
-                    <Border Background="{DynamicResource ImageBackgroundColor}" CornerRadius="{DynamicResource DefaultCornerRadius}">
-                        <Image VerticalAlignment="Stretch" Margin="1,1,1,1" Source="{Binding Path=[Poster], Mode=OneWay}"/>
+                <StackPanel MaxHeight="45"  Orientation="Horizontal" FlowDirection="LeftToRight" HorizontalAlignment="Stretch" Margin="1,1,1,1">
+                    <Border Background="{DynamicResource ControlBackgroundBrush}" CornerRadius="{DynamicResource DefaultCornerRadius}">
+                        <Image x:Name="Poster" VerticalAlignment="Stretch" Margin="1,1,1,1" Source="{Binding Path=[Poster], Mode=OneWay}"/>
                     </Border>
                     <StackPanel Orientation="Vertical">
                         <Label HorizontalAlignment="Left" Margin="3,2,0,0" Content="{Binding Path=[Name], Mode=OneWay}"/>
-                        <TextBlock Margin="3,0,0,0" Text="{Binding Path=[Year], Mode=OneWay, Converter={StaticResource StringValueModifier}, ConverterParameter={StaticResource ListViewItemYearLabel}}"/>
+                        <TextBlock Margin="3,0,0,0" Foreground="{DynamicResource OutsideFontColor}" 
+                                   Text="{Binding Path=[Genre], Mode=OneWay, Converter={StaticResource StringValueModifier}, ConverterParameter={StaticResource ListViewItemGenreLabel}}"/>
+                        <TextBlock Margin="3,0,0,0" Foreground="{DynamicResource OutsideFontColor}" 
+                                   Text="{Binding Path=[Year], Mode=OneWay, Converter={StaticResource StringValueModifier}, ConverterParameter={StaticResource ListViewItemYearLabel}}"/>
                     </StackPanel>
                 </StackPanel>
             </Border>

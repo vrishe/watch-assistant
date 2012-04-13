@@ -5,8 +5,7 @@
     
     <SolidColorBrush x:Key="ImageBackgroundColor"  Color="#FFA0A0A0" />
     <SolidColorBrush x:Key="WindowLabelTextColor" Color="Beige" />
-    <SolidColorBrush x:Key="OutsideFontColor" Color="#FFFFFFFF" />
-    <SolidColorBrush x:Key="TextBrush" Color="#FFFFFFFF" />
+    <SolidColorBrush x:Key="OutsideFontColor" Color="LightGray" />
     
     <!-- Frame brushes -->
 
