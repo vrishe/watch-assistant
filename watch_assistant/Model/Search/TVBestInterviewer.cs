@@ -13,31 +13,31 @@ namespace watch_assistant.Model.Search
         /// Fill InterviewResult DataTable with concern search results
         /// </summary>
         /// <param name="query">A string for server to find</param>
-        public override void ConductInterview(string query)
+        public override void ConductInterview(string[] queries)
         {
-            // Create table and it's schema if it hasn't been done yet 
-            if (_interviewResult == null)
-                FormNewResultTable();
-
-            // Do we need to interview server
-            if (String.IsNullOrEmpty(query))
-                return;
-
-            // Try to get response from TVBest server
-            string answerContent = GetResponceContent(query, 0);
-
-            // Find out how many results are found
-            int resultsPages = GetResultsPages(ref answerContent);
-            if (resultsPages == 0)
-                return;
-            while (resultsPages > 1)
+            foreach (string query in queries)
             {
-                GetResponceContent(query, resultsPages * 100);
-                resultsPages = GetResultsPages(ref answerContent);
-            }
+                // Do we need to interview server
+                if (String.IsNullOrEmpty(query))
+                    return;
 
-            // Pick out every concern result
-            GetResultsFromContent(query, answerContent);
+                // Try to get response from AOS server
+                string answerContent = GetResponceContent(query, 1);
+                // Find out how many results are found
+                int resultsPages = GetResultsPages(ref answerContent);
+                if (resultsPages == 0)
+                    return;
+                if (resultsPages > 1)
+                {
+                    GetResponceContent(query, resultsPages * 100);
+                    resultsPages = GetResultsPages(ref answerContent);
+                }
+
+                // Pick out every concern result
+                GetResultsFromContent(query, answerContent);
+                for (int page = 2; page <= resultsPages; page++)
+                    GetResultsFromContent(query, GetResponceContent(query, page));
+            }
         }
 
         #endregion (IInterviewer implementation)

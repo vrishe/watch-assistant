@@ -18,6 +18,18 @@ namespace watch_assistant.Model.Search
 
         #endregion (Fields)
 
+        #region Constructors
+
+        public InterviewerBase()
+        {
+            _dictionary.Source = new Uri(
+                String.Format("..\\Resources\\res{0}.xaml", GetClassType()),
+                UriKind.Relative);
+            FormNewResultTable();
+        }
+
+        #endregion (Constructors)
+
         #region IInterviewer implementation
 
         /// <summary>
@@ -37,43 +49,26 @@ namespace watch_assistant.Model.Search
         /// <summary>
         /// Fill InterviewResult DataTable with concern search results
         /// </summary>
-        /// <param name="query">A string for server to find</param>
-        public virtual void ConductInterview(string query)
-        {
-            // Create table and it's schema if it hasn't been done yet 
-            if (_interviewResult == null)
-                FormNewResultTable();
-
-            // Do we need to interview server
-            if (String.IsNullOrEmpty(query))
-                return;
-
-            // Try to get response from AOS server
-            string answerContent = GetResponceContent(query, 1);
-            // Find out how many results are found
-            int resultsPages = GetResultsPages(ref answerContent);
-            if (resultsPages == 0)
-                return;
-
-            // Pick out every concern result
-            GetResultsFromContent(query, answerContent);
-            for (int page = 2; page <= resultsPages; page++)
-                GetResultsFromContent(query, GetResponceContent(query, page));
-        }
-
-        /// <summary>
-        /// Fill InterviewResult DataTable with concern search results
-        /// </summary>
         /// <param name="query">Strings for server to find</param>
-        public virtual void ConductInterview(string[] query)
-        {
-            // Create table and it's schema if it hasn't been done yet 
-            if (_interviewResult == null)
-                FormNewResultTable();
-
-            foreach (string s in query)
+        public virtual void ConductInterview(string[] queries)
+        {   
+            foreach (string query in queries)
             {
-                ConductInterview(s);
+                // Do we need to interview server
+                if (String.IsNullOrEmpty(query))
+                    continue;
+
+                // Try to get response from AOS server
+                string answerContent = GetResponceContent(query, 1);
+                // Find out how many results are found
+                int resultsPages = GetResultsPages(ref answerContent);
+                if (resultsPages == 0)
+                    continue;
+
+                // Pick out every concern result
+                GetResultsFromContent(query, answerContent);
+                for (int page = 2; page <= resultsPages; page++)
+                    GetResultsFromContent(query, GetResponceContent(query, page));
             }
         }
 
@@ -83,6 +78,7 @@ namespace watch_assistant.Model.Search
         public void ClearInterviewResults()
         {
             _interviewResult = null;
+            FormNewResultTable();
         }
 
         #endregion (IInterviewer implementation)
@@ -104,7 +100,7 @@ namespace watch_assistant.Model.Search
         /// </summary>
         protected void FormNewResultTable()
         {
-            _interviewResult = new DataTable("AOS");
+            _interviewResult = new DataTable(GetClassType());
 
             _interviewResult.Columns.Add("Name", typeof(String));
             _interviewResult.Columns.Add("HRef", typeof(String));
@@ -178,8 +174,11 @@ namespace watch_assistant.Model.Search
             request.GetRequestStream().Write(byteArr, 0, byteArr.Length);
 
             HttpWebResponse response = (HttpWebResponse)request.GetResponse();
-            request.ServicePoint.CloseConnectionGroup(request.ConnectionGroupName);
-            GC.Collect();
+            if (request.ServicePoint.CurrentConnections == request.ServicePoint.ConnectionLimit)
+            {
+                request.ServicePoint.CloseConnectionGroup(request.ConnectionGroupName);
+                GC.Collect();
+            }
 
             return response;
         }
@@ -190,21 +189,18 @@ namespace watch_assistant.Model.Search
         /// <returns></returns>
         protected virtual HttpWebRequest FormPostRequestHeader()
         {
-            _dictionary.Source = new Uri(
-                String.Format("..\\Resources\\res{0}.xaml", GetClassType()),
-                UriKind.Relative);
             HttpWebRequest request = (HttpWebRequest)WebRequest.Create((string)_dictionary["Uri"]);
             request.Host = Regex.Match(request.RequestUri.ToString(), @"http://([^/]*)").Groups[1].ToString();
             request.Method = "POST";
             request.ContentType = (string)_dictionary["ContentType"];
-            request.Accept = (string)_dictionary["Accept"];
-            request.UserAgent = (string)_dictionary["UserAgent"];
+            //request.Accept = (string)_dictionary["Accept"];
+            //request.UserAgent = (string)_dictionary["UserAgent"];
 
-            request.Headers.Add("Origin", (string)_dictionary["Origin"]);
-            request.Headers.Add("Cache-Control", (string)_dictionary["Cache-Control"]);
-            request.Headers.Add("Accept-Language", (string)_dictionary["Accept-Language"]);
-            request.Headers.Add("Accept-Charset", (string)_dictionary["Accept-Charset"]);
-            request.Headers.Add("Accept-Encoding", (string)_dictionary["Accept-Encoding"]);
+            //request.Headers.Add("Origin", (string)_dictionary["Origin"]);
+            //request.Headers.Add("Cache-Control", (string)_dictionary["Cache-Control"]);
+            //request.Headers.Add("Accept-Language", (string)_dictionary["Accept-Language"]);
+            //request.Headers.Add("Accept-Charset", (string)_dictionary["Accept-Charset"]);
+            //request.Headers.Add("Accept-Encoding", (string)_dictionary["Accept-Encoding"]);
 
             request.Timeout = (int)_dictionary["Timeout"];
             request.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
@@ -223,11 +219,6 @@ namespace watch_assistant.Model.Search
         protected virtual Byte[] FormPostRequestStream(string query, int page)
         {
             throw new NotImplementedException();
-        }
-
-        protected void AddResultRow(DataRow row)
-        {
-            _interviewResult.Rows.Add(row);
         }
 
         /// <summary>

@@ -11,12 +11,6 @@ namespace watch_assistant.Model.Search
         DataTable InterviewResult { get; }
 
         /// <summary>
-        /// Получает страницу ответа сайта на поисковый запрос.
-        /// </summary>
-        /// <param name="query">Строка для поиска на сайте</param>
-        void ConductInterview(string query);
-
-        /// <summary>
         /// Получает страницу ответа сайта на поисковые запросы.
         /// </summary>
         /// <param name="query">Строки для поиска на сайте</param>

@@ -16,15 +16,17 @@ namespace watch_assistant.Model.Search
 
         private DataTable _interviewResult;
 
-        private AOSInterviewer _aosInterviewer = new AOSInterviewer();
-        private ASeeInterviewer _aseeInterviewer = new ASeeInterviewer();
-        private FilminInterviewer _filminInterviewer = new FilminInterviewer();
-        private TVBestInterviewer _tvbestInterviewer = new TVBestInterviewer();
+        //private AOSInterviewer _aosInterviewer = new AOSInterviewer();
+        //private ASeeInterviewer _aseeInterviewer = new ASeeInterviewer();
+        //private FilminInterviewer _filminInterviewer = new FilminInterviewer();
+        //private TVBestInterviewer _tvbestInterviewer = new TVBestInterviewer();
 
-        private Thread _aosThread;
-        private Thread _aseeThread;
-        private Thread _filminThread;
-        private Thread _tvbestThread;
+        //private Thread _aosThread;
+        //private Thread _aseeThread;
+        //private Thread _filminThread;
+        //private Thread _tvbestThread;
+
+        private readonly Dictionary<InterviewerBase, Thread> _interviewers = new Dictionary<InterviewerBase, Thread>();
 
         #endregion (Fields)
 
@@ -47,41 +49,17 @@ namespace watch_assistant.Model.Search
         /// <summary>
         /// Fill InterviewResult DataTable with concern search results
         /// </summary>
-        /// <param name="query">A string for server to find</param>
-        public virtual void ConductInterview(string query)
-        {
-            FormThreadsForOneQuery();
-
-            _aosThread.Start(query);
-            _aseeThread.Start(query);
-            _filminThread.Start(query);
-            _tvbestThread.Start(query);
-
-            _aosThread.Join();
-            _aseeThread.Join();
-            _filminThread.Join();
-            _tvbestThread.Join();
-
-            AggregateResults();
-        }
-
-        /// <summary>
-        /// Fill InterviewResult DataTable with concern search results
-        /// </summary>
         /// <param name="query">Strings for server to find</param>
         public virtual void ConductInterview(string[] query)
         {
-            FormThreadsForMultipleQueries();
+            FormInterviewers();
 
-            _aosThread.Start(query);
-            _aseeThread.Start(query);
-            _filminThread.Start(query);
-            _tvbestThread.Start(query);
+            foreach (Thread t in _interviewers.Values) t.Start(query);
+            foreach (Thread t in _interviewers.Values) 
+                if (t.IsAlive)
+                    t.Join();
 
-            _aosThread.Join();
-            _aseeThread.Join();
-            _filminThread.Join();
-            _tvbestThread.Join();
+            AggregateResults();
         }
 
         /// <summary>
@@ -96,57 +74,43 @@ namespace watch_assistant.Model.Search
 
         #region Methods
 
-        private void FormThreadsForOneQuery()
+        private void FormInterviewers()
         {
-            _aosThread = new Thread((object query) =>
+            InterviewerBase aos;
+            _interviewers.Add(aos = new AOSInterviewer(), new Thread((object query) =>
             {
-                _aosInterviewer.ConductInterview((string)query);
-                MessageBox.Show("AOS Results Number: " + _aosInterviewer.InterviewResult.Rows.Count.ToString());
-            });
-            _aseeThread = new Thread((object query) =>
+                aos.ConductInterview((string[])query);
+                //MessageBox.Show("AOS Results Number: " + aos.InterviewResult.Rows.Count.ToString());
+            }));
+            InterviewerBase asee;
+            _interviewers.Add(asee = new ASeeInterviewer(), new Thread((object query) =>
             {
-                _aseeInterviewer.ConductInterview((string)query);
-                MessageBox.Show("ASee Results Number: " + _aseeInterviewer.InterviewResult.Rows.Count.ToString());
-            });
-            _filminThread = new Thread((object query) =>
+                asee.ConductInterview((string[])query);
+                //MessageBox.Show("ASee Results Number: " + asee.InterviewResult.Rows.Count.ToString());
+            }));
+            InterviewerBase tvbest;
+            _interviewers.Add(tvbest = new TVBestInterviewer(), new Thread((object query) =>
             {
-                _filminInterviewer.ConductInterview((string)query);
-                MessageBox.Show("Filmin Results Number: " + _filminInterviewer.InterviewResult.Rows.Count.ToString());
-            });
-            _tvbestThread = new Thread((object query) =>
+                tvbest.ConductInterview((string[])query);
+                //MessageBox.Show("TVBest Results Number: " + tvbest.InterviewResult.Rows.Count.ToString());
+            }));
+            InterviewerBase filmin;
+            _interviewers.Add(filmin = new FilminInterviewer(), new Thread((object query) =>
             {
-                _tvbestInterviewer.ConductInterview((string)query);
-                MessageBox.Show("TVBest Results Number: " + _tvbestInterviewer.InterviewResult.Rows.Count.ToString());
-            });
-        }
-
-        private void FormThreadsForMultipleQueries()
-        {
-            _aosThread = new Thread((object query) =>
-            {
-                _aosInterviewer.ConductInterview((string[])query);
-                MessageBox.Show("AOS Results Number: " + _aosInterviewer.InterviewResult.Rows.Count.ToString());
-            });
-            _aseeThread = new Thread((object query) =>
-            {
-                _aseeInterviewer.ConductInterview((string[])query);
-                MessageBox.Show("ASee Results Number: " + _aseeInterviewer.InterviewResult.Rows.Count.ToString());
-            });
-            _filminThread = new Thread((object query) =>
-            {
-                _filminInterviewer.ConductInterview((string[])query);
-                MessageBox.Show("Filmin Results Number: " + _filminInterviewer.InterviewResult.Rows.Count.ToString());
-            });
-            _tvbestThread = new Thread((object query) =>
-            {
-                _tvbestInterviewer.ConductInterview((string[])query);
-                MessageBox.Show("TVBest Results Number: " + _tvbestInterviewer.InterviewResult.Rows.Count.ToString());
-            });
+                filmin.ConductInterview((string[])query);
+                //MessageBox.Show("Filmin Results Number: " + filmin.InterviewResult.Rows.Count.ToString());
+            }));
         }
 
         private void AggregateResults()
         {
-            throw new NotImplementedException();
+
+            foreach (InterviewerBase i in _interviewers.Keys)
+                if (_interviewResult == null)
+                    _interviewResult = i.InterviewResult.Copy();
+                else
+                    foreach (DataRow row in i.InterviewResult.Rows)
+                        _interviewResult.ImportRow(row);                    
         }
 
         #endregion (Methods)
