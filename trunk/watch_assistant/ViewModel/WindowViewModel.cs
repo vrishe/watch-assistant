@@ -28,7 +28,7 @@ namespace watch_assistant.ViewModel
             AssociatedObject.PreviewMouseMove -= OnPreviewMouseMoveEventHandler;
         }
 
-        #endregion //Attach/Detach
+        #endregion (Attach/Detach)
 
         private static void OnPreviewMouseMoveEventHandler(object sender, MouseEventArgs e)
         {
@@ -43,13 +43,7 @@ namespace watch_assistant.ViewModel
 
         protected readonly Window _owner;
 
-        #endregion // Fields
-
-        #region Properties
-
-        //public Dictionary<string, ICommand> Commands { get; private set; }
-
-        #endregion
+        #endregion (Fields)
 
         #region Constructors
 
@@ -62,6 +56,6 @@ namespace watch_assistant.ViewModel
             this._owner.CommandBindings.Add(new CommandBinding(ApplicationCommands.Close, (s, e) => { _owner.Close(); }));
         }
 
-        #endregion // Constructors
+        #endregion (Constructors)
     }
 }

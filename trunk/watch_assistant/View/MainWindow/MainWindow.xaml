@@ -24,7 +24,7 @@
             <Border x:Name="Basement" Background="Transparent" CornerRadius="{DynamicResource DefaultCornerRadius}">
                 <StackPanel MaxHeight="40" Orientation="Horizontal" FlowDirection="LeftToRight" HorizontalAlignment="Stretch" Margin="1,1,1,1">
                     <Border Background="{DynamicResource ImageBackgroundColor}" CornerRadius="{DynamicResource DefaultCornerRadius}">
-                        <Image Width ="20" VerticalAlignment="Stretch" Margin="1,1,1,1" Source="{Binding Path=[Poster], Mode=OneWay}"/>
+                        <Image VerticalAlignment="Stretch" Margin="1,1,1,1" Source="{Binding Path=[Poster], Mode=OneWay}"/>
                     </Border>
                     <StackPanel Orientation="Vertical">
                         <Label HorizontalAlignment="Left" Margin="3,2,0,0" Content="{Binding Path=[Name], Mode=OneWay}"/>

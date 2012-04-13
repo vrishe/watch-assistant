@@ -73,6 +73,7 @@ namespace watch_assistant.ViewModel.MainWindow
                 {
                     try
                     {
+                        _interviewer.ClearInterviewResults();
                         _interviewer.ConductInterview((string)e.Parameter);
                         SearchResultTable = _interviewer.InterviewResult;
                     }

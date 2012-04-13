@@ -51,14 +51,6 @@ namespace CustomControls
 
         private Rect _restoreBounds;
 
-
-        // Using a DependencyProperty as the backing store for LayoutName.  This enables animation, styling, binding, etc...
-        public static readonly DependencyProperty LayoutNameProperty =
-            DependencyProperty.Register("LayoutName", typeof(string), typeof(CustomWindow), new UIPropertyMetadata(
-                    "Default", (s, e) => { ((CustomWindow)s).UpdateFrameStyle(e.NewValue as string); }
-                )
-            );
-
         #endregion (Fields)
 
         #region Properties
@@ -69,19 +61,26 @@ namespace CustomControls
             set { SetValue(LayoutNameProperty, value); }
         }
 
-        protected override void OnPropertyChanged(DependencyPropertyChangedEventArgs e)
-        {
-            base.OnPropertyChanged(e);
+        // Using a DependencyProperty as the backing store for LayoutName.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty LayoutNameProperty =
+            DependencyProperty.Register("LayoutName", typeof(string), typeof(CustomWindow), new UIPropertyMetadata(
+                    "Default", (s, e) => { ((CustomWindow)s).UpdateFrameStyle(e.NewValue as string); }
+                )
+            );
 
-            if (e.Property == MaxWidthProperty)
-            {
-                MaxWidth = Math.Min(SystemParameters.WorkArea.Width + 2 * SystemParameters.BorderWidth, (double)e.NewValue);
-            }
-            if (e.Property == MaxHeightProperty)
-            {
-                MaxHeight = Math.Min(SystemParameters.WorkArea.Height + 2 * SystemParameters.BorderWidth, (double)e.NewValue);
-            }
-        }
+        //protected override void OnPropertyChanged(DependencyPropertyChangedEventArgs e)
+        //{
+        //    base.OnPropertyChanged(e);
+
+        //    if (e.Property == MaxWidthProperty)
+        //    {
+        //        MaxWidth = Math.Min(SystemParameters.WorkArea.Width + 2 * SystemParameters.BorderWidth, (double)e.NewValue);
+        //    }
+        //    if (e.Property == MaxHeightProperty)
+        //    {
+        //        MaxHeight = Math.Min(SystemParameters.WorkArea.Height + 2 * SystemParameters.BorderWidth, (double)e.NewValue);
+        //    }
+        //}
 
         #endregion (Properties)
 
@@ -237,14 +236,18 @@ namespace CustomControls
 
         private void titleBarMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-            if ((sender as FrameworkElement).IsMouseDirectlyOver) DragMove();
+            if ( e.ClickCount > 1 )
+            {
+                WindowState = WindowState == WindowState.Normal ? WindowState.Maximized : WindowState.Normal;
+            }
+            else if ((sender as FrameworkElement).IsMouseDirectlyOver) DragMove();
         }
 
         private void titleBarMouseMove(object sender, MouseEventArgs e)
         {
             if ((sender as FrameworkElement).IsMouseDirectlyOver 
                 && e.LeftButton == MouseButtonState.Pressed 
-                && WindowState == System.Windows.WindowState.Maximized)
+                && WindowState == WindowState.Maximized)
             {
                 _restoreBounds = new Rect(e.GetPosition(this), _restoreBounds.Size);
                 double restoreOffsetX = _restoreBounds.X / Width;
@@ -284,7 +287,7 @@ namespace CustomControls
                     }
                 }
                 _restoreBounds.Offset(-restoreOffsetX, -restoreOffsetY);
-                WindowState = System.Windows.WindowState.Normal;
+                WindowState = WindowState.Normal;
 
                 DragMove();
             }
@@ -303,8 +306,8 @@ namespace CustomControls
             {
                 case WindowState.Maximized:
                     _restoreBounds = RestoreBounds;
-                    MaxWidth = Double.PositiveInfinity;
-                    MaxHeight = Double.PositiveInfinity;
+                    MaxWidth = 500;
+                    Height = SystemParameters.WorkArea.Height + 2 * SystemParameters.BorderWidth;
                     break;
 
                 case WindowState.Normal:
