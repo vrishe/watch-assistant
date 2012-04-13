@@ -2,13 +2,35 @@
 using System.Windows.Input;
 using System.Collections.Generic;
 using System.Data;
+using System.Windows.Data;
+using System;
 
 namespace watch_assistant.ViewModel.MainWindow
 {
+    class FormatStringConverter : IValueConverter
+    {
+        #region Implementation
+
+        public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            string val = value.ToString();
+            return parameter != null ? String.Format((string)parameter, val) : val;
+        }
+
+
+        public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            string val = value.ToString();
+            return parameter != null ? val.Replace((string)parameter, String.Empty) : val;
+        }
+
+        #endregion
+    }
+
     class MainWindowViewModel : WindowViewModel
     {
         #region Fields
-        private readonly Model.Search.InterviewAggregator _interviewer = new Model.Search.InterviewAggregator();
+        private readonly Model.Search.AOSInterviewer _interviewer = new Model.Search.AOSInterviewer();
         private readonly Dictionary<string, DataTable> _userLists = new Dictionary<string, DataTable>();
 
         #region Commands
@@ -19,15 +41,15 @@ namespace watch_assistant.ViewModel.MainWindow
 
         #region Properties
 
-        public DataTable SearchResultList
+        public DataTable SearchResultTable
         {
-            get { return (DataTable)GetValue(SearchResultListProperty); }
-            set { SetValue(SearchResultListProperty, value); }
+            get { return (DataTable)GetValue(SearchResultTableProperty); }
+            set { SetValue(SearchResultTableProperty, value); }
         }
 
         // Using a DependencyProperty as the backing store for SearchResultList.  This enables animation, styling, binding, etc...
-        public static readonly DependencyProperty SearchResultListProperty =
-            DependencyProperty.Register("SearchResultList", typeof(DataTable), typeof(MainWindowViewModel), new UIPropertyMetadata(null));
+        public static readonly DependencyProperty SearchResultTableProperty =
+            DependencyProperty.Register("SearchResultTable", typeof(DataTable), typeof(MainWindowViewModel), new UIPropertyMetadata(null));
 
         public DataTable ActiveUserList
         {
@@ -52,6 +74,7 @@ namespace watch_assistant.ViewModel.MainWindow
                     try
                     {
                         _interviewer.ConductInterview((string)e.Parameter);
+                        SearchResultTable = _interviewer.InterviewResult;
                     }
                     catch { }
                 }
