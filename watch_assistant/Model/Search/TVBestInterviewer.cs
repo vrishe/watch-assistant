@@ -13,7 +13,7 @@ namespace watch_assistant.Model.Search
         /// Fill InterviewResult DataTable with concern search results
         /// </summary>
         /// <param name="query">A string for server to find</param>
-        public override void InterviewSite(string query)
+        public override void ConductInterview(string query)
         {
             // Create table and it's schema if it hasn't been done yet 
             if (_interviewResult == null)
@@ -49,7 +49,7 @@ namespace watch_assistant.Model.Search
         /// </summary>
         /// <param name="query">A string that server used to send results</param>
         /// <param name="answerContent">An HTML based text content as a string from server responce on query</param>
-        private void GetResultsFromContent(string query, string answerContent)
+        protected override void GetResultsFromContent(string query, string answerContent)
         {
             do
             {

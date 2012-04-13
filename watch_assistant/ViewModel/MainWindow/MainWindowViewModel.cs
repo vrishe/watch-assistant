@@ -8,7 +8,7 @@ namespace watch_assistant.ViewModel.MainWindow
     class MainWindowViewModel : WindowViewModel
     {
         #region Fields
-        private readonly Model.Search.AOSInterviewer _interviewer = new Model.Search.AOSInterviewer();
+        private readonly Model.Search.InterviewAgregator _interviewer = new Model.Search.InterviewAgregator();
         private readonly Dictionary<string, DataTable> _userLists = new Dictionary<string, DataTable>();
 
         #region Commands
@@ -49,7 +49,11 @@ namespace watch_assistant.ViewModel.MainWindow
             _owner.CommandBindings.Add(new CommandBinding(
                 SearchCommand, (s, e) => 
                 {
-                    _interviewer.InterviewSite((string)e.Parameter);
+                    try
+                    {
+                        _interviewer.ConductInterview((string)e.Parameter);
+                    }
+                    catch { }
                 }
             ));
         }
