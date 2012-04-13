@@ -34,7 +34,6 @@ namespace watch_assistant.Model.Search
                 videoItem["RussianSub"] = false;
                 videoItem["Poster"] = "http://filmin.ru" + Regex.Match(answerContent, "<img src=\"([^\"]*)\"").Groups[1].ToString();
                 videoItem["Description"] = Regex.Match(answerContent, "<b>Описание:</b>([^<]*)<").Groups[1].ToString().Trim();
-                videoItem["Genre"] = "Unknown";
 
                 _interviewResult.Rows.Add(videoItem);
             }

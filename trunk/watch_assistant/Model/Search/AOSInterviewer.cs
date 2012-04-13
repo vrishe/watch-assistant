@@ -37,7 +37,7 @@ namespace watch_assistant.Model.Search
                 itemLocalMatch = Regex.Match(answerContent, "style=\"color: [^>]*>([0-9]{4})<");
                 videoItem["Year"] = Int32.Parse(itemLocalMatch.Groups[1].ToString());
 
-                AddResultRow(videoItem);
+                _interviewResult.Rows.Add(videoItem);
             }
             while (true);
         }

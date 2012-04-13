@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.Data;
 using System.Windows.Data;
 using System;
+using System.Diagnostics;
+using System.Net;
 
 namespace watch_assistant.ViewModel.MainWindow
 {
@@ -30,7 +32,7 @@ namespace watch_assistant.ViewModel.MainWindow
     class MainWindowViewModel : WindowViewModel
     {
         #region Fields
-        private readonly Model.Search.AOSInterviewer _interviewer = new Model.Search.AOSInterviewer();
+        private readonly Model.Search.InterviewAggregator _interviewer = new Model.Search.InterviewAggregator();
         private readonly Dictionary<string, DataTable> _userLists = new Dictionary<string, DataTable>();
 
         #region Commands
@@ -74,10 +76,14 @@ namespace watch_assistant.ViewModel.MainWindow
                     try
                     {
                         _interviewer.ClearInterviewResults();
-                        _interviewer.ConductInterview((string)e.Parameter);
+                        string[] tmp = new string[] { "Genshiken", (string)e.Parameter };
+                        _interviewer.ConductInterview(tmp);
                         SearchResultTable = _interviewer.InterviewResult;
                     }
-                    catch { }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show(ex.ToString());
+                    }
                 }
             ));
         }
