@@ -168,15 +168,11 @@ namespace CustomControls
                 FrameworkElement titleBar = (FrameworkElement)_frame.Template.FindName("PART_TitleBar", _frame);
                 if (titleBar != null)
                 {
-                    switch (WindowState)
+                    titleBar.MouseLeftButtonDown += titleBarMouseLeftButtonDown;
+                    if (WindowState == WindowState.Maximized)
                     {
-                        case System.Windows.WindowState.Normal:
-                            titleBar.MouseLeftButtonDown += titleBarMouseLeftButtonDown;
-                            break;
-
-                        case System.Windows.WindowState.Maximized:
-                            titleBar.MouseMove += titleBarMouseMove;
-                            break;
+                        titleBar.MouseMove += titleBarMouseMove;
+                        titleBar.MouseLeftButtonUp += titleBarMouseLeftButtonUp;
                     }
                 }
 
@@ -236,19 +232,27 @@ namespace CustomControls
 
         private void titleBarMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-            if ( e.ClickCount > 1 )
+            if (e.ClickCount > 1)
             {
                 WindowState = WindowState == WindowState.Normal ? WindowState.Maximized : WindowState.Normal;
             }
-            else if ((sender as FrameworkElement).IsMouseDirectlyOver) DragMove();
+            else
+            {
+                if (WindowState != WindowState.Maximized && (sender as FrameworkElement).IsMouseDirectlyOver) DragMove();
+            }
         }
 
         private void titleBarMouseMove(object sender, MouseEventArgs e)
         {
-            if ((sender as FrameworkElement).IsMouseDirectlyOver 
-                && e.LeftButton == MouseButtonState.Pressed 
+            if (e.LeftButton == MouseButtonState.Pressed 
                 && WindowState == WindowState.Maximized)
             {
+                if (!(sender as FrameworkElement).IsMouseDirectlyOver)
+                {
+                    (e.Source as FrameworkElement).CaptureMouse();
+                    return;
+                }
+
                 _restoreBounds = new Rect(e.GetPosition(this), _restoreBounds.Size);
                 double restoreOffsetX = _restoreBounds.X / Width;
                 double restoreOffsetY = _restoreBounds.Y / Height;
@@ -293,6 +297,11 @@ namespace CustomControls
             }
         }
 
+        private void titleBarMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            (e.OriginalSource as FrameworkElement).ReleaseMouseCapture();
+        }
+
         #endregion (Moving handlers)
 
         #region Sizing handlers
@@ -306,7 +315,7 @@ namespace CustomControls
             {
                 case WindowState.Maximized:
                     _restoreBounds = RestoreBounds;
-                    MaxWidth = 500;
+                    Width = 500;
                     Height = SystemParameters.WorkArea.Height + 2 * SystemParameters.BorderWidth;
                     break;
 
@@ -318,6 +327,7 @@ namespace CustomControls
                     Focus();
                     break;
             }
+            base.UpdateLayout();
         }
 
         private void sizingBorderMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
