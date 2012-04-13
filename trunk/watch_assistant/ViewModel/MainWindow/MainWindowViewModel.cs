@@ -8,7 +8,7 @@ namespace watch_assistant.ViewModel.MainWindow
     class MainWindowViewModel : WindowViewModel
     {
         #region Fields
-        private readonly Model.Search.InterviewAgregator _interviewer = new Model.Search.InterviewAgregator();
+        private readonly Model.Search.InterviewAggregator _interviewer = new Model.Search.InterviewAggregator();
         private readonly Dictionary<string, DataTable> _userLists = new Dictionary<string, DataTable>();
 
         #region Commands

@@ -10,7 +10,7 @@ using System.Threading;
 
 namespace watch_assistant.Model.Search
 {
-    class InterviewAgregator : IInterviewer
+    class InterviewAggregator : IInterviewer
     {
         #region Fields
 
