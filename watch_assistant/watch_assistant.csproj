@@ -74,7 +74,6 @@
     <Compile Include="ViewModel\MainWindow\MainWindowViewModel.cs" />
     <Compile Include="ViewModel\WindowViewModel.cs" />
     <Compile Include="ViewModel\ViewModelBase.cs" />
-    <Compile Include="View\WindowPage.cs" />
     <Page Include="Resources\resAOS.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
