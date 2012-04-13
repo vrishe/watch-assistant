@@ -4,6 +4,7 @@ using System.IO;
 using System.Net;
 using System.Text.RegularExpressions;
 using System.Windows;
+using System.Threading;
 
 namespace watch_assistant.Model.Search
 {
@@ -12,6 +13,7 @@ namespace watch_assistant.Model.Search
         #region Fields
 
         protected DataTable _interviewResult;
+
         private ResourceDictionary _dictionary = new ResourceDictionary();
 
         #endregion (Fields)
@@ -36,9 +38,43 @@ namespace watch_assistant.Model.Search
         /// Fill InterviewResult DataTable with concern search results
         /// </summary>
         /// <param name="query">A string for server to find</param>
-        public virtual void InterviewSite(string query)
+        public virtual void ConductInterview(string query)
         {
-            throw new NotImplementedException();
+            // Create table and it's schema if it hasn't been done yet 
+            if (_interviewResult == null)
+                FormNewResultTable();
+
+            // Do we need to interview server
+            if (String.IsNullOrEmpty(query))
+                return;
+
+            // Try to get response from AOS server
+            string answerContent = GetResponceContent(query, 1);
+            // Find out how many results are found
+            int resultsPages = GetResultsPages(ref answerContent);
+            if (resultsPages == 0)
+                return;
+
+            // Pick out every concern result
+            GetResultsFromContent(query, answerContent);
+            for (int page = 2; page <= resultsPages; page++)
+                GetResultsFromContent(query, GetResponceContent(query, page));
+        }
+
+        /// <summary>
+        /// Fill InterviewResult DataTable with concern search results
+        /// </summary>
+        /// <param name="query">Strings for server to find</param>
+        public virtual void ConductInterview(string[] query)
+        {
+            // Create table and it's schema if it hasn't been done yet 
+            if (_interviewResult == null)
+                FormNewResultTable();
+
+            foreach (string s in query)
+            {
+                ConductInterview(s);
+            }
         }
 
         /// <summary>
@@ -52,6 +88,16 @@ namespace watch_assistant.Model.Search
         #endregion (IInterviewer implementation)
 
         #region Methods
+
+        /// <summary>
+        /// Fill InterviewResult DataTable with concern results
+        /// </summary>
+        /// <param name="query">A string that server used to send results</param>
+        /// <param name="answerContent">An HTML based text content as a string from server responce on query</param>
+        protected virtual void GetResultsFromContent(string query, string answerContent)
+        {
+            throw new NotImplementedException();
+        }
 
         /// <summary>
         /// Create new InterviewResult DataTable and assign it's schema
@@ -106,7 +152,7 @@ namespace watch_assistant.Model.Search
                     GetClassType(), serverResponse.StatusCode.ToString()));
             String answerContent;
             using (Stream initStream = serverResponse.GetResponseStream())
-            using (StreamReader answerContentStream = new StreamReader(initStream, System.Text.Encoding.GetEncoding(serverResponse.CharacterSet)))
+            using (StreamReader answerContentStream = new StreamReader(initStream, System.Text.Encoding.GetEncoding(1251)))
                 answerContent = answerContentStream.ReadToEnd();
             if (answerContent.Length <= 0)
                 throw new WebException(
@@ -177,6 +223,11 @@ namespace watch_assistant.Model.Search
         protected virtual Byte[] FormPostRequestStream(string query, int page)
         {
             throw new NotImplementedException();
+        }
+
+        protected void AddResultRow(DataRow row)
+        {
+            _interviewResult.Rows.Add(row);
         }
 
         /// <summary>

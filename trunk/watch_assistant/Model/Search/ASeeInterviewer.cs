@@ -7,37 +7,6 @@ namespace watch_assistant.Model.Search
 {
     class ASeeInterviewer : InterviewerBase
     {
-        #region IInterviewer implementation
-
-        /// <summary>
-        /// Fill InterviewResult DataTable with concern search results
-        /// </summary>
-        /// <param name="query">A string for server to find</param>
-        public override void InterviewSite(string query)
-        {
-            // Create table and it's schema if it hasn't been done yet 
-            if (_interviewResult == null)
-                FormNewResultTable();
-
-            // Do we need to interview server
-            if (String.IsNullOrEmpty(query))
-                return;
-
-            // Try to get response from AOS server
-            string answerContent = GetResponceContent(query, 1);
-            // Find out how many results are found
-            int resultsPages = GetResultsPages(ref answerContent);
-            if (resultsPages == 0)
-                return;
-
-            // Pick out every concern result
-            GetResultsFromContent(query, answerContent);
-            for (int page = 2; page <= resultsPages; page++)
-                GetResultsFromContent(query, GetResponceContent(query, page));
-        }
-
-        #endregion // IInterviewer implementation
-
         #region Methods
 
         /// <summary>
@@ -45,7 +14,7 @@ namespace watch_assistant.Model.Search
         /// </summary>
         /// <param name="query">A string that server used to send results</param>
         /// <param name="answerContent">An HTML based text content as a string from server responce on query</param>
-        private void GetResultsFromContent(string query, string answerContent)
+        protected override void GetResultsFromContent(string query, string answerContent)
         {
             do
             {

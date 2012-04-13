@@ -63,6 +63,7 @@
     <Compile Include="Model\Search\AOSInterviewer.cs" />
     <Compile Include="Model\Search\IInterviewer.cs" />
     <Compile Include="Model\Search\ASeeInterviewer.cs" />
+    <Compile Include="Model\Search\InterviewAgregator.cs" />
     <Compile Include="Model\Search\InterviewerBase.cs" />
     <Compile Include="Model\Search\TVBestInterviewer.cs" />
     <Compile Include="Model\Search\FilminInterviewer.cs" />
