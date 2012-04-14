@@ -31,11 +31,7 @@
                                 </Grid.ColumnDefinitions>
 
                                 <!-- MouseMove && MouseLeftButtonDown -->
-                                <Border x:Name="PART_TitleBar"
-                                    CornerRadius="{Binding ElementName=WindowFrame, Path=CornerRadius}"
-                                    Background="{DynamicResource WindowBackgroundBrush}"
-                                    Grid.Row="1"
-                                    Grid.Column="1">
+                                <Border x:Name="PART_TitleBar" CornerRadius="{Binding ElementName=WindowFrame, Path=CornerRadius}" Background="{DynamicResource WindowBackgroundBrush}" Grid.Row="1" Grid.Column="1">
 
                                     <AdornerDecorator Grid.Row="1">
                                         <ContentPresenter />

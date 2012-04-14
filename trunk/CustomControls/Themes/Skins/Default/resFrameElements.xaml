@@ -37,7 +37,7 @@
                                             Style="{StaticResource ControlButtonStyle}" >
                             <Line Stroke="{StaticResource brushControlButtonStroke}" StrokeThickness="2" X2="8" Y1="8" Y2="8" />
                         </local:CustomButton>
-                        <local:CustomButton Command="{x:Static local:CustomWindowCommands.Maximize}"
+                        <local:CustomButton Command="{x:Static local:CustomWindowCommands.ToggleMaximizeNormal}"
                                             Style="{StaticResource ControlButtonStyle}" >
                             <Rectangle Stroke="{StaticResource brushControlButtonStroke}" StrokeThickness="1.8" Width="7" Height="7" />
                         </local:CustomButton>

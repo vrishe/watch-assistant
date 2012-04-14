@@ -7,11 +7,38 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Threading;
+using System.Runtime.InteropServices;
 
 namespace CustomControls
 {
     public class CustomWindow : Window
     {
+        #region External calls
+        [StructLayout(LayoutKind.Sequential)]
+        private struct Rect32
+        {
+            public int Left;
+            public int Top;
+            public int Right;
+            public int Bottom;
+        }
+        [DllImport("user32.dll", CallingConvention = CallingConvention.Winapi)]
+        private static extern IntPtr MonitorFromRect(ref Rect32 wndRect, uint flags);
+
+        private struct MonitorInfoEx
+        {
+            public int cbSize;
+            public Rect32 rcMonitor;
+            public Rect32 rcWork;
+            public uint dwFlags;           
+            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 0x20)]
+            public string szDevice;
+        }
+        [DllImport("user32.dll", EntryPoint="GetMonitorInfo", SetLastError=true, CallingConvention = CallingConvention.Winapi)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        private static extern bool GetMonitorInfo(IntPtr hMonitor, ref MonitorInfoEx monitorInfo);
+        #endregion (External calls)
+
         private delegate void ResizeProcedure(Window owner, Point mousePosition, Point mouseOffset);
         private delegate Point AnchorProcedure(Window owner, Point mousePosition);
 
@@ -50,6 +77,7 @@ namespace CustomControls
         private ResizeAnchor _resizeAnchor;
 
         private Rect _restoreBounds;
+        private Size _restoreMaxBounds;
 
         #endregion (Fields)
 
@@ -68,20 +96,6 @@ namespace CustomControls
                 )
             );
 
-        //protected override void OnPropertyChanged(DependencyPropertyChangedEventArgs e)
-        //{
-        //    base.OnPropertyChanged(e);
-
-        //    if (e.Property == MaxWidthProperty)
-        //    {
-        //        MaxWidth = Math.Min(SystemParameters.WorkArea.Width + 2 * SystemParameters.BorderWidth, (double)e.NewValue);
-        //    }
-        //    if (e.Property == MaxHeightProperty)
-        //    {
-        //        MaxHeight = Math.Min(SystemParameters.WorkArea.Height + 2 * SystemParameters.BorderWidth, (double)e.NewValue);
-        //    }
-        //}
-
         #endregion (Properties)
 
         #region Methods
@@ -92,11 +106,27 @@ namespace CustomControls
             {
                 WindowState = WindowState.Minimized;
             } 
-            else if (e.Command == CustomWindowCommands.Maximize)
+            else if (e.Command == CustomWindowCommands.ToggleMaximizeNormal)
             {
-                WindowState = 
-                    WindowState == WindowState.Maximized ? 
-                        WindowState.Normal : WindowState.Maximized;
+                //WindowState = 
+                //    WindowState == WindowState.Maximized ? 
+                //        WindowState.Normal : WindowState.Maximized;
+                switch (WindowState)
+                {
+                    case WindowState.Normal:
+                        Size maximizedBounds = GetMaximizedWindowWorkArea(this);
+                        _restoreMaxBounds = new Size(MaxWidth, MaxHeight);
+                        MaxWidth = maximizedBounds.Width;
+                        MaxHeight = maximizedBounds.Height;
+                        WindowState = WindowState.Maximized;
+                        break;
+
+                    case WindowState.Maximized:
+                        MaxWidth = _restoreMaxBounds.Width;
+                        MaxHeight = _restoreMaxBounds.Height;
+                        WindowState = WindowState.Normal;
+                        break;
+                }
             }
             else if (e.Command == ApplicationCommands.Close)
             {
@@ -111,7 +141,7 @@ namespace CustomControls
             base.OnApplyTemplate();
 
             CommandBindings.Add(new CommandBinding(CustomWindowCommands.Minimize, OnFrameCommand));
-            CommandBindings.Add(new CommandBinding(CustomWindowCommands.Maximize, OnFrameCommand));
+            CommandBindings.Add(new CommandBinding(CustomWindowCommands.ToggleMaximizeNormal, OnFrameCommand));
             CommandBindings.Add(new CommandBinding(ApplicationCommands.Close, OnFrameCommand));
 
             _frame = (Control)Template.FindName("PART_CustomFrame", this);
@@ -306,17 +336,26 @@ namespace CustomControls
 
         #region Sizing handlers
 
+        private static Size GetMaximizedWindowWorkArea(Window window)
+        {
+            Rect32 rect = new Rect32();
+            rect.Left = (int)window.Left;
+            rect.Top = (int)window.Top;
+            rect.Right = (int)(window.Left + window.ActualWidth);
+            rect.Bottom = (int)(window.Top + window.ActualHeight);
+            IntPtr monitor = MonitorFromRect(ref rect, 0x00000002);
+            MonitorInfoEx monInfo = new MonitorInfoEx(); monInfo.cbSize = 104;
+            if (GetMonitorInfo(monitor, ref monInfo)) 
+                return new Size(monInfo.rcWork.Right - monInfo.rcWork.Left, monInfo.rcWork.Bottom - monInfo.rcWork.Top);
+            return new Size(SystemParameters.WorkArea.Width, SystemParameters.WorkArea.Height);
+        }
+
         protected override void OnStateChanged(EventArgs e)
         {
-            base.OnStateChanged(e);
-            UpdateFrameStyle(LayoutName);
-
             switch (WindowState)
             {
                 case WindowState.Maximized:
                     _restoreBounds = RestoreBounds;
-                    Width = 500;
-                    Height = SystemParameters.WorkArea.Height + 2 * SystemParameters.BorderWidth;
                     break;
 
                 case WindowState.Normal:
@@ -324,10 +363,10 @@ namespace CustomControls
                     Left = _restoreBounds.Left;
                     Width = _restoreBounds.Width;
                     Height = _restoreBounds.Height;
-                    Focus();
                     break;
             }
-            base.UpdateLayout();
+            UpdateFrameStyle(LayoutName);
+            base.OnStateChanged(e);
         }
 
         private void sizingBorderMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
@@ -517,12 +556,6 @@ namespace CustomControls
         static CustomWindow()
         {
             DefaultStyleKeyProperty.OverrideMetadata(typeof(CustomWindow), new FrameworkPropertyMetadata(typeof(CustomWindow)));
-        }
-
-        public CustomWindow()
-        {
-            MaxWidth = Double.PositiveInfinity;
-            MaxHeight = Double.PositiveInfinity;
         }
 
         #endregion (Constructors)
