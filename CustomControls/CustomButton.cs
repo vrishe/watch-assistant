@@ -5,7 +5,6 @@ using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using System.Windows.Media;
 
-
 namespace CustomControls
 {
     public class BrightnessToColorConverter : IValueConverter

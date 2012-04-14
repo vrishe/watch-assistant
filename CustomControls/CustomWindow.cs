@@ -280,12 +280,10 @@ namespace CustomControls
                 //    }
                 //}
                 //_restoreBounds.Offset(-restoreOffsetX, -restoreOffsetY);
-                //SystemParameters2.Current
+                
 
-                IntPtr handle = (new System.Windows.Interop.WindowInteropHelper(this as Window)).Handle;
-                int SW_RESTORE = 9;
-                ShowWindow(handle, SW_RESTORE);
-                //WindowState = WindowState.Normal;
+
+                WindowState = WindowState.Normal;
 
                 DragMove();
             }
@@ -302,7 +300,7 @@ namespace CustomControls
 
         #region WinAPI interop
 
-        internal struct POINT
+        private struct POINT
         {
             public int x;
             public int y;
@@ -314,8 +312,7 @@ namespace CustomControls
             }
         }
 
-        [StructLayout(LayoutKind.Sequential)]
-        internal struct MINMAXINFO
+        private struct MINMAXINFO
         {
             public POINT ptReserved;
             public POINT ptMaxSize;
@@ -400,8 +397,6 @@ namespace CustomControls
         internal static extern bool GetMonitorInfo(IntPtr hMonitor, MONITORINFO lpmi);
         [DllImport("User32")]
         internal static extern IntPtr MonitorFromWindow(IntPtr handle, uint flags);
-        [DllImport("User32")]
-        internal static extern int ShowWindow(IntPtr handle, int nCmdShow);
 
         private static IntPtr WindowProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
         {
