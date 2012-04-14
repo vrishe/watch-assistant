@@ -1,4 +1,5 @@
 ﻿using System.Windows.Input;
+
 namespace CustomControls
 {
     public static class CustomWindowCommands
