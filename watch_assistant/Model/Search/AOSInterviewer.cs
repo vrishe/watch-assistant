@@ -24,18 +24,35 @@ namespace watch_assistant.Model.Search
                 answerContent = answerContent.Substring(videoItemRef.Index + videoItemRef.Length);
 
                 DataRow videoItem = _interviewResult.NewRow();
-                videoItem["Name"] = Regex.Match(answerContent, @"<b>(.*)</b>").Groups[1];
+                videoItem["Name"] = Regex.Match(answerContent, @"<b>(.*)</b>").Groups[1].ToString();
                 if (!((String)videoItem["Name"]).ToLower().Contains(query.ToLower())) continue;
                 // If category is not Video then go to the next search result
-                Match itemLocalMatch = Regex.Match(answerContent, @"\sКатегория:\s[^A-ZА-Я]*([^<]*)<");
-                if (!itemLocalMatch.Groups[1].ToString().Contains("Аниме")) continue;
-                videoItem["HRef"] = videoItemRef.Groups[1];
+                Match category = Regex.Match(answerContent, @"\sКатегория:\s[^A-ZА-Я]*([^<]*)<");
+                if (!category.Groups[1].ToString().Contains("Аниме")) continue;
+                videoItem["HRef"] = videoItemRef.Groups[1].ToString();
                 videoItem["RussianAudio"] = (((String)videoItem["Name"]).Contains("(RUS)") ? true : false);
                 videoItem["RussianSub"] = (((String)videoItem["Name"]).Contains("(SUB)") ? true : false);
-                videoItem["Poster"] = Regex.Match(answerContent, "<div class='img_'><a href=\"([^\"]*)\"").Groups[1];
-                videoItem["Genre"] = Regex.Match(answerContent, "Жанр: ([^<]*)").Groups[1];
-                itemLocalMatch = Regex.Match(answerContent, "style=\"color: [^>]*>([0-9]{4})<");
-                videoItem["Year"] = Int32.Parse(itemLocalMatch.Groups[1].ToString());
+                videoItem["Poster"] = Regex.Match(answerContent, "<div class='img_'><a href=\"([^\"]*)\"").Groups[1].ToString();
+                
+                Match genre = Regex.Match(answerContent, @"Жанр:(?:\s)?(?:<[^>]*>)?([\sа-яА-Я]+[^<]*)");
+                if (String.IsNullOrEmpty(genre.Groups[1].ToString()) || genre.Index > category.Index)
+                {
+                    Match first = Regex.Match(answerContent, @"Жанр:(?:\s?)</strong>[^<]*<a href=[^>]*>([^<]*)</a>");
+                    Match end = Regex.Match(answerContent, @"<a href=[^>]*>([^<]*)</a> <br />");
+                    videoItem["Genre"] = first.Groups[1].ToString().Trim();
+
+                    Regex currentPattern = new Regex("<a href=[^>]*>([^<]*)</a>");
+                    Match current = currentPattern.Match(answerContent, first.Index + first.Length);
+                    for (; current.Groups[1].ToString() != end.Groups[1].ToString();
+                        current.NextMatch())
+                        videoItem["Genre"] = videoItem["Genre"].ToString() + ", " + current.Groups[1].ToString();
+                    videoItem["Genre"] = videoItem["Genre"].ToString() + ", " + end.Groups[1].ToString().Trim();
+                }
+                else
+                    videoItem["Genre"] = genre.Groups[1].ToString().Trim();
+
+                Match year = Regex.Match(answerContent, "style=\"color: [^>]*>([0-9]{4})<");
+                videoItem["Year"] = Int32.Parse(year.Groups[1].ToString());
 
                 _interviewResult.Rows.Add(videoItem);
             }
