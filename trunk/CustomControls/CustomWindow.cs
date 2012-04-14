@@ -4,40 +4,38 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Threading;
-using System.Runtime.InteropServices;
 
 namespace CustomControls
 {
     public class CustomWindow : Window
     {
-        #region External calls
-        [StructLayout(LayoutKind.Sequential)]
-        private struct Rect32
-        {
-            public int Left;
-            public int Top;
-            public int Right;
-            public int Bottom;
-        }
-        [DllImport("user32.dll", CallingConvention = CallingConvention.Winapi)]
-        private static extern IntPtr MonitorFromRect(ref Rect32 wndRect, uint flags);
+        //#region External calls
+        //[StructLayout(LayoutKind.Explicit, Size=16)]
+        //private struct Rect32
+        //{
+        //    [FieldOffset(0)]    public int Left;
+        //    [FieldOffset(4)]    public int Top;
+        //    [FieldOffset(8)]    public int Right;
+        //    [FieldOffset(12)]   public int Bottom;
+        //}
+        //[DllImport("user32.dll", EntryPoint = "MonitorFromRect", SetLastError = true, CallingConvention = CallingConvention.Winapi)]
+        //private static extern IntPtr MonitorFromRect([MarshalAs(UnmanagedType.LPStruct)]Rect32 wndRect, uint flags);
 
-        private struct MonitorInfoEx
-        {
-            public int cbSize;
-            public Rect32 rcMonitor;
-            public Rect32 rcWork;
-            public uint dwFlags;           
-            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 0x20)]
-            public string szDevice;
-        }
-        [DllImport("user32.dll", EntryPoint="GetMonitorInfo", SetLastError=true, CallingConvention = CallingConvention.Winapi)]
-        [return: MarshalAs(UnmanagedType.Bool)]
-        private static extern bool GetMonitorInfo(IntPtr hMonitor, ref MonitorInfoEx monitorInfo);
-        #endregion (External calls)
+        //private struct MonitorInfoEx
+        //{
+        //    public int cbSize;
+        //    public Rect32 rcMonitor;
+        //    public Rect32 rcWork;
+        //    public uint dwFlags;           
+        //    [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 0x20)]
+        //    public string szDevice;
+        //}
+        //[DllImport("user32.dll", EntryPoint="GetMonitorInfo", SetLastError=true, CallingConvention = CallingConvention.Winapi)]
+        //[return: MarshalAs(UnmanagedType.Bool)]
+        //private static extern bool GetMonitorInfo(IntPtr hMonitor, ref MonitorInfoEx monitorInfo);
+        //#endregion (External calls)
 
         private delegate void ResizeProcedure(Window owner, Point mousePosition, Point mouseOffset);
         private delegate Point AnchorProcedure(Window owner, Point mousePosition);
@@ -108,16 +106,16 @@ namespace CustomControls
             } 
             else if (e.Command == CustomWindowCommands.ToggleMaximizeNormal)
             {
-                //WindowState = 
-                //    WindowState == WindowState.Maximized ? 
-                //        WindowState.Normal : WindowState.Maximized;
                 switch (WindowState)
                 {
                     case WindowState.Normal:
-                        Size maximizedBounds = GetMaximizedWindowWorkArea(this);
                         _restoreMaxBounds = new Size(MaxWidth, MaxHeight);
-                        MaxWidth = maximizedBounds.Width;
-                        MaxHeight = maximizedBounds.Height;
+                        System.Drawing.Rectangle wndRect = new System.Drawing.Rectangle((int)Top, (int)Left, (int)Width, (int)Height);
+                        System.Drawing.Rectangle wrkRect = System.Windows.Forms.Screen.GetWorkingArea(wndRect);
+                        wrkRect.Inflate((int)SystemParameters.BorderWidth, (int)SystemParameters.BorderWidth);
+                        wrkRect.Offset((int)SystemParameters.BorderWidth, (int)SystemParameters.BorderWidth);
+                        MaxWidth = wrkRect.Width;
+                        MaxHeight = wrkRect.Height;
                         WindowState = WindowState.Maximized;
                         break;
 
@@ -335,20 +333,6 @@ namespace CustomControls
         #endregion (Moving handlers)
 
         #region Sizing handlers
-
-        private static Size GetMaximizedWindowWorkArea(Window window)
-        {
-            Rect32 rect = new Rect32();
-            rect.Left = (int)window.Left;
-            rect.Top = (int)window.Top;
-            rect.Right = (int)(window.Left + window.ActualWidth);
-            rect.Bottom = (int)(window.Top + window.ActualHeight);
-            IntPtr monitor = MonitorFromRect(ref rect, 0x00000002);
-            MonitorInfoEx monInfo = new MonitorInfoEx(); monInfo.cbSize = 104;
-            if (GetMonitorInfo(monitor, ref monInfo)) 
-                return new Size(monInfo.rcWork.Right - monInfo.rcWork.Left, monInfo.rcWork.Bottom - monInfo.rcWork.Top);
-            return new Size(SystemParameters.WorkArea.Width, SystemParameters.WorkArea.Height);
-        }
 
         protected override void OnStateChanged(EventArgs e)
         {
