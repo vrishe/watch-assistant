@@ -6,7 +6,7 @@
 
     <Style x:Key="ResizePathSegmentStyle" TargetType="{x:Type Path}" >
         <Setter Property="StrokeThickness" Value="10" />
-        <Setter Property="Fill" Value="{x:Null}" />
+        <!--<Setter Property="Fill" Value="{x:Null}" />-->
         <Setter Property="Stroke" Value="Transparent" />
         <Setter Property="Stretch" Value="Fill" />
     </Style>

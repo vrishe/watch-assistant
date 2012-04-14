@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
@@ -11,32 +12,6 @@ namespace CustomControls
 {
     public class CustomWindow : Window
     {
-        //#region External calls
-        //[StructLayout(LayoutKind.Explicit, Size=16)]
-        //private struct Rect32
-        //{
-        //    [FieldOffset(0)]    public int Left;
-        //    [FieldOffset(4)]    public int Top;
-        //    [FieldOffset(8)]    public int Right;
-        //    [FieldOffset(12)]   public int Bottom;
-        //}
-        //[DllImport("user32.dll", EntryPoint = "MonitorFromRect", SetLastError = true, CallingConvention = CallingConvention.Winapi)]
-        //private static extern IntPtr MonitorFromRect([MarshalAs(UnmanagedType.LPStruct)]Rect32 wndRect, uint flags);
-
-        //private struct MonitorInfoEx
-        //{
-        //    public int cbSize;
-        //    public Rect32 rcMonitor;
-        //    public Rect32 rcWork;
-        //    public uint dwFlags;           
-        //    [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 0x20)]
-        //    public string szDevice;
-        //}
-        //[DllImport("user32.dll", EntryPoint="GetMonitorInfo", SetLastError=true, CallingConvention = CallingConvention.Winapi)]
-        //[return: MarshalAs(UnmanagedType.Bool)]
-        //private static extern bool GetMonitorInfo(IntPtr hMonitor, ref MonitorInfoEx monitorInfo);
-        //#endregion (External calls)
-
         private delegate void ResizeProcedure(Window owner, Point mousePosition, Point mouseOffset);
         private delegate Point AnchorProcedure(Window owner, Point mousePosition);
 
@@ -75,7 +50,6 @@ namespace CustomControls
         private ResizeAnchor _resizeAnchor;
 
         private Rect _restoreBounds;
-        private Size _restoreMaxBounds;
 
         #endregion (Fields)
 
@@ -102,34 +76,21 @@ namespace CustomControls
         {
             if (e.Command == CustomWindowCommands.Minimize)
             {
-                WindowState = WindowState.Minimized;
+                WindowState = WindowState.Minimized;              
             } 
             else if (e.Command == CustomWindowCommands.ToggleMaximizeNormal)
             {
-                switch (WindowState)
-                {
-                    case WindowState.Normal:
-                        _restoreMaxBounds = new Size(MaxWidth, MaxHeight);
-                        System.Drawing.Rectangle wndRect = new System.Drawing.Rectangle((int)Top, (int)Left, (int)Width, (int)Height);
-                        System.Drawing.Rectangle wrkRect = System.Windows.Forms.Screen.GetWorkingArea(wndRect);
-                        wrkRect.Inflate((int)SystemParameters.BorderWidth, (int)SystemParameters.BorderWidth);
-                        wrkRect.Offset((int)SystemParameters.BorderWidth, (int)SystemParameters.BorderWidth);
-                        MaxWidth = wrkRect.Width;
-                        MaxHeight = wrkRect.Height;
-                        WindowState = WindowState.Maximized;
-                        break;
-
-                    case WindowState.Maximized:
-                        MaxWidth = _restoreMaxBounds.Width;
-                        MaxHeight = _restoreMaxBounds.Height;
-                        WindowState = WindowState.Normal;
-                        break;
-                }
+                WindowState = WindowState == WindowState.Normal ? WindowState.Maximized : WindowState.Normal;
             }
             else if (e.Command == ApplicationCommands.Close)
             {
                 this.Close();
             }
+        }
+        protected override void OnStateChanged(EventArgs e)
+        {
+            UpdateFrameStyle(LayoutName);
+            base.OnStateChanged(e);
         }
 
         #region Frame styling
@@ -225,7 +186,7 @@ namespace CustomControls
             });
         }
 
-        #region Utility
+        #region Resizer utility
 
         private FrameworkElement GetResizeBorder(string borderSegmentID)
         {
@@ -250,11 +211,11 @@ namespace CustomControls
             }
         }
 
-        #endregion (Utility)
+        #endregion (Resizer utility)
 
         #endregion (Frame styling)
 
-        #region Behaviors 
+        #region Behaviors
 
         #region Moving handlers
 
@@ -281,45 +242,50 @@ namespace CustomControls
                     return;
                 }
 
-                _restoreBounds = new Rect(e.GetPosition(this), _restoreBounds.Size);
-                double restoreOffsetX = _restoreBounds.X / Width;
-                double restoreOffsetY = _restoreBounds.Y / Height;
+                //_restoreBounds = new Rect(e.GetPosition(this), _restoreBounds.Size);
+                //double restoreOffsetX = _restoreBounds.X / Width;
+                //double restoreOffsetY = _restoreBounds.Y / Height;
 
-                if (restoreOffsetX >= .45 && restoreOffsetX <= .55)
-                {
-                    restoreOffsetX = _restoreBounds.Width * .5;
-                }
-                else
-                {
-                    double tempOffsetX = _restoreBounds.X;
-                    if (restoreOffsetX < .45)
-                    {
-                        restoreOffsetX = Math.Min(_restoreBounds.Width * .5, tempOffsetX);
-                    }
-                    else
-                    {
-                        restoreOffsetX = Math.Max(_restoreBounds.Width * .5, _restoreBounds.Width - ActualWidth + tempOffsetX);
-                    }
-                }
+                //if (restoreOffsetX >= .45 && restoreOffsetX <= .55)
+                //{
+                //    restoreOffsetX = _restoreBounds.Width * .5;
+                //}
+                //else
+                //{
+                //    double tempOffsetX = _restoreBounds.X;
+                //    if (restoreOffsetX < .45)
+                //    {
+                //        restoreOffsetX = Math.Min(_restoreBounds.Width * .5, tempOffsetX);
+                //    }
+                //    else
+                //    {
+                //        restoreOffsetX = Math.Max(_restoreBounds.Width * .5, _restoreBounds.Width - ActualWidth + tempOffsetX);
+                //    }
+                //}
 
-                if (restoreOffsetY >= .45 && restoreOffsetY <= .55)
-                {
-                    restoreOffsetY = _restoreBounds.Height * .5;
-                }
-                else
-                {
-                    double tempOffsetY = _restoreBounds.Y;
-                    if (restoreOffsetY < .45)
-                    {
-                        restoreOffsetY = Math.Min(_restoreBounds.Height * .5, tempOffsetY);
-                    }
-                    else
-                    {
-                        restoreOffsetY = Math.Max(_restoreBounds.Height * .5, _restoreBounds.Height - ActualHeight + tempOffsetY);
-                    }
-                }
-                _restoreBounds.Offset(-restoreOffsetX, -restoreOffsetY);
-                WindowState = WindowState.Normal;
+                //if (restoreOffsetY >= .45 && restoreOffsetY <= .55)
+                //{
+                //    restoreOffsetY = _restoreBounds.Height * .5;
+                //}
+                //else
+                //{
+                //    double tempOffsetY = _restoreBounds.Y;
+                //    if (restoreOffsetY < .45)
+                //    {
+                //        restoreOffsetY = Math.Min(_restoreBounds.Height * .5, tempOffsetY);
+                //    }
+                //    else
+                //    {
+                //        restoreOffsetY = Math.Max(_restoreBounds.Height * .5, _restoreBounds.Height - ActualHeight + tempOffsetY);
+                //    }
+                //}
+                //_restoreBounds.Offset(-restoreOffsetX, -restoreOffsetY);
+                //SystemParameters2.Current
+
+                IntPtr handle = (new System.Windows.Interop.WindowInteropHelper(this as Window)).Handle;
+                int SW_RESTORE = 9;
+                ShowWindow(handle, SW_RESTORE);
+                //WindowState = WindowState.Normal;
 
                 DragMove();
             }
@@ -334,24 +300,146 @@ namespace CustomControls
 
         #region Sizing handlers
 
-        protected override void OnStateChanged(EventArgs e)
-        {
-            switch (WindowState)
-            {
-                case WindowState.Maximized:
-                    _restoreBounds = RestoreBounds;
-                    break;
+        #region WinAPI interop
 
-                case WindowState.Normal:
-                    Top = _restoreBounds.Top;
-                    Left = _restoreBounds.Left;
-                    Width = _restoreBounds.Width;
-                    Height = _restoreBounds.Height;
+        internal struct POINT
+        {
+            public int x;
+            public int y;
+
+            public POINT(int x, int y)
+            {
+                this.x = x;
+                this.y = y;
+            }
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        internal struct MINMAXINFO
+        {
+            public POINT ptReserved;
+            public POINT ptMaxSize;
+            public POINT ptMaxPosition;
+            public POINT ptMinTrackSize;
+            public POINT ptMaxTrackSize;
+        };
+
+        [StructLayout(LayoutKind.Sequential)]
+        internal class MONITORINFO
+        {       
+            public int cbSize = Marshal.SizeOf(typeof(MONITORINFO));         
+            public RECT rcMonitor = new RECT();         
+            public RECT rcWork = new RECT();         
+            public int dwFlags = 0;
+        }
+
+        internal struct RECT
+        {
+            public int left;
+            public int top;
+            public int right;
+            public int bottom;
+
+            public static readonly RECT Empty = new RECT();
+
+            public int Width
+            {
+                get { return Math.Abs(right - left); }
+            }
+            public int Height
+            {
+                get { return bottom - top; }
+            }
+            public RECT(int left, int top, int right, int bottom)
+            {
+                this.left = left;
+                this.top = top;
+                this.right = right;
+                this.bottom = bottom;
+            }
+            public RECT(RECT rcSrc)
+            {
+                this.left = rcSrc.left;
+                this.top = rcSrc.top;
+                this.right = rcSrc.right;
+                this.bottom = rcSrc.bottom;
+            }
+            public bool IsEmpty
+            {
+                get
+                {
+                    // BUGBUG : On Bidi OS (hebrew arabic) left > right
+                    return left >= right || top >= bottom;
+                }
+            }
+            public override string ToString()
+            {
+                if (this == RECT.Empty) { return "RECT {Empty}"; }
+                return "RECT { left : " + left + " / top : " + top + " / right : " + right + " / bottom : " + bottom + " }";
+            }
+            public override bool Equals(object obj)
+            {
+                if (!(obj is Rect)) { return false; }
+                return (this == (RECT)obj);
+            }
+            public override int GetHashCode()
+            {
+                return left.GetHashCode() + top.GetHashCode() + right.GetHashCode() + bottom.GetHashCode();
+            }
+            public static bool operator ==(RECT rect1, RECT rect2)
+            {
+                return (rect1.left == rect2.left && rect1.top == rect2.top && rect1.right == rect2.right && rect1.bottom == rect2.bottom);
+            }
+            public static bool operator !=(RECT rect1, RECT rect2)
+            {
+                return !(rect1 == rect2);
+            }
+        }
+
+        [DllImport("user32")]
+        internal static extern bool GetMonitorInfo(IntPtr hMonitor, MONITORINFO lpmi);
+        [DllImport("User32")]
+        internal static extern IntPtr MonitorFromWindow(IntPtr handle, uint flags);
+        [DllImport("User32")]
+        internal static extern int ShowWindow(IntPtr handle, int nCmdShow);
+
+        private static IntPtr WindowProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
+        {
+            switch (msg)
+            {
+                case 0x0024:/* WM_GETMINMAXINFO */
+                    WmGetMinMaxInfo(hwnd, lParam);
+                    handled = true;
                     break;
             }
-            UpdateFrameStyle(LayoutName);
-            base.OnStateChanged(e);
+
+            return (IntPtr)0;
         }
+
+        private static void WmGetMinMaxInfo(IntPtr hwnd, IntPtr lParam)
+        {
+            MINMAXINFO mmi = (MINMAXINFO)Marshal.PtrToStructure(lParam, typeof(MINMAXINFO));
+
+            // Adjust the maximized size and position to fit the work area of the correct monitor
+            uint MONITOR_DEFAULTTONEAREST = 0x00000002;
+            IntPtr monitor = MonitorFromWindow(hwnd, MONITOR_DEFAULTTONEAREST);
+
+            if (monitor != IntPtr.Zero)
+            {
+                MONITORINFO monitorInfo = new MONITORINFO();
+                GetMonitorInfo(monitor, monitorInfo);
+                RECT rcWorkArea = monitorInfo.rcWork;
+                RECT rcMonitorArea = monitorInfo.rcMonitor;
+                mmi.ptMaxPosition.x = Math.Abs(rcWorkArea.left - rcMonitorArea.left);
+                mmi.ptMaxPosition.y = Math.Abs(rcWorkArea.top - rcMonitorArea.top);
+                mmi.ptMaxSize.x = Math.Abs(rcWorkArea.right - rcWorkArea.left);
+                mmi.ptMaxSize.y = Math.Abs(rcWorkArea.bottom - rcWorkArea.top);
+            }
+
+            Marshal.StructureToPtr(mmi, lParam, true);
+        }
+
+        #endregion (WinAPI interop)
 
         private void sizingBorderMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
@@ -540,6 +628,15 @@ namespace CustomControls
         static CustomWindow()
         {
             DefaultStyleKeyProperty.OverrideMetadata(typeof(CustomWindow), new FrameworkPropertyMetadata(typeof(CustomWindow)));
+        }
+
+        public CustomWindow()
+        {
+            Loaded += (s, e) =>
+            {
+                IntPtr handle = (new System.Windows.Interop.WindowInteropHelper(this as Window)).Handle;
+                System.Windows.Interop.HwndSource.FromHwnd(handle).AddHook(new System.Windows.Interop.HwndSourceHook(WindowProc));
+            };
         }
 
         #endregion (Constructors)

@@ -10,11 +10,9 @@
 
     <GridLengthConverter x:Key="GridLengthConverter"/>
     <Style TargetType="{x:Type ContentControl}" x:Key="FrameLayout" >
-
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type ContentControl}">
-                    <!-- SizeChanged -->
                     <Grid x:Name="WindowRoot">
                         <Border x:Name="WindowFrame" Style="{DynamicResource WindowFrameBorder}">
                             <Grid>
@@ -30,7 +28,6 @@
                                     <ColumnDefinition Width="{Binding Source={x:Static SystemParameters.BorderWidth}}"/>
                                 </Grid.ColumnDefinitions>
 
-                                <!-- MouseMove && MouseLeftButtonDown -->
                                 <Border x:Name="PART_TitleBar" CornerRadius="{Binding ElementName=WindowFrame, Path=CornerRadius}" Background="{DynamicResource WindowBackgroundBrush}" Grid.Row="1" Grid.Column="1">
 
                                     <AdornerDecorator Grid.Row="1">
