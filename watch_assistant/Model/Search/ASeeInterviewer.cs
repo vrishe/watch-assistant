@@ -24,16 +24,17 @@ namespace watch_assistant.Model.Search
                 answerContent = answerContent.Substring(videoItemRef.Index + videoItemRef.Length);
 
                 DataRow videoItem = _interviewResult.NewRow();
-                // If category is not Video then go to the next search result
                 Match itemLocalMatch = Regex.Match(answerContent, @">(.*)</a></h2>");
-                videoItem["Name"] = itemLocalMatch.Groups[1];
+                videoItem["Name"] = itemLocalMatch.Groups[1].ToString();
                 if (!((String)videoItem["Name"]).ToLower().Contains(query.ToLower())) continue;
+                // If category is not Video then go to the next search result
                 if (!((String)videoItem["Name"]).Contains("Онлайн: ")) continue;
-                videoItem["HRef"] = videoItemRef.Groups[1];
+                else videoItem["Name"] = ((string)videoItem["Name"]).Substring(8);
+                videoItem["HRef"] = videoItemRef.Groups[1].ToString();
                 videoItem["RussianAudio"] = (((String)videoItem["Name"]).Contains("(RUS)") ? true : false);
                 videoItem["RussianSub"] = (((String)videoItem["Name"]).Contains("(SUB)") ? true : false);
-                videoItem["Poster"] = Regex.Match(answerContent, "<!--TBegin--><a href=\"([^\"]*)\"").Groups[1];
-                videoItem["Genre"] = Regex.Match(answerContent, @"<b>Жанр:\s*</b>\s*([^<]*)").Groups[1];
+                videoItem["Poster"] = Regex.Match(answerContent, "<!--TBegin--><a href=\"([^\"]*)\"").Groups[1].ToString();
+                videoItem["Genre"] = Regex.Match(answerContent, @"<b>Жанр:\s*</b>\s*([^<]*)").Groups[1].ToString();
                 videoItem["Year"] = Int32.Parse(Regex.Match(answerContent, "<!--/colorstart-->[^0-9]*([0-9]{4})[^0-9]*<!--colorend-->").Groups[1].ToString());
 
                 _interviewResult.Rows.Add(videoItem);
