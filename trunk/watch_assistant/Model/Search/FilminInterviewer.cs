@@ -26,7 +26,7 @@ namespace watch_assistant.Model.Search
                 if (!videoItemRef.Groups[2].ToString().ToLower().Contains(query.ToLower())) continue;
 
                 DataRow videoItem = _interviewResult.NewRow();
-                videoItem["HRef"] = videoItemRef.Groups[1];
+                videoItem["HRef"] = new string[] { videoItemRef.Groups[1].ToString() };
                 Match tmp = Regex.Match(videoItemRef.Groups[2].ToString(), @"(.*)\((([0-9]{4})\))\Z");
                 videoItem["Name"] = tmp.Groups[1].ToString().Trim();
                 videoItem["Year"] = Int32.Parse(tmp.Groups[3].ToString());
