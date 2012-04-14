@@ -23,26 +23,5 @@ namespace watch_assistant.View.MainWindow
             DetailsWindow.DetailsWindow tempPreview = new DetailsWindow.DetailsWindow();
             tempPreview.ShowDialog();
         }
-
-        // Delete this when AOSInterviewer is seted up
-        Model.Search.ASeeInterviewer testSpamer = new Model.Search.ASeeInterviewer();
-        private void bSearch_Click(object sender, RoutedEventArgs e)
-        {
-            //testSpamer.ClearInterviewResults();
-            //try
-            //{
-            //    testSpamer.InterviewSite(tbSearch.Text);
-            //}
-            //catch (Exception ex)
-            //{
-            //    MessageBox.Show(ex.Message);
-            //}   
-
-            //searchView.Items.Clear();
-            //foreach (DataRow tmp in testSpamer.InterviewResult.Rows) 
-            //{
-            //    searchView.Items.Add(tmp.ItemArray[0].ToString());
-            //}
-        }
     }
 }

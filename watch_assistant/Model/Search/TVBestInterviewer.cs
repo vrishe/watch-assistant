@@ -61,15 +61,15 @@ namespace watch_assistant.Model.Search
                 if (!videoItemRef.Groups[2].ToString().ToLower().Contains(query.ToLower())) continue;
 
                 DataRow videoItem = _interviewResult.NewRow();
-                videoItem["HRef"] = videoItemRef.Groups[1];
+                videoItem["HRef"] = new string[] { videoItemRef.Groups[1].ToString() };
                 Match tmp = Regex.Match(videoItemRef.Groups[2].ToString(), @"(.*)\((([0-9]{4})\))\Z");
                 videoItem["Name"] = tmp.Groups[1].ToString().Trim();
                 videoItem["Year"] = Int32.Parse(tmp.Groups[3].ToString());
                 videoItem["RussianAudio"] = true;
                 videoItem["RussianSub"] = false;
                 tmp = Regex.Match(answerContent, "<!--TBegin--><a href=\"([^\"]*).*<!--TEnd-->(.*)</div>");
-                videoItem["Poster"] = tmp.Groups[1];
-                videoItem["Description"] = tmp.Groups[2];
+                videoItem["Poster"] = tmp.Groups[1].ToString();
+                videoItem["Description"] = tmp.Groups[2].ToString();
                 answerContent = answerContent.Substring(videoItemRef.Index + videoItemRef.Length);
 
                 Match current = Regex.Match(answerContent, @"<a href=[^>]*>([^<]*)</a>");

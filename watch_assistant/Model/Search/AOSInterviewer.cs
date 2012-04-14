@@ -29,7 +29,7 @@ namespace watch_assistant.Model.Search
                 // If category is not Video then go to the next search result
                 Match category = Regex.Match(answerContent, @"\sКатегория:\s[^A-ZА-Я]*([^<]*)<");
                 if (!category.Groups[1].ToString().Contains("Аниме")) continue;
-                videoItem["HRef"] = videoItemRef.Groups[1].ToString();
+                videoItem["HRef"] = new string[] {videoItemRef.Groups[1].ToString()};
                 videoItem["RussianAudio"] = (((String)videoItem["Name"]).Contains("(RUS)") ? true : false);
                 videoItem["RussianSub"] = (((String)videoItem["Name"]).Contains("(SUB)") ? true : false);
                 videoItem["Poster"] = Regex.Match(answerContent, "<div class='img_'><a href=\"([^\"]*)\"").Groups[1].ToString();

@@ -7,6 +7,8 @@ using System.ComponentModel;
 using System.Windows;
 using System.Threading.Tasks;
 using System.Threading;
+using System.Text.RegularExpressions;
+using System.Collections;
 
 namespace watch_assistant.Model.Search
 {
@@ -26,7 +28,7 @@ namespace watch_assistant.Model.Search
         //private Thread _filminThread;
         //private Thread _tvbestThread;
 
-        private readonly Dictionary<InterviewerBase, Thread> _interviewers = new Dictionary<InterviewerBase, Thread>();
+        private readonly List<KeyValuePair<InterviewerBase, Thread>> _interviewers = new List<KeyValuePair<InterviewerBase,Thread>>();
 
         #endregion (Fields)
 
@@ -54,10 +56,10 @@ namespace watch_assistant.Model.Search
         {
             FormInterviewers();
 
-            foreach (Thread t in _interviewers.Values) t.Start(query);
-            foreach (Thread t in _interviewers.Values) 
-                if (t.IsAlive)
-                    t.Join();
+            foreach (var interviewer in _interviewers) interviewer.Value.Start(query);
+            foreach (var interviewer in _interviewers) 
+                if (interviewer.Value.IsAlive)
+                    interviewer.Value.Join();
 
             AggregateResults();
         }
@@ -76,41 +78,156 @@ namespace watch_assistant.Model.Search
 
         private void FormInterviewers()
         {
-            InterviewerBase aos;
-            _interviewers.Add(aos = new AOSInterviewer(), new Thread((object query) =>
+            _interviewers.Add(new KeyValuePair<InterviewerBase, Thread>
+                (new AOSInterviewer(), new Thread((object query) =>
             {
-                aos.ConductInterview((string[])query);
-                //MessageBox.Show("AOS Results Number: " + aos.InterviewResult.Rows.Count.ToString());
-            }));
-            InterviewerBase asee;
-            _interviewers.Add(asee = new ASeeInterviewer(), new Thread((object query) =>
+                _interviewers[0].Key.ConductInterview((string[])query);
+                //MessageBox.Show("AOS Results Number: " + _interviewers[0].Key.InterviewResult.Rows.Count.ToString());
+            })));
+            _interviewers.Add(new KeyValuePair<InterviewerBase, Thread>(
+                new ASeeInterviewer(), new Thread((object query) =>
             {
-                asee.ConductInterview((string[])query);
-                //MessageBox.Show("ASee Results Number: " + asee.InterviewResult.Rows.Count.ToString());
-            }));
-            InterviewerBase tvbest;
-            _interviewers.Add(tvbest = new TVBestInterviewer(), new Thread((object query) =>
+                _interviewers[1].Key.ConductInterview((string[])query);
+                //MessageBox.Show("ASee Results Number: " + _interviewers[1].Key.InterviewResult.Rows.Count.ToString());
+            })));
+            _interviewers.Add(new KeyValuePair<InterviewerBase, Thread>(
+                new TVBestInterviewer(), new Thread((object query) =>
             {
-                tvbest.ConductInterview((string[])query);
-                //MessageBox.Show("TVBest Results Number: " + tvbest.InterviewResult.Rows.Count.ToString());
-            }));
-            InterviewerBase filmin;
-            _interviewers.Add(filmin = new FilminInterviewer(), new Thread((object query) =>
+                _interviewers[2].Key.ConductInterview((string[])query);
+                //MessageBox.Show("TVBest Results Number: " + _interviewers[2].Key.InterviewResult.Rows.Count.ToString());
+            })));
+            _interviewers.Add(new KeyValuePair<InterviewerBase, Thread>(
+                new FilminInterviewer(), new Thread((object query) =>
             {
-                filmin.ConductInterview((string[])query);
-                //MessageBox.Show("Filmin Results Number: " + filmin.InterviewResult.Rows.Count.ToString());
-            }));
+                _interviewers[3].Key.ConductInterview((string[])query);
+                //MessageBox.Show("Filmin Results Number: " + _interviewers[3].Key.InterviewResult.Rows.Count.ToString());
+            })));
         }
 
         private void AggregateResults()
         {
+            this.ClearInterviewResults();
+            this.FormNewResultTable();
 
-            foreach (InterviewerBase i in _interviewers.Keys)
-                if (_interviewResult == null)
-                    _interviewResult = i.InterviewResult.Copy();
-                else
-                    foreach (DataRow row in i.InterviewResult.Rows)
-                        _interviewResult.ImportRow(row);                    
+            Dictionary<string, bool[]> rowsVisited = new Dictionary<string, bool[]>();
+
+            foreach (var interview in _interviewers)
+            {
+                if (!rowsVisited.ContainsKey(interview.Key.InterviewResult.TableName))
+                    rowsVisited.Add(
+                        interview.Key.InterviewResult.TableName, 
+                        new bool[interview.Key.InterviewResult.Rows.Count]
+                        );
+
+                foreach (var otherInterview in _interviewers)
+                {
+                    if (interview.Key.InterviewResult.TableName ==
+                        otherInterview.Key.InterviewResult.TableName)
+                        continue;
+
+                    if (!rowsVisited.ContainsKey(otherInterview.Key.InterviewResult.TableName))
+                        rowsVisited.Add(
+                            otherInterview.Key.InterviewResult.TableName,
+                            new bool[otherInterview.Key.InterviewResult.Rows.Count]
+                            );
+
+                    foreach (DataRow row in interview.Key.InterviewResult.Rows)
+                    {
+                        if (rowsVisited[interview.Key.InterviewResult.TableName]
+                                       [interview.Key.InterviewResult.Rows.IndexOf(row)])
+                            continue;
+                        foreach (DataRow otherRow in otherInterview.Key.InterviewResult.Rows)
+                        {
+                            if (rowsVisited[otherInterview.Key.InterviewResult.TableName]
+                                       [otherInterview.Key.InterviewResult.Rows.IndexOf(otherRow)])
+                                continue;
+
+                            // Fastest cheks to find out if rows are different
+                            if (row["RussianAudio"].ToString() != otherRow["RussianAudio"].ToString())
+                                continue;
+                            if (row["RussianSub"].ToString() != otherRow["RussianSub"].ToString())
+                                continue;
+                            if (row["Year"].ToString() != otherRow["Year"].ToString())
+                                continue;
+
+                            // Check and (maybe)merge Name here
+                            string[] names = GetNames((string)row["Name"]);
+                            string[] otherNames = GetNames((string)otherRow["Name"]);
+                            if (names[0] != otherNames[0] || names[1] != otherNames[1])
+                                continue;
+
+                            // Check and merge Genre here
+                            bool matched = false;
+                            Match genre = Regex.Match(row["Genre"].ToString(), "([^,]*)(?:,?)");
+                            while (!matched && genre.Success)
+                            {
+                                Match otherGenre = Regex.Match(row["Genre"].ToString(), "([^,]*)(?:,?)");
+                                while (!matched && otherGenre.Success)
+                                {
+                                    if (genre.Groups[1].ToString() == otherGenre.Groups[1].ToString())
+                                        matched = true;
+                                    else
+                                        otherGenre.NextMatch();
+                                }
+                                genre.NextMatch();
+                            }
+                            if (!matched)
+                                continue;
+
+                            // Merge other info if we got here
+                            string[] href = new string[((string[])row["HRef"]).Length + 1];
+                            for (int i = 0; i < href.Length - 1; i++)
+                                href[i] = new string(((string[])row["HRef"])[i].ToCharArray());
+                            href[href.Length - 1] = new string(((string[])otherRow["HRef"])[0].ToCharArray());
+
+                            row["HRef"] = href;
+                            if (String.IsNullOrEmpty(row["Description"].ToString()) &&
+                                !String.IsNullOrEmpty(otherRow["Description"].ToString()))
+                                row["Description"] = otherRow["Description"].ToString();
+
+                            // Mark otherRow as visited because we merge it with row
+                            int a = otherInterview.Key.InterviewResult.Rows.IndexOf(otherRow);
+                            rowsVisited[otherInterview.Key.InterviewResult.TableName]
+                                       [a] = true;                            
+                        }
+                        _interviewResult.ImportRow(row);
+                        int b = interview.Key.InterviewResult.Rows.IndexOf(row);
+                        rowsVisited[interview.Key.InterviewResult.TableName]
+                                   [b] = true;
+                    }
+                }
+            }                
+        }
+
+        private static string[] GetNames(string fullName)
+        {
+            for (int removeStart = fullName.IndexOf('['); removeStart >= 0; removeStart = fullName.IndexOf('['))
+                fullName = fullName.Remove(removeStart, fullName.IndexOf(']') - removeStart + 1);
+            for (int removeStart = fullName.IndexOf('('); removeStart >= 0; removeStart = fullName.IndexOf('('))
+                fullName = fullName.Remove(removeStart, fullName.IndexOf(')') - removeStart + 1);
+            // ([\p{IsCyrillic}\s\W]*)
+            char[] a = fullName.ToCharArray();
+            Match nameRus = Regex.Match(fullName, @"[\p{IsCyrillic}]+[\s\W]*", RegexOptions.Singleline);
+            while (nameRus.Success && nameRus.Value.ToString().Length < 1)
+                nameRus.NextMatch();
+            string nameEng = fullName.Remove(nameRus.Index, nameRus.Length);
+
+            return (new string[] { nameRus.Value.ToString().Trim(' ', '/', '.'), nameEng.Trim(' ', '/', '.') });
+        }
+
+        private void FormNewResultTable()
+        {
+            _interviewResult = new DataTable("Agregated results");
+
+            _interviewResult.Columns.Add("Name", typeof(String));
+            _interviewResult.Columns.Add("HRef", typeof(String[]));
+            _interviewResult.Columns.Add("Poster", typeof(String));
+            _interviewResult.Columns.Add("Genre", typeof(String));
+            _interviewResult.Columns.Add("Year", typeof(Int32));
+            _interviewResult.Columns.Add("Description", typeof(String));
+            _interviewResult.Columns.Add("VideoQuality", typeof(String));
+            _interviewResult.Columns.Add("RussianAudio", typeof(Boolean));
+            _interviewResult.Columns.Add("RussianSub", typeof(Boolean));
         }
 
         #endregion (Methods)

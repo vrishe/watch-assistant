@@ -103,7 +103,7 @@ namespace watch_assistant.Model.Search
             _interviewResult = new DataTable(GetClassType());
 
             _interviewResult.Columns.Add("Name", typeof(String));
-            _interviewResult.Columns.Add("HRef", typeof(String));
+            _interviewResult.Columns.Add("HRef", typeof(String[]));
             _interviewResult.Columns.Add("Poster", typeof(String));
             _interviewResult.Columns.Add("Genre", typeof(String));
             _interviewResult.Columns.Add("Year", typeof(Int32));
@@ -173,7 +173,16 @@ namespace watch_assistant.Model.Search
             request.ContentLength = byteArr.LongLength;
             request.GetRequestStream().Write(byteArr, 0, byteArr.Length);
 
-            HttpWebResponse response = (HttpWebResponse)request.GetResponse();
+            HttpWebResponse response;
+            while (true)
+            {
+                try
+                {
+                    response = (HttpWebResponse)request.GetResponse();
+                    break;
+                }
+                catch { }
+            }
             if (request.ServicePoint.CurrentConnections == request.ServicePoint.ConnectionLimit)
             {
                 request.ServicePoint.CloseConnectionGroup(request.ConnectionGroupName);
