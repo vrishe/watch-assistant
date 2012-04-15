@@ -43,7 +43,7 @@
     <Reference Include="PresentationCore" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CustomWindowCommands.cs" />
+    <Compile Include="SystemCommands.cs" />
     <Compile Include="WindowPage.cs" />
     <Page Include="Themes\Generic.xaml">
       <Generator>MSBuild:Compile</Generator>

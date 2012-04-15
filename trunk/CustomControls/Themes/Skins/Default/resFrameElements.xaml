@@ -33,15 +33,15 @@
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type ContentControl}" >
                     <StackPanel Orientation="Horizontal">
-                        <local:CustomButton Command="{x:Static local:CustomWindowCommands.Minimize}"
+                        <local:CustomButton Command="{x:Static local:SystemCommands.MinimizeWindowCommand}"
                                             Style="{StaticResource ControlButtonStyle}" >
                             <Line Stroke="{StaticResource brushControlButtonStroke}" StrokeThickness="2" X2="8" Y1="8" Y2="8" />
                         </local:CustomButton>
-                        <local:CustomButton Command="{x:Static local:CustomWindowCommands.ToggleMaximizeNormal}"
+                        <local:CustomButton Command="{x:Static local:SystemCommands.ToggleMaximizeWindowCommand}"
                                             Style="{StaticResource ControlButtonStyle}" >
                             <Rectangle Stroke="{StaticResource brushControlButtonStroke}" StrokeThickness="1.8" Width="7" Height="7" />
                         </local:CustomButton>
-                        <local:CustomButton Command="ApplicationCommands.Close"
+                        <local:CustomButton Command="{x:Static local:SystemCommands.CloseWindowCommand}"
                                             Style="{StaticResource ControlButtonStyle}"
                 						    GlowColor="{StaticResource brushCloseButtonGlow}">
                             <Canvas Width="6" Height="6">
