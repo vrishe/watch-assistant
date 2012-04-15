@@ -34,8 +34,12 @@ namespace watch_assistant.Model.Search
                 videoItem["RussianAudio"] = (((String)videoItem["Name"]).Contains("(RUS)") ? true : false);
                 videoItem["RussianSub"] = (((String)videoItem["Name"]).Contains("(SUB)") ? true : false);
                 videoItem["Poster"] = Regex.Match(answerContent, "<!--TBegin--><a href=\"([^\"]*)\"").Groups[1].ToString();
+                if (String.IsNullOrEmpty(videoItem["Poster"].ToString()))
+                    videoItem["Poster"] = Regex.Match(answerContent, @"<!--dle_image_begin:([^\|]*)\|").Groups[1].ToString();
                 videoItem["Genre"] = Regex.Match(answerContent, @"<b>Жанр:\s*</b>\s*([^<]*)").Groups[1].ToString();
-                videoItem["Year"] = Int32.Parse(Regex.Match(answerContent, "<!--/colorstart-->[^0-9]*([0-9]{4})[^0-9]*<!--colorend-->").Groups[1].ToString());
+                Match year = Regex.Match(answerContent, "<!--/colorstart-->[^0-9]*([0-9]{4})[^0-9]*<!--colorend-->");
+                if (year.Success)
+                    videoItem["Year"] = Int32.Parse(year.Groups[1].ToString());
 
                 _interviewResult.Rows.Add(videoItem);
             }

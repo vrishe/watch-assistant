@@ -74,11 +74,13 @@ namespace watch_assistant.Model.Search
 
                 Match current = Regex.Match(answerContent, @"<a href=[^>]*>([^<]*)</a>");
                 Match end = Regex.Match(answerContent, @"<a href=[^>]*>([^<]*)</a><br />");
-                do
+                videoItem["Genre"] = current.Groups[1].ToString();
+                current = current.NextMatch();
+                while (current.Groups[1].ToString() != end.Groups[1].ToString())
                 {
                     current = current.NextMatch();
-                    videoItem["Genre"] = videoItem["Genre"].ToString() + current.Groups[1].ToString();
-                } while (current.Groups[1].ToString() != end.Groups[1].ToString());
+                    videoItem["Genre"] = videoItem["Genre"].ToString() + ", " + current.Groups[1].ToString();
+                } 
 
                 _interviewResult.Rows.Add(videoItem);
             }
