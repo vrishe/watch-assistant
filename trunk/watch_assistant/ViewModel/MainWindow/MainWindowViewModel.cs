@@ -76,7 +76,7 @@ namespace watch_assistant.ViewModel.MainWindow
                     try
                     {
                         _interviewer.ClearInterviewResults();
-                        string[] tmp = new string[] { "Genshiken", (string)e.Parameter };
+                        string[] tmp = new string[] { /*"Genshiken", */(string)e.Parameter };
                         _interviewer.ConductInterview(tmp);
                         SearchResultTable = _interviewer.InterviewResult;
                     }

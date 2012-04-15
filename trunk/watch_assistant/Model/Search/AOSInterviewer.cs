@@ -33,20 +33,26 @@ namespace watch_assistant.Model.Search
                 videoItem["RussianAudio"] = (((String)videoItem["Name"]).Contains("(RUS)") ? true : false);
                 videoItem["RussianSub"] = (((String)videoItem["Name"]).Contains("(SUB)") ? true : false);
                 videoItem["Poster"] = Regex.Match(answerContent, "<div class='img_'><a href=\"([^\"]*)\"").Groups[1].ToString();
-                
-                Match genre = Regex.Match(answerContent, @"Жанр:(?:\s)?(?:<[^>]*>)?([\sа-яА-Я]+[^<]*)");
-                if (String.IsNullOrEmpty(genre.Groups[1].ToString()) || genre.Index > category.Index)
+
+                Match genre = Regex.Match(answerContent, @"Жанр:(?:\s?)(?:&nbsp;)?(?:<[^>]*>)?(?:\s?)(?:&nbsp;)?([а-яА-Я]+[^<]*)");
+                string tmp = genre.Groups[1].ToString();
+                if (String.IsNullOrEmpty(tmp) || genre.Index > category.Index)
                 {
                     Match first = Regex.Match(answerContent, @"Жанр:(?:\s?)</strong>[^<]*<a href=[^>]*>([^<]*)</a>");
                     Match end = Regex.Match(answerContent, @"<a href=[^>]*>([^<]*)</a> <br />");
                     videoItem["Genre"] = first.Groups[1].ToString().Trim();
 
                     Regex currentPattern = new Regex("<a href=[^>]*>([^<]*)</a>");
-                    Match current = currentPattern.Match(answerContent, first.Index + first.Length);
-                    for (; current.Groups[1].ToString() != end.Groups[1].ToString();
-                        current.NextMatch())
-                        videoItem["Genre"] = videoItem["Genre"].ToString() + ", " + current.Groups[1].ToString();
-                    videoItem["Genre"] = videoItem["Genre"].ToString() + ", " + end.Groups[1].ToString().Trim();
+                    MatchCollection genres = currentPattern.Matches(answerContent, first.Index + first.Length);
+                    string last = end.Groups[1].ToString().Trim();
+                    for (int i = 0; i < genres.Count; i++)
+                    {
+                        string current = genres[i].Groups[1].ToString().Trim();
+                        if (genres[i].Index < end.Index && current != last)
+                            videoItem["Genre"] = videoItem["Genre"].ToString() + ", " + current;
+                        else break;
+                    }
+                    videoItem["Genre"] = videoItem["Genre"].ToString() + ", " + last;
                 }
                 else
                     videoItem["Genre"] = genre.Groups[1].ToString().Trim();
