@@ -29,7 +29,7 @@ namespace watch_assistant.Model.Search
 
                 DataRow videoItem = _interviewResult.NewRow();
                 videoItem["HRef"] = new string[] { videoItemRef.Groups[1].ToString() };
-                Match tmp = Regex.Match(videoItemRef.Groups[2].ToString(), @"(.*)\((([0-9]{4})\))\Z");
+                Match tmp = Regex.Match(videoItemRef.Groups[2].ToString(), @"(.*)\((([0-9]{4})(?:\-[0-9]{4})?\))\Z");
                 videoItem["Name"] = tmp.Groups[1].ToString().Replace("&amp;", "&").Trim();
                 videoItem["Year"] = Int32.Parse(tmp.Groups[3].ToString());
                 videoItem["RussianAudio"] = true;
