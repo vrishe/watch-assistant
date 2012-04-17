@@ -8,7 +8,6 @@
         <ResourceDictionary Source="../resSharedStyles.xaml" />
     </ResourceDictionary.MergedDictionaries>
 
-    <GridLengthConverter x:Key="GridLengthConverter"/>
     <Style TargetType="{x:Type ContentControl}" x:Key="FrameLayout" >
         <Setter Property="Template">
             <Setter.Value>
