@@ -32,6 +32,7 @@ namespace watch_assistant.ViewModel.MainWindow
     class MainWindowViewModel : WindowViewModel
     {
         #region Fields
+        private readonly Model.Dictionary.Thesaurus _thesaurus = new Model.Dictionary.Thesaurus();
         private readonly Model.Search.InterviewAggregator _interviewer = new Model.Search.InterviewAggregator();
         private readonly Dictionary<string, DataTable> _userLists = new Dictionary<string, DataTable>();
 
@@ -76,7 +77,7 @@ namespace watch_assistant.ViewModel.MainWindow
                     try
                     {
                         _interviewer.ClearInterviewResults();
-                        string[] tmp = new string[] { /*"Genshiken", */(string)e.Parameter };
+                        string[] tmp = _thesaurus.GetPhrasePermutations((string)e.Parameter);
                         _interviewer.ConductInterview(tmp);
                         SearchResultTable = _interviewer.InterviewResult;
                     }
