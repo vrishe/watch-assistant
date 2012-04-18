@@ -54,15 +54,15 @@ namespace watch_assistant.ViewModel.MainWindow
         public static readonly DependencyProperty SearchResultTableProperty =
             DependencyProperty.Register("SearchResultTable", typeof(DataTable), typeof(MainWindowViewModel), new UIPropertyMetadata(null));
 
-        public DataTable ActiveUserList
+        public DataTable ActiveUserTable
         {
-            get { return (DataTable)GetValue(ActiveUserListProperty); }
-            set { SetValue(ActiveUserListProperty, value); }
+            get { return (DataTable)GetValue(ActiveUserTableProperty); }
+            set { SetValue(ActiveUserTableProperty, value); }
         }
 
         // Using a DependencyProperty as the backing store for ActiveUserList.  This enables animation, styling, binding, etc...
-        public static readonly DependencyProperty ActiveUserListProperty =
-            DependencyProperty.Register("ActiveUserList", typeof(DataTable), typeof(MainWindowViewModel), new UIPropertyMetadata(null));       
+        public static readonly DependencyProperty ActiveUserTableProperty =
+            DependencyProperty.Register("ActiveUserTable", typeof(DataTable), typeof(MainWindowViewModel), new UIPropertyMetadata(null));       
 
         #endregion (Properties)
 

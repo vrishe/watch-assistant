@@ -13,27 +13,68 @@
     <custom:CustomWindow.Resources>
         <Thickness x:Key="DefaultLeftRightMargin">5,0,5,0</Thickness>
 
-        <DataTemplate x:Key="ListViewItemTemplate">
-            <DataTemplate.Resources>
-                <mwvm:FormatStringConverter x:Key="StringValueModifier" />
-                <sys:String x:Key="ListViewItemGenreLabel">Genre: {0}</sys:String>
-                <sys:String x:Key="ListViewItemYearLabel">Year: {0}</sys:String>
-            </DataTemplate.Resources>
-            
-            <Border x:Name="Basement" Background="Transparent" CornerRadius="{DynamicResource DefaultCornerRadius}">
-                <StackPanel MaxHeight="45"  Orientation="Horizontal" FlowDirection="LeftToRight" HorizontalAlignment="Stretch" Margin="1,1,1,1">
-                    <Border Background="{DynamicResource ControlBackgroundBrush}" CornerRadius="{DynamicResource DefaultCornerRadius}">
-                        <Image x:Name="Poster" VerticalAlignment="Stretch" Margin="1,1,1,1" Source="{Binding Path=[Poster], Mode=OneWay}"/>
-                    </Border>
-                    <StackPanel Orientation="Vertical">
-                        <Label HorizontalAlignment="Left" Margin="3,2,0,0" Content="{Binding Path=[Name], Mode=OneWay}"/>
-                        <TextBlock Margin="3,0,0,0" Foreground="{DynamicResource OutsideFontColor}" 
-                                   Text="{Binding Path=[Genre], Mode=OneWay, Converter={StaticResource StringValueModifier}, ConverterParameter={StaticResource ListViewItemGenreLabel}}"/>
-                        <TextBlock Margin="3,0,0,0" Foreground="{DynamicResource OutsideFontColor}" 
-                                   Text="{Binding Path=[Year], Mode=OneWay, Converter={StaticResource StringValueModifier}, ConverterParameter={StaticResource ListViewItemYearLabel}}"/>
-                    </StackPanel>
-                </StackPanel>
-            </Border>
+        <Style x:Key="BaseListItemStyle" TargetType="{x:Type UserControl}">          
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type UserControl}">
+                        <ControlTemplate.Resources>
+                            <mwvm:FormatStringConverter x:Key="StringValueModifier" />
+                            <sys:String x:Key="ListViewItemGenreLabel">Genre: {0}</sys:String>
+                            <sys:String x:Key="ListViewItemYearLabel">Year: {0}</sys:String>
+
+                            <Storyboard x:Key="HoverOn" TargetName="AdditionalPresenter">
+                                <ObjectAnimationUsingKeyFrames BeginTime="00:00:00" Storyboard.TargetName="AdditionalPresenter" Storyboard.TargetProperty="(UIElement.Visibility)">
+                                    <DiscreteObjectKeyFrame KeyTime="00:00:00.5000000" Value="{x:Static Visibility.Visible}" />
+                                </ObjectAnimationUsingKeyFrames>
+                                <DoubleAnimation BeginTime="00:00:00" Duration="00:00:00.7500000" To="0.85" Storyboard.TargetProperty="(UIElement.Opacity)" />
+                            </Storyboard>
+
+                            <Storyboard x:Key="HoverOff" TargetName="AdditionalPresenter">
+                                <ObjectAnimationUsingKeyFrames BeginTime="00:00:00" Storyboard.TargetProperty="(UIElement.Visibility)">
+                                    <DiscreteObjectKeyFrame KeyTime="00:00:00.5000000" Value="{x:Static Visibility.Collapsed}" />
+                                </ObjectAnimationUsingKeyFrames>
+                                <DoubleAnimation BeginTime="00:00:00" Duration="00:00:00.7500000" To="0" Storyboard.TargetProperty="(UIElement.Opacity)" />
+                            </Storyboard>
+                        </ControlTemplate.Resources>
+
+                        <ControlTemplate.Triggers>
+                            <EventTrigger RoutedEvent="MouseEnter">
+                                <EventTrigger.Actions>
+                                    <BeginStoryboard Storyboard="{StaticResource HoverOn}" />
+                                </EventTrigger.Actions>
+                            </EventTrigger>
+
+                            <EventTrigger RoutedEvent="MouseLeave">
+                                <EventTrigger.Actions>
+                                    <BeginStoryboard Storyboard="{StaticResource HoverOff}" />
+                                </EventTrigger.Actions>
+                            </EventTrigger>
+                        </ControlTemplate.Triggers>
+
+                        <StackPanel MaxHeight="45" Orientation="Horizontal" FlowDirection="LeftToRight" Margin="1,1,1,1">
+                            <Border Background="{DynamicResource ControlBackgroundBrush}" CornerRadius="{DynamicResource DefaultCornerRadius}">
+                                <Image x:Name="Poster" VerticalAlignment="Stretch" Margin="1,1,1,1" Source="{Binding Path=[Poster], Mode=OneWay}" />
+                            </Border>
+                            <Grid>
+                                <StackPanel Orientation="Vertical">
+                                    <Label HorizontalAlignment="Left" Margin="3,2,0,0" Content="{Binding Path=[Name], Mode=OneWay}"/>
+                                    <TextBlock Margin="3,0,0,0" Foreground="{DynamicResource OutsideFontColor}" 
+                                    Text="{Binding Path=[Genre], Mode=OneWay, Converter={StaticResource StringValueModifier}, ConverterParameter={StaticResource ListViewItemGenreLabel}}"/>
+                                    <TextBlock Margin="3,0,0,0" Foreground="{DynamicResource OutsideFontColor}" 
+                                    Text="{Binding Path=[Year], Mode=OneWay, Converter={StaticResource StringValueModifier}, ConverterParameter={StaticResource ListViewItemYearLabel}}"/>
+                                </StackPanel>
+                                <AdornerDecorator >
+                                    <Button x:Name="AdditionalPresenter" Height="15" Width="60" VerticalAlignment="Bottom" HorizontalAlignment="Right"  Visibility="Collapsed" Opacity="0" />
+                                </AdornerDecorator>
+                            </Grid>
+                        </StackPanel>                
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>           
+        </Style>
+
+        <DataTemplate x:Key="SearchingListViewItemTemplate">
+            <UserControl Style="{StaticResource BaseListItemStyle}" />
         </DataTemplate>
     </custom:CustomWindow.Resources>
     
@@ -64,11 +105,12 @@
                     <TextBox x:Name="tbSearch" Grid.Column="0" >
                         Naruto
                     </TextBox>
-                    <Button x:Name="bSearch" Grid.Column="1" Margin="2,0,0,0" Content="Search" Command="{x:Static mwvm:MainWindowViewModel.SearchCommand}" CommandParameter="{Binding ElementName=tbSearch, Path=Text, Mode=OneWay}" />
+                    <Button x:Name="bSearch" Grid.Column="1" Margin="2,0,0,0" Content="Search" Command="{x:Static mwvm:MainWindowViewModel.SearchCommand}" 
+                            CommandParameter="{Binding ElementName=tbSearch, Path=Text, Mode=OneWay}" />
                 </Grid>
 
-                <ListBox x:Name="searchView" Grid.Row="1" Margin="5,3,5,3.5" ItemsSource="{Binding Path=SearchResultTable.Rows, Mode=OneWay}" ItemTemplate="{StaticResource ListViewItemTemplate}">
-                </ListBox>
+                <ListBox x:Name="searchView" Grid.Row="1" Margin="5,3,5,3.5" ItemsSource="{Binding Path=SearchResultTable.Rows, Mode=OneWay}"
+                         ItemTemplate="{StaticResource SearchingListViewItemTemplate}" ScrollViewer.HorizontalScrollBarVisibility="Disabled" />
             </Grid>
         </custom:WindowPage>
 
@@ -107,10 +149,8 @@
                 </Grid>
 
                 <!-- Main List -->
-                <ListBox x:Name="listView" Grid.Row="1" Margin="5,3,5,3.5" ItemTemplate="{StaticResource ListViewItemTemplate}">
-                    <ListBoxItem MouseDoubleClick="ListBoxItem_MouseDoubleClick">Item1</ListBoxItem>
-                    <ListBoxItem>Item2</ListBoxItem>
-                </ListBox>
+                <ListBox x:Name="listView" Grid.Row="1" Margin="5,3,5,3.5" ItemTemplate="{StaticResource SearchingListViewItemTemplate}"
+                         ItemsSource="{Binding Path=ActiveUserTableProperty.Rows, Mode=TwoWay}" ScrollViewer.HorizontalScrollBarVisibility="Disabled" />
 
                 <!-- Userbar -->
                 <ContentControl Style="{DynamicResource UserBarPlateStyle}" Margin="0,0,5,0" HorizontalAlignment="Right" Grid.Row="2"/> 
