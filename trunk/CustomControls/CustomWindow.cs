@@ -72,19 +72,20 @@ namespace CustomControls
 
         #region Commands
 
-        private void OnFrameCommand(object sender, ExecutedRoutedEventArgs e)
+        private static void OnFrameCommand(object sender, ExecutedRoutedEventArgs e)
         {
+            Window commander = sender as Window;
             if (e.Command == SystemCommands.MinimizeWindowCommand)
             {
-                WindowState = WindowState.Minimized;              
+                commander.WindowState = WindowState.Minimized;              
             } 
             else if (e.Command == SystemCommands.ToggleMaximizeWindowCommand)
             {
-                WindowState = WindowState == WindowState.Normal ? WindowState.Maximized : WindowState.Normal;
+                commander.WindowState = commander.WindowState == WindowState.Normal ? WindowState.Maximized : WindowState.Normal;
             }
             else if (e.Command == SystemCommands.CloseWindowCommand)
             {
-                this.Close();
+                commander.Close();
             }
         }
 
@@ -215,7 +216,8 @@ namespace CustomControls
 
         #region WinAPI interop
 
-        private struct POINT
+
+        internal struct POINT
         {
             public int x;
             public int y;
@@ -227,7 +229,8 @@ namespace CustomControls
             }
         }
 
-        private struct MINMAXINFO
+        [StructLayout(LayoutKind.Sequential)]
+        internal class MINMAXINFO
         {
             public POINT ptReserved;
             public POINT ptMaxSize;
@@ -240,9 +243,9 @@ namespace CustomControls
         internal class MONITORINFO
         {
             public int cbSize = Marshal.SizeOf(typeof(MONITORINFO));
-            public RECT rcMonitor = new RECT();
-            public RECT rcWork = new RECT();
-            public int dwFlags = 0;
+            public RECT rcMonitor;
+            public RECT rcWork;
+            public int dwFlags;
         }
 
         internal struct RECT
@@ -347,6 +350,12 @@ namespace CustomControls
             }
 
             Marshal.StructureToPtr(mmi, lParam, true);
+        }
+
+        private static void OnLoadedWinApiInteropInitialization(object sender, RoutedEventArgs e)
+        {
+            IntPtr handle = (new System.Windows.Interop.WindowInteropHelper(sender as Window)).Handle;
+            System.Windows.Interop.HwndSource.FromHwnd(handle).AddHook(new System.Windows.Interop.HwndSourceHook(WindowProc));
         }
 
         #endregion (WinAPI interop)
@@ -610,19 +619,12 @@ namespace CustomControls
         static CustomWindow()
         {
             DefaultStyleKeyProperty.OverrideMetadata(typeof(CustomWindow), new FrameworkPropertyMetadata(typeof(CustomWindow)));
-        }
 
-        public CustomWindow()
-        {
-            CommandBindings.Add(new CommandBinding(SystemCommands.MinimizeWindowCommand, this.OnFrameCommand));
-            CommandBindings.Add(new CommandBinding(SystemCommands.ToggleMaximizeWindowCommand, this.OnFrameCommand));
-            CommandBindings.Add(new CommandBinding(SystemCommands.CloseWindowCommand, this.OnFrameCommand));
+            EventManager.RegisterClassHandler(typeof(CustomWindow), CustomWindow.LoadedEvent, new RoutedEventHandler(OnLoadedWinApiInteropInitialization));
 
-            Loaded += (s, e) =>
-            {
-                IntPtr handle = (new System.Windows.Interop.WindowInteropHelper(this as Window)).Handle;
-                System.Windows.Interop.HwndSource.FromHwnd(handle).AddHook(new System.Windows.Interop.HwndSourceHook(WindowProc));
-            };
+            CommandManager.RegisterClassCommandBinding(typeof(CustomWindow), new CommandBinding(SystemCommands.MinimizeWindowCommand, OnFrameCommand));
+            CommandManager.RegisterClassCommandBinding(typeof(CustomWindow), new CommandBinding(SystemCommands.ToggleMaximizeWindowCommand, OnFrameCommand));
+            CommandManager.RegisterClassCommandBinding(typeof(CustomWindow), new CommandBinding(SystemCommands.CloseWindowCommand, OnFrameCommand));
         }
 
         #endregion (Constructors)
