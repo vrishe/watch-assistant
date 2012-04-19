@@ -6,6 +6,7 @@ using System.Windows.Data;
 using System;
 using System.Diagnostics;
 using System.Net;
+using System.ComponentModel;
 
 namespace watch_assistant.ViewModel.MainWindow
 {
@@ -34,6 +35,7 @@ namespace watch_assistant.ViewModel.MainWindow
         #region Fields
         private readonly Model.Dictionary.Thesaurus _thesaurus = new Model.Dictionary.Thesaurus();
         private readonly Model.Search.InterviewAggregator _interviewer = new Model.Search.InterviewAggregator();
+        private BackgroundWorker _bgInterview = new BackgroundWorker();
         private readonly Dictionary<string, DataTable> _userLists = new Dictionary<string, DataTable>();
 
         #region Commands
@@ -71,15 +73,17 @@ namespace watch_assistant.ViewModel.MainWindow
         public MainWindowViewModel(Window owner)
             : base(owner)
         {
+            InitializeBGInterview();
             _owner.CommandBindings.Add(new CommandBinding(
                 SearchCommand, (s, e) => 
                 {
                     try
                     {
                         _interviewer.ClearInterviewResults();
-                        string[] tmp = _thesaurus.GetPhrasePermutations((string)e.Parameter);
-                        _interviewer.ConductInterview(tmp);
-                        SearchResultTable = _interviewer.InterviewResult;
+                        if (!_bgInterview.IsBusy)
+                            _bgInterview.RunWorkerAsync(e.Parameter);
+                        else
+                            System.Media.SystemSounds.Beep.Play();
                     }
                     catch (Exception ex)
                     {
@@ -91,5 +95,22 @@ namespace watch_assistant.ViewModel.MainWindow
 
         #endregion (Constructors)
 
+        #region Methods
+
+        private void InitializeBGInterview()
+        {
+            _bgInterview.DoWork += new DoWorkEventHandler((s, e) =>
+            {
+                string[] tmp = _thesaurus.GetPhrasePermutations((string)e.Argument);
+                _interviewer.ConductInterview((string[])tmp);
+            });
+            _bgInterview.RunWorkerCompleted += new RunWorkerCompletedEventHandler((s, e) =>
+            {
+                SearchResultTable = _interviewer.InterviewResult;
+            });
+            //_bgInterview.ProgressChanged += new ProgressChangedEventHandler(backgroundWorker1_ProgressChanged);
+        }
+
+        #endregion (Methods)
     }
 }

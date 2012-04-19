@@ -1,14 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Data;
-using System.ComponentModel;
-using System.Windows;
-using System.Threading.Tasks;
-using System.Threading;
 using System.Text.RegularExpressions;
-using System.Collections;
+using System.Threading;
+using System.Windows;
 
 namespace watch_assistant.Model.Search
 {
@@ -17,16 +12,6 @@ namespace watch_assistant.Model.Search
         #region Fields
 
         private DataTable _interviewResult;
-
-        //private AOSInterviewer _aosInterviewer = new AOSInterviewer();
-        //private ASeeInterviewer _aseeInterviewer = new ASeeInterviewer();
-        //private FilminInterviewer _filminInterviewer = new FilminInterviewer();
-        //private TVBestInterviewer _tvbestInterviewer = new TVBestInterviewer();
-
-        //private Thread _aosThread;
-        //private Thread _aseeThread;
-        //private Thread _filminThread;
-        //private Thread _tvbestThread;
 
         private readonly List<KeyValuePair<InterviewerBase, Thread>> _interviewers = new List<KeyValuePair<InterviewerBase,Thread>>();
 
@@ -57,7 +42,7 @@ namespace watch_assistant.Model.Search
             FormInterviewers();
 
             foreach (var interviewer in _interviewers) interviewer.Value.Start(query);
-            foreach (var interviewer in _interviewers) 
+            foreach (var interviewer in _interviewers)
                 if (interviewer.Value.IsAlive)
                     interviewer.Value.Join();
 
@@ -92,18 +77,21 @@ namespace watch_assistant.Model.Search
                         interview.Key.InterviewResult.TableName, 
                         new bool[interview.Key.InterviewResult.Rows.Count]
                         );
-
+                
                 foreach (DataRow row in interview.Key.InterviewResult.Rows)
                 {
                     if (rowsVisited[interview.Key.InterviewResult.TableName]
                                    [interview.Key.InterviewResult.Rows.IndexOf(row)])
                         continue;
+                    /*else
+                        rowsVisited[interview.Key.InterviewResult.TableName]
+                                   [interview.Key.InterviewResult.Rows.IndexOf(row)] = true;*/
 
                     foreach (var otherInterview in _interviewers)
                     {
-                        if (interview.Key.InterviewResult.TableName ==
-                            otherInterview.Key.InterviewResult.TableName)
-                            continue;
+                        //if (interview.Key.InterviewResult.TableName ==
+                        //    otherInterview.Key.InterviewResult.TableName)
+                        //    continue;
 
                         if (!rowsVisited.ContainsKey(otherInterview.Key.InterviewResult.TableName))
                             rowsVisited.Add(
@@ -113,15 +101,17 @@ namespace watch_assistant.Model.Search
                     
                         foreach (DataRow otherRow in otherInterview.Key.InterviewResult.Rows)
                         {
+                            if (row == otherRow)
+                                continue;
                             if (rowsVisited[otherInterview.Key.InterviewResult.TableName]
                                        [otherInterview.Key.InterviewResult.Rows.IndexOf(otherRow)])
                                 continue;
 
                             // Fastest cheks to find out if rows are different
-                            if (row["RussianAudio"].ToString() != otherRow["RussianAudio"].ToString())
+                            /*if (row["RussianAudio"].ToString() != otherRow["RussianAudio"].ToString())
                                 continue;
                             if (row["RussianSub"].ToString() != otherRow["RussianSub"].ToString())
-                                continue;
+                                continue;*/
                             if (!String.IsNullOrEmpty(row["Year"].ToString()) &&
                                 !String.IsNullOrEmpty(otherRow["Year"].ToString()))
                                 if (row["Year"].ToString() != otherRow["Year"].ToString())
@@ -130,8 +120,13 @@ namespace watch_assistant.Model.Search
                             // Check and (maybe)merge Name here
                             string[] names = GetNames((string)row["Name"]);
                             string[] otherNames = GetNames((string)otherRow["Name"]);
-                            if (names[0] != otherNames[0] || names[1] != otherNames[1])
-                                continue;
+                            if (!(String.IsNullOrEmpty(names[0]) || String.IsNullOrEmpty(otherNames[0])))
+                            {
+                                if (names[0] != otherNames[0])
+                                    continue;
+                            }
+                            else if (names[1] != otherNames[1])
+                                    continue;
 
                             // Check and merge Genre here
                             bool matched = (String.IsNullOrEmpty(row["Genre"].ToString()) ||
@@ -155,12 +150,18 @@ namespace watch_assistant.Model.Search
                                 row["Genre"] = new string((otherRow["Genre"].ToString().ToCharArray()));
 
                             // Merge other info if we got here
-                            string[] href = new string[((string[])row["HRef"]).Length + 1];
+                            if (row["Year"].ToString().Length < otherRow["Year"].ToString().Length)
+                                row["Year"] = new string((otherRow["Year"].ToString().ToCharArray()));
+                            string[] href = new string[((String[])row["HRef"]).Length + 1];
                             for (int i = 0; i < href.Length - 1; i++)
                                 href[i] = new string(((string[])row["HRef"])[i].ToCharArray());
                             href[href.Length - 1] = new string(((string[])otherRow["HRef"])[0].ToCharArray());
-
                             row["HRef"] = href;
+                            string[] text = new string[((String[])row["Text"]).Length + 1];
+                            for (int i = 0; i < text.Length - 1; i++)
+                                text[i] = new string(((string[])row["Text"])[i].ToCharArray());
+                            text[text.Length - 1] = new string(((string[])otherRow["Text"])[0].ToCharArray());
+                            row["Text"] = text;
                             if (String.IsNullOrEmpty(row["Description"].ToString()) &&
                                 !String.IsNullOrEmpty(otherRow["Description"].ToString()))
                                 row["Description"] = otherRow["Description"].ToString();
@@ -171,8 +172,6 @@ namespace watch_assistant.Model.Search
                         }
                     }
                     _interviewResult.ImportRow(row);
-                    rowsVisited[interview.Key.InterviewResult.TableName]
-                               [interview.Key.InterviewResult.Rows.IndexOf(row)] = true;
                 }
             }                
         }
@@ -193,8 +192,7 @@ namespace watch_assistant.Model.Search
                 nameRus.NextMatch();
             string nameEng = fullName.Remove(nameRus.Index, nameRus.Length);
 
-            return (new string[] 
-                { nameRus.Value.ToString().Trim(' ', '/', '.', ',').ToLower(), nameEng.Trim(' ', '/', '.', ',').ToLower() });
+            return (new string[] { nameEng.Trim(' ', '/', '.', ',').ToLower(), nameRus.Value.ToString().Trim(' ', '/', '.', ',').ToLower() });
         }
 
         private void FormInterviewers()

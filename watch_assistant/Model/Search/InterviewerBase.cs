@@ -18,6 +18,12 @@ namespace watch_assistant.Model.Search
 
         #endregion (Fields)
 
+        #region Properties
+
+        public int MaxAttempts { get; set; }
+
+        #endregion (Properties)
+
         #region Constructors
 
         public InterviewerBase()
@@ -25,6 +31,7 @@ namespace watch_assistant.Model.Search
             _dictionary.Source = new Uri(
                 String.Format("..\\Resources\\res{0}.xaml", GetClassType()),
                 UriKind.Relative);
+            MaxAttempts = 5;
             FormNewResultTable();
         }
 
@@ -108,9 +115,10 @@ namespace watch_assistant.Model.Search
             _interviewResult.Columns.Add("Genre", typeof(String));
             _interviewResult.Columns.Add("Year", typeof(Int32));
             _interviewResult.Columns.Add("Description", typeof(String));
-            _interviewResult.Columns.Add("VideoQuality", typeof(String));
-            _interviewResult.Columns.Add("RussianAudio", typeof(Boolean));
-            _interviewResult.Columns.Add("RussianSub", typeof(Boolean));
+            //_interviewResult.Columns.Add("VideoQuality", typeof(String));
+            //_interviewResult.Columns.Add("RussianAudio", typeof(Boolean));
+            //_interviewResult.Columns.Add("RussianSub", typeof(Boolean));
+            _interviewResult.Columns.Add("Text", typeof(String[]));
         }
 
         /// <summary>
@@ -173,8 +181,8 @@ namespace watch_assistant.Model.Search
             request.ContentLength = byteArr.LongLength;
             request.GetRequestStream().Write(byteArr, 0, byteArr.Length);
 
-            HttpWebResponse response;
-            while (true)
+            HttpWebResponse response = null;
+            for (int i = 0; i < MaxAttempts; i++)
             {
                 try
                 {
@@ -202,14 +210,14 @@ namespace watch_assistant.Model.Search
             request.Host = Regex.Match(request.RequestUri.ToString(), @"http://([^/]*)").Groups[1].ToString();
             request.Method = "POST";
             request.ContentType = (string)_dictionary["ContentType"];
-            //request.Accept = (string)_dictionary["Accept"];
-            //request.UserAgent = (string)_dictionary["UserAgent"];
+            /*request.Accept = (string)_dictionary["Accept"];
+            request.UserAgent = (string)_dictionary["UserAgent"];
 
-            //request.Headers.Add("Origin", (string)_dictionary["Origin"]);
-            //request.Headers.Add("Cache-Control", (string)_dictionary["Cache-Control"]);
-            //request.Headers.Add("Accept-Language", (string)_dictionary["Accept-Language"]);
-            //request.Headers.Add("Accept-Charset", (string)_dictionary["Accept-Charset"]);
-            //request.Headers.Add("Accept-Encoding", (string)_dictionary["Accept-Encoding"]);
+            request.Headers.Add("Origin", (string)_dictionary["Origin"]);
+            request.Headers.Add("Cache-Control", (string)_dictionary["Cache-Control"]);
+            request.Headers.Add("Accept-Language", (string)_dictionary["Accept-Language"]);
+            request.Headers.Add("Accept-Charset", (string)_dictionary["Accept-Charset"]);
+            request.Headers.Add("Accept-Encoding", (string)_dictionary["Accept-Encoding"]);*/
 
             request.Timeout = (int)_dictionary["Timeout"];
             request.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
