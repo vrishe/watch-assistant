@@ -31,10 +31,19 @@ namespace watch_assistant.Model.Search
                 if (!category.Groups[1].ToString().Contains("Аниме")) continue;
                 videoItem["HRef"] = new string[] {videoItemRef.Groups[1].ToString()};
              //   videoItem["RussianAudio"] = (((String)videoItem["Name"]).Contains("(RUS)") ? true : false);
-                if (((String)videoItem["Name"]).Contains("(SUB)"))
+                int spare = ((String)videoItem["Name"]).LastIndexOf("(SUB)");
+                if (spare >= 0)
+                {
                     videoItem["Text"] = new string[] { "SUB" };
+                    videoItem["Name"] = ((String)videoItem["Name"]).Remove(spare, 5);
+                }
                 else
+                {
+                    spare = ((String)videoItem["Name"]).LastIndexOf("(RUS)");
                     videoItem["Text"] = new string[] { "RUS" };
+                    if (spare >= 0)
+                        videoItem["Name"] = ((String)videoItem["Name"]).Remove(spare, 5).Trim();
+                }
                 videoItem["Poster"] = Regex.Match(answerContent, "<div class='img_'><a href=\"([^\"]*)\"").Groups[1].ToString();
 
                 Match genre = Regex.Match(answerContent, @"Жанр:(?:\s?)(?:&nbsp;)?(?:<[^>]*>)?(?:\s?)(?:&nbsp;)?([а-яА-Я]+[^<]*)");

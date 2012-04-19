@@ -83,9 +83,9 @@ namespace watch_assistant.Model.Search
                     if (rowsVisited[interview.Key.InterviewResult.TableName]
                                    [interview.Key.InterviewResult.Rows.IndexOf(row)])
                         continue;
-                    /*else
+                    else
                         rowsVisited[interview.Key.InterviewResult.TableName]
-                                   [interview.Key.InterviewResult.Rows.IndexOf(row)] = true;*/
+                                   [interview.Key.InterviewResult.Rows.IndexOf(row)] = true;
 
                     foreach (var otherInterview in _interviewers)
                     {
@@ -233,9 +233,10 @@ namespace watch_assistant.Model.Search
             _interviewResult.Columns.Add("Genre", typeof(String));
             _interviewResult.Columns.Add("Year", typeof(Int32));
             _interviewResult.Columns.Add("Description", typeof(String));
-            _interviewResult.Columns.Add("VideoQuality", typeof(String));
-            _interviewResult.Columns.Add("RussianAudio", typeof(Boolean));
-            _interviewResult.Columns.Add("RussianSub", typeof(Boolean));
+            //_interviewResult.Columns.Add("VideoQuality", typeof(String));
+            //_interviewResult.Columns.Add("RussianAudio", typeof(Boolean));
+            //_interviewResult.Columns.Add("RussianSub", typeof(Boolean));
+            _interviewResult.Columns.Add("Text", typeof(String[]));
         }
 
         #endregion (Methods)

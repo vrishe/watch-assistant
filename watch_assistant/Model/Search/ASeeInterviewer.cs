@@ -32,10 +32,19 @@ namespace watch_assistant.Model.Search
                 else videoItem["Name"] = ((string)videoItem["Name"]).Substring(8);
                 videoItem["HRef"] = new string[] { videoItemRef.Groups[1].ToString() };
                 //videoItem["RussianAudio"] = (((String)videoItem["Name"]).Contains("(RUS)") ? true : false);
-                if (((String)videoItem["Name"]).Contains("(SUB)"))
+                int tmp = ((String)videoItem["Name"]).LastIndexOf("(SUB)");
+                if (tmp >= 0)
+                {
                     videoItem["Text"] = new string[] { "SUB" };
+                    videoItem["Name"] = ((String)videoItem["Name"]).Remove(tmp, 5);
+                }
                 else
+                {
+                    tmp = ((String)videoItem["Name"]).LastIndexOf("(RUS)");
                     videoItem["Text"] = new string[] { "RUS" };
+                    if (tmp >= 0)
+                        videoItem["Name"] = ((String)videoItem["Name"]).Remove(tmp, 5).Trim();
+                }
                 videoItem["Poster"] = Regex.Match(answerContent, "<!--TBegin--><a href=\"([^\"]*)\"").Groups[1].ToString();
                 if (String.IsNullOrEmpty(videoItem["Poster"].ToString()))
                     videoItem["Poster"] = Regex.Match(answerContent, @"<!--dle_image_begin:([^\|]*)\|").Groups[1].ToString();
