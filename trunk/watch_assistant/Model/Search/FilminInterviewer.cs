@@ -32,8 +32,7 @@ namespace watch_assistant.Model.Search
                 Match tmp = Regex.Match(videoItemRef.Groups[2].ToString(), @"(.*)\((([0-9]{4})(?:\-[0-9]{4})?\))\Z");
                 videoItem["Name"] = tmp.Groups[1].ToString().Replace("&amp;", "&").Trim();
                 videoItem["Year"] = Int32.Parse(tmp.Groups[3].ToString());
-                videoItem["RussianAudio"] = true;
-                videoItem["RussianSub"] = false;
+                videoItem["Text"] = new string[] { "RUS" };
                 videoItem["Poster"] = "http://filmin.ru" + Regex.Match(answerContent, "<img src=\"([^\"]*)\"").Groups[1].ToString();
                 videoItem["Description"] = Regex.Match(answerContent, "<b>Описание:</b>([^<]*)<").Groups[1].ToString().Trim();
 

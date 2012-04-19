@@ -30,8 +30,11 @@ namespace watch_assistant.Model.Search
                 Match category = Regex.Match(answerContent, @"\sКатегория:\s[^A-ZА-Я]*([^<]*)<");
                 if (!category.Groups[1].ToString().Contains("Аниме")) continue;
                 videoItem["HRef"] = new string[] {videoItemRef.Groups[1].ToString()};
-                videoItem["RussianAudio"] = (((String)videoItem["Name"]).Contains("(RUS)") ? true : false);
-                videoItem["RussianSub"] = (((String)videoItem["Name"]).Contains("(SUB)") ? true : false);
+             //   videoItem["RussianAudio"] = (((String)videoItem["Name"]).Contains("(RUS)") ? true : false);
+                if (((String)videoItem["Name"]).Contains("(SUB)"))
+                    videoItem["Text"] = new string[] { "SUB" };
+                else
+                    videoItem["Text"] = new string[] { "RUS" };
                 videoItem["Poster"] = Regex.Match(answerContent, "<div class='img_'><a href=\"([^\"]*)\"").Groups[1].ToString();
 
                 Match genre = Regex.Match(answerContent, @"Жанр:(?:\s?)(?:&nbsp;)?(?:<[^>]*>)?(?:\s?)(?:&nbsp;)?([а-яА-Я]+[^<]*)");
@@ -58,7 +61,11 @@ namespace watch_assistant.Model.Search
                     videoItem["Genre"] = genre.Groups[1].ToString().Trim();
 
                 Match year = Regex.Match(answerContent, "style=\"color: [^>]*>([0-9]{4})<");
-                videoItem["Year"] = Int32.Parse(year.Groups[1].ToString());
+                try
+                {
+                    videoItem["Year"] = Int32.Parse(year.Groups[1].ToString());
+                }
+                catch { }
 
                 _interviewResult.Rows.Add(videoItem);
             }
