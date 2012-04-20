@@ -3,7 +3,7 @@ using System.Data;
 using System.Text;
 using System.Text.RegularExpressions;
 
-namespace watch_assistant.Model.Search
+namespace watch_assistant.Model.Search.IInterviewers
 {
     class ASeeInterviewer : InterviewerBase
     {

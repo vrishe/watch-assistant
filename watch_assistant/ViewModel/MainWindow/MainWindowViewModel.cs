@@ -1,12 +1,10 @@
-﻿using System.Windows;
-using System.Windows.Input;
+﻿using System;
 using System.Collections.Generic;
-using System.Data;
-using System.Windows.Data;
-using System;
-using System.Diagnostics;
-using System.Net;
 using System.ComponentModel;
+using System.Data;
+using System.Windows;
+using System.Windows.Data;
+using System.Windows.Input;
 
 namespace watch_assistant.ViewModel.MainWindow
 {
@@ -34,7 +32,7 @@ namespace watch_assistant.ViewModel.MainWindow
     {
         #region Fields
         private readonly Model.Dictionary.Thesaurus _thesaurus = new Model.Dictionary.Thesaurus();
-        private readonly Model.Search.InterviewAggregator _interviewer = new Model.Search.InterviewAggregator();
+        private readonly Model.Search.IInterviewers.InterviewAggregator _interviewer = new Model.Search.IInterviewers.InterviewAggregator();
         private BackgroundWorker _bgInterview = new BackgroundWorker();
         private readonly Dictionary<string, DataTable> _userLists = new Dictionary<string, DataTable>();
 
@@ -87,7 +85,7 @@ namespace watch_assistant.ViewModel.MainWindow
                     }
                     catch (Exception ex)
                     {
-                        MessageBox.Show(ex.ToString());
+                        MessageBox.Show(ex.Message.ToString());
                     }
                 }
             ));
@@ -102,7 +100,14 @@ namespace watch_assistant.ViewModel.MainWindow
             _bgInterview.DoWork += new DoWorkEventHandler((s, e) =>
             {
                 string[] tmp = _thesaurus.GetPhrasePermutations((string)e.Argument);
-                _interviewer.ConductInterview((string[])tmp);
+                try
+                {
+                    _interviewer.ConductInterview((string[])tmp);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message.ToString());
+                }
             });
             _bgInterview.RunWorkerCompleted += new RunWorkerCompletedEventHandler((s, e) =>
             {
