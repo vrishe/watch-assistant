@@ -779,14 +779,13 @@
                             <DoubleAnimation Duration="00:00:00.4000000" Storyboard.TargetName="BackgroundGradientSelectedDisabled" Storyboard.TargetProperty="Opacity" To="0" />
                         </Storyboard>
                     </ControlTemplate.Resources>
-                    <Grid SnapsToDevicePixels="true">
+                    <Grid HorizontalAlignment="Stretch" SnapsToDevicePixels="true">
                         <Rectangle x:Name="BackgroundGradientOver" RadiusX="1" RadiusY="1" Stroke="{DynamicResource MouseOverBorderBrush}" Opacity="0" Fill="{DynamicResource MouseOverBrush}"/>
                         <Rectangle x:Name="BackgroundGradientSelectedDisabled" RadiusX="1" RadiusY="1" Opacity="0" Fill="{DynamicResource ListItemSelectedBrush}" Stroke="{DynamicResource ListItemSelectedBorderBrush}"/>
                         <Rectangle x:Name="BackgroundGradientSelected" Stroke="{DynamicResource PressedBorderBrush}" StrokeThickness="1" RadiusX="1" RadiusY="1" Opacity="0" Fill="{DynamicResource PressedBrush}" />
                         <ContentPresenter x:Name="contentPresenter" Content="{TemplateBinding Content}" ContentTemplate="{TemplateBinding ContentTemplate}" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" Margin="{TemplateBinding Padding}" />
                     </Grid>
                     <ControlTemplate.Triggers>
-
                         <Trigger Property="IsSelected" Value="true">
                             <Trigger.ExitActions>
                                 <BeginStoryboard Storyboard="{StaticResource SelectedOff}" x:Name="SelectedOff_BeginStoryboard" />
@@ -3400,7 +3399,6 @@
                     </ControlTemplate.Resources>
                     <Grid Margin="0,1,0,1">
                         <Grid>
-
                             <Border x:Name="BackgroundNorm" BorderThickness="1" CornerRadius="1.75" Background="{DynamicResource NormalBrush}" BorderBrush="{DynamicResource NormalBorderBrush}"/>
                             <Border x:Name="BackgroundNorm_highlight" Margin="1" BorderBrush="{DynamicResource NormalHighlightBrush}" BorderThickness="1,0,1,1" CornerRadius="1" Opacity="0.65" />
                             <Border x:Name="BackgroundOver" BorderThickness="1" CornerRadius="1.75" Opacity="0" Background="{DynamicResource MouseOverBrush}" BorderBrush="{DynamicResource MouseOverBorderBrush}"/>

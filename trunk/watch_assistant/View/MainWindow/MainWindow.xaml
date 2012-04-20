@@ -13,10 +13,10 @@
     <custom:CustomWindow.Resources>
         <Thickness x:Key="DefaultLeftRightMargin">5,0,5,0</Thickness>
 
-        <Style x:Key="BaseListItemStyle" TargetType="{x:Type UserControl}">          
+        <Style x:Key="BaseListItemStyle" TargetType="{x:Type ContentControl}">
             <Setter Property="Template">
                 <Setter.Value>
-                    <ControlTemplate TargetType="{x:Type UserControl}">
+                    <ControlTemplate TargetType="{x:Type ContentControl}">
                         <ControlTemplate.Resources>
                             <mwvm:FormatStringConverter x:Key="StringValueModifier" />
                             <sys:String x:Key="ListViewItemGenreLabel">Genre: {0}</sys:String>
@@ -24,16 +24,16 @@
 
                             <Storyboard x:Key="HoverOn" TargetName="AdditionalPresenter">
                                 <ObjectAnimationUsingKeyFrames BeginTime="00:00:00" Storyboard.TargetName="AdditionalPresenter" Storyboard.TargetProperty="(UIElement.Visibility)">
-                                    <DiscreteObjectKeyFrame KeyTime="00:00:00.5000000" Value="{x:Static Visibility.Visible}" />
+                                    <DiscreteObjectKeyFrame KeyTime="00:00:00.2500000" Value="{x:Static Visibility.Visible}" />
                                 </ObjectAnimationUsingKeyFrames>
-                                <DoubleAnimation BeginTime="00:00:00" Duration="00:00:00.7500000" To="0.85" Storyboard.TargetProperty="(UIElement.Opacity)" />
+                                <DoubleAnimation BeginTime="00:00:00" Duration="00:00:00.5000000" To="0.85" Storyboard.TargetProperty="(UIElement.Opacity)" />
                             </Storyboard>
 
                             <Storyboard x:Key="HoverOff" TargetName="AdditionalPresenter">
                                 <ObjectAnimationUsingKeyFrames BeginTime="00:00:00" Storyboard.TargetProperty="(UIElement.Visibility)">
-                                    <DiscreteObjectKeyFrame KeyTime="00:00:00.5000000" Value="{x:Static Visibility.Collapsed}" />
+                                    <DiscreteObjectKeyFrame KeyTime="00:00:00.2500000" Value="{x:Static Visibility.Collapsed}" />
                                 </ObjectAnimationUsingKeyFrames>
-                                <DoubleAnimation BeginTime="00:00:00" Duration="00:00:00.7500000" To="0" Storyboard.TargetProperty="(UIElement.Opacity)" />
+                                <DoubleAnimation BeginTime="00:00:00" Duration="00:00:00.5000000" To="0" Storyboard.TargetProperty="(UIElement.Opacity)" />
                             </Storyboard>
                         </ControlTemplate.Resources>
 
@@ -51,30 +51,33 @@
                             </EventTrigger>
                         </ControlTemplate.Triggers>
 
-                        <StackPanel MaxHeight="45" Orientation="Horizontal" FlowDirection="LeftToRight" Margin="1,1,1,1">
-                            <Border Background="{DynamicResource ControlBackgroundBrush}" CornerRadius="{DynamicResource DefaultCornerRadius}">
-                                <Image x:Name="Poster" VerticalAlignment="Stretch" Margin="1,1,1,1" Source="{Binding Path=[Poster], Mode=OneWay}" />
+                        <Grid Height="45" Margin="1">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition />
+                            </Grid.ColumnDefinitions>
+
+                            <ContentPresenter x:Name="AdditionalPresenter" VerticalAlignment="Stretch" Visibility="Collapsed" Opacity="0" />
+                            <Border Background="{DynamicResource ControlBackgroundBrush}" CornerRadius="{DynamicResource DefaultCornerRadius}" Grid.Column="1">
+                                <Image x:Name="Poster" Margin="1,1,1,1" Source="{Binding Path=[Poster], Mode=OneWay}" />
                             </Border>
-                            <Grid>
-                                <StackPanel Orientation="Vertical">
-                                    <Label HorizontalAlignment="Left" Margin="3,2,0,0" Content="{Binding Path=[Name], Mode=OneWay}"/>
-                                    <TextBlock Margin="3,0,0,0" Foreground="{DynamicResource OutsideFontColor}" 
-                                    Text="{Binding Path=[Genre], Mode=OneWay, Converter={StaticResource StringValueModifier}, ConverterParameter={StaticResource ListViewItemGenreLabel}}"/>
-                                    <TextBlock Margin="3,0,0,0" Foreground="{DynamicResource OutsideFontColor}" 
-                                    Text="{Binding Path=[Year], Mode=OneWay, Converter={StaticResource StringValueModifier}, ConverterParameter={StaticResource ListViewItemYearLabel}}"/>
-                                </StackPanel>
-                                <AdornerDecorator >
-                                    <Button x:Name="AdditionalPresenter" Height="15" Width="60" VerticalAlignment="Bottom" HorizontalAlignment="Right"  Visibility="Collapsed" Opacity="0" />
-                                </AdornerDecorator>
-                            </Grid>
-                        </StackPanel>                
+                            <StackPanel Orientation="Vertical" Grid.Column="2">
+                                <TextBlock Margin="3,2,0,0" TextTrimming="CharacterEllipsis" Foreground="{DynamicResource WindowLabelTextColor}" 
+                                           Text="{Binding Path=[Name], Mode=OneWay}" HorizontalAlignment="Left" />
+                                <TextBlock Margin="3,0,0,0" TextTrimming="CharacterEllipsis" Foreground="{DynamicResource OutsideFontColor}"
+                                           Text="{Binding Path=[Genre], Mode=OneWay, Converter={StaticResource StringValueModifier}, ConverterParameter={StaticResource ListViewItemGenreLabel}}"  />
+                                <TextBlock Margin="3,0,0,0" TextTrimming="CharacterEllipsis" Foreground="{DynamicResource OutsideFontColor}" 
+                                           Text="{Binding Path=[Year], Mode=OneWay, Converter={StaticResource StringValueModifier}, ConverterParameter={StaticResource ListViewItemYearLabel}}" />
+                            </StackPanel>
+                        </Grid>
                     </ControlTemplate>
                 </Setter.Value>
-            </Setter>           
+            </Setter>
         </Style>
 
-        <DataTemplate x:Key="SearchingListViewItemTemplate">
-            <UserControl Style="{StaticResource BaseListItemStyle}" />
+        <DataTemplate x:Key="SearchingListBoxItemTemplate">
+            <ContentControl Style="{StaticResource BaseListItemStyle}" />
         </DataTemplate>
     </custom:CustomWindow.Resources>
     
@@ -109,8 +112,8 @@
                             CommandParameter="{Binding ElementName=tbSearch, Path=Text, Mode=OneWay}" />
                 </Grid>
 
-                <ListBox x:Name="searchView" Grid.Row="1" Margin="5,3,5,3.5" ItemsSource="{Binding Path=SearchResultTable.Rows, Mode=OneWay}"
-                         ItemTemplate="{StaticResource SearchingListViewItemTemplate}" ScrollViewer.HorizontalScrollBarVisibility="Disabled" />
+                <ListBox x:Name="searchView" Grid.Row="1" Margin="5,3,5,3.5" ItemsSource="{Binding Path=SearchResultTable.Rows, Mode=OneWay}" 
+                         ItemTemplate="{StaticResource SearchingListBoxItemTemplate}" HorizontalContentAlignment="Stretch" ScrollViewer.HorizontalScrollBarVisibility="Disabled" />
             </Grid>
         </custom:WindowPage>
 
@@ -149,7 +152,7 @@
                 </Grid>
 
                 <!-- Main List -->
-                <ListBox x:Name="listView" Grid.Row="1" Margin="5,3,5,3.5" ItemTemplate="{StaticResource SearchingListViewItemTemplate}"
+                <ListBox x:Name="listView" Grid.Row="1" Margin="5,3,5,3.5" ItemTemplate="{StaticResource SearchingListBoxItemTemplate}" HorizontalContentAlignment="Stretch"
                          ItemsSource="{Binding Path=ActiveUserTableProperty.Rows, Mode=TwoWay}" ScrollViewer.HorizontalScrollBarVisibility="Disabled" />
 
                 <!-- Userbar -->
