@@ -27,11 +27,13 @@
                                     <ColumnDefinition Width="{Binding Source={x:Static SystemParameters.BorderWidth}}"/>
                                 </Grid.ColumnDefinitions>
 
-                                <Border x:Name="PART_TitleBar" CornerRadius="{Binding ElementName=WindowFrame, Path=CornerRadius}" Background="{DynamicResource WindowBackgroundBrush}" Grid.Row="1" Grid.Column="1">
-
-                                    <AdornerDecorator Grid.Row="1">
-                                        <ContentPresenter />
-                                    </AdornerDecorator>
+                                <Border x:Name="PART_Background" CornerRadius="{Binding ElementName=WindowFrame, Path=CornerRadius}" Background="{DynamicResource WindowBackgroundBrush}" Grid.Row="1" Grid.Column="1">
+                                    <Grid>
+                                        <Border x:Name="PART_TitleBar" Height="30" VerticalAlignment="Top" HorizontalAlignment="Stretch" CornerRadius="{Binding ElementName=WindowFrame, Path=CornerRadius}" Background="Transparent" />
+                                        <AdornerDecorator Grid.Row="1">
+                                            <ContentPresenter />
+                                        </AdornerDecorator>
+                                    </Grid>                                  
                                 </Border>
 
                                 <Rectangle x:Name="PART_ResizeBorderLeft" Fill="Transparent" Cursor="SizeWE" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Grid.Row="1"/>

@@ -180,6 +180,7 @@ namespace CustomControls
             // (because we were called from a different thread, we must also marshall back to the UI thread)
             Dispatcher.BeginInvoke(DispatcherPriority.ContextIdle, (ThreadStart)delegate
             {
+                // TODO: Change the WindowFrame layout to setup visual tree in its right state.
                 FrameworkElement titleBar = (FrameworkElement)_frame.Template.FindName("PART_TitleBar", _frame);
                 if (titleBar != null)
                 {
@@ -215,7 +216,6 @@ namespace CustomControls
         #region Sizing handlers
 
         #region WinAPI interop
-
 
         internal struct POINT
         {
@@ -328,7 +328,6 @@ namespace CustomControls
 
             return (IntPtr)0;
         }
-
         private static void WmGetMinMaxInfo(IntPtr hwnd, IntPtr lParam)
         {
             MINMAXINFO mmi = (MINMAXINFO)Marshal.PtrToStructure(lParam, typeof(MINMAXINFO));
@@ -544,14 +543,13 @@ namespace CustomControls
         {
             if (e.ClickCount > 1)
             {
-                if ( (sender as FrameworkElement).IsMouseDirectlyOver ) WindowState = WindowState == WindowState.Normal ? WindowState.Maximized : WindowState.Normal;
+                WindowState = WindowState == WindowState.Normal ? WindowState.Maximized : WindowState.Normal;
             }
             else
             {
-                if (WindowState != WindowState.Maximized && (sender as FrameworkElement).IsMouseDirectlyOver) DragMove();
+                if (WindowState != WindowState.Maximized) DragMove();
             }
         }
-
         private void titleBarMouseMove(object sender, MouseEventArgs e)
         {
             if (e.LeftButton == MouseButtonState.Pressed 

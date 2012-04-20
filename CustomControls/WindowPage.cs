@@ -5,6 +5,7 @@ namespace CustomControls
 {
     public class WindowPage : UserControl
     {
+        // TODO: CaptionHeight DepProp - For caption height dynamic customization.
         static WindowPage()
         {
             DefaultStyleKeyProperty.OverrideMetadata(typeof(WindowPage), new FrameworkPropertyMetadata(typeof(WindowPage)));
@@ -12,6 +13,7 @@ namespace CustomControls
 
         #region depProps
 
+        // REFACTOR: Rename properties according to their semantic purposes. 
         public object LeftHeaderCell
         {
             get { return (object)GetValue(LeftHeaderCellProperty); }
