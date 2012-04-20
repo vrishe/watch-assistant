@@ -9,7 +9,7 @@ namespace watch_assistant.Model.Search.IVideoInfoGrabers
     {
         #region IVideoInfoGraber implementation
 
-        void GetInfo(System.Data.DataRow videoItem)
+        public void GetInfo(System.Data.DataRow videoItem)
         {
             throw new NotImplementedException();
         }
