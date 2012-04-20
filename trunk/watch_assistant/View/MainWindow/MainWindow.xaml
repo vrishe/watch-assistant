@@ -77,7 +77,15 @@
         </Style>
 
         <DataTemplate x:Key="SearchingListBoxItemTemplate">
-            <ContentControl Style="{StaticResource BaseListItemStyle}" />
+            <ContentControl Style="{StaticResource BaseListItemStyle}" >
+                <custom:RatingControl VerticalAlignment="Bottom" Cursor="Hand" Margin="1,0,2,0" Width="15" Value="0">
+                    <custom:RatingControl.Items>
+                        <custom:RatingItem Content="One star"/>
+                        <custom:RatingItem Content="Two stars"/>
+                        <custom:RatingItem Content="Three stars"/>
+                    </custom:RatingControl.Items>
+                </custom:RatingControl>
+            </ContentControl>
         </DataTemplate>
         
         <DataTemplate x:Key="UserListBoxItemTemplate">
