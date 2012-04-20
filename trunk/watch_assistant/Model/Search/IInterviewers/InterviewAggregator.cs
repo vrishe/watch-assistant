@@ -5,7 +5,7 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Windows;
 
-namespace watch_assistant.Model.Search
+namespace watch_assistant.Model.Search.IInterviewers
 {
     class InterviewAggregator : IInterviewer
     {
@@ -47,7 +47,7 @@ namespace watch_assistant.Model.Search
                     interviewer.Value.Join();
 
             AggregateResults();
-            MessageBox.Show(_interviewResult.Rows.Count.ToString());
+      //      MessageBox.Show(_interviewResult.Rows.Count.ToString());
             _interviewers.Clear();
         }
 
@@ -117,7 +117,7 @@ namespace watch_assistant.Model.Search
                                 if (row["Year"].ToString() != otherRow["Year"].ToString())
                                     continue;
 
-                            // Check and (maybe)merge Name here
+                            // Check Name here
                             string[] names = GetNames((string)row["Name"]);
                             string[] otherNames = GetNames((string)otherRow["Name"]);
                             if (!(String.IsNullOrEmpty(names[0]) || String.IsNullOrEmpty(otherNames[0])))
@@ -150,6 +150,8 @@ namespace watch_assistant.Model.Search
                                 row["Genre"] = new string((otherRow["Genre"].ToString().ToCharArray()));
 
                             // Merge other info if we got here
+                            if (row["Name"].ToString().Length > otherRow["Name"].ToString().Length)
+                                row["Name"] = new string((otherRow["Name"].ToString().ToCharArray()));
                             if (row["Year"].ToString().Length < otherRow["Year"].ToString().Length)
                                 row["Year"] = new string((otherRow["Year"].ToString().ToCharArray()));
                             string[] href = new string[((String[])row["HRef"]).Length + 1];
@@ -201,25 +203,25 @@ namespace watch_assistant.Model.Search
                 (new AOSInterviewer(), new Thread((object query) =>
                 {
                     _interviewers[0].Key.ConductInterview((string[])query);
-                    MessageBox.Show("AOS Results Number: " + _interviewers[0].Key.InterviewResult.Rows.Count.ToString());
+         //           MessageBox.Show("AOS Results Number: " + _interviewers[0].Key.InterviewResult.Rows.Count.ToString());
                 })));
             _interviewers.Add(new KeyValuePair<InterviewerBase, Thread>(
                 new ASeeInterviewer(), new Thread((object query) =>
                 {
                     _interviewers[1].Key.ConductInterview((string[])query);
-                    MessageBox.Show("ASee Results Number: " + _interviewers[1].Key.InterviewResult.Rows.Count.ToString());
+            //        MessageBox.Show("ASee Results Number: " + _interviewers[1].Key.InterviewResult.Rows.Count.ToString());
                 })));
             _interviewers.Add(new KeyValuePair<InterviewerBase, Thread>(
                 new TVBestInterviewer(), new Thread((object query) =>
                 {
                     _interviewers[2].Key.ConductInterview((string[])query);
-                    MessageBox.Show("TVBest Results Number: " + _interviewers[2].Key.InterviewResult.Rows.Count.ToString());
+            //        MessageBox.Show("TVBest Results Number: " + _interviewers[2].Key.InterviewResult.Rows.Count.ToString());
                 })));
             _interviewers.Add(new KeyValuePair<InterviewerBase, Thread>(
                 new FilminInterviewer(), new Thread((object query) =>
                 {
                     _interviewers[3].Key.ConductInterview((string[])query);
-                    MessageBox.Show("Filmin Results Number: " + _interviewers[3].Key.InterviewResult.Rows.Count.ToString());
+             //       MessageBox.Show("Filmin Results Number: " + _interviewers[3].Key.InterviewResult.Rows.Count.ToString());
                 })));
         }
 

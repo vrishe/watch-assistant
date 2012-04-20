@@ -112,7 +112,7 @@
                         <ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
                     <TextBox x:Name="tbSearch" Grid.Column="0" >
-                        Naruto
+                        Batman
                     </TextBox>
                     <Button x:Name="bSearch" Grid.Column="1" Margin="2,0,0,0" Content="Search" Command="{x:Static mwvm:MainWindowViewModel.SearchCommand}" 
                             CommandParameter="{Binding ElementName=tbSearch, Path=Text, Mode=OneWay}" />

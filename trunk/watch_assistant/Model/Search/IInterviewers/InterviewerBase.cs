@@ -4,9 +4,8 @@ using System.IO;
 using System.Net;
 using System.Text.RegularExpressions;
 using System.Windows;
-using System.Threading;
 
-namespace watch_assistant.Model.Search
+namespace watch_assistant.Model.Search.IInterviewers
 {
     class InterviewerBase : IInterviewer
     {
@@ -150,6 +149,8 @@ namespace watch_assistant.Model.Search
             HttpWebResponse serverResponse = PostSearchQuery(query, page);
 
             // Pick out html page from server response if possible
+            if (serverResponse == null)
+                throw new WebException(String.Format("{0} server doesn't responce", GetClassType()));
             if (serverResponse.StatusCode != HttpStatusCode.OK)
                 throw new WebException(
                     String.Format("{0} server doesn't responce as expected. Recieved StatusCode is {1}.",
@@ -246,7 +247,7 @@ namespace watch_assistant.Model.Search
         {
             string childType = this.GetType().ToString();
             int childTypeStart = childType.LastIndexOf(".");
-            int childTypeEnd = childType.IndexOf("Interviewer");
+            int childTypeEnd = childType.LastIndexOf("Interviewer");
             return childType.Substring(childTypeStart + 1, childTypeEnd - childTypeStart - 1);
         }
 

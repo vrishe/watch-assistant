@@ -104,13 +104,19 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Model\Dictionary\Thesaurus.cs" />
-    <Compile Include="Model\Search\AOSInterviewer.cs" />
+    <Compile Include="Model\Search\IInterviewers\AOSInterviewer.cs" />
     <Compile Include="Model\Search\IInterviewer.cs" />
-    <Compile Include="Model\Search\ASeeInterviewer.cs" />
-    <Compile Include="Model\Search\InterviewAggregator.cs" />
-    <Compile Include="Model\Search\InterviewerBase.cs" />
-    <Compile Include="Model\Search\TVBestInterviewer.cs" />
-    <Compile Include="Model\Search\FilminInterviewer.cs" />
+    <Compile Include="Model\Search\IInterviewers\ASeeInterviewer.cs" />
+    <Compile Include="Model\Search\IInterviewers\InterviewAggregator.cs" />
+    <Compile Include="Model\Search\IInterviewers\InterviewerBase.cs" />
+    <Compile Include="Model\Search\IInterviewers\TVBestInterviewer.cs" />
+    <Compile Include="Model\Search\IInterviewers\FilminInterviewer.cs" />
+    <Compile Include="Model\Search\IVideoInfoGraber.cs" />
+    <Compile Include="Model\Search\IVideoInfoGrabers\AOSVideoInfoGraber.cs" />
+    <Compile Include="Model\Search\IVideoInfoGrabers\ASeeVideoInfoGraber.cs" />
+    <Compile Include="Model\Search\IVideoInfoGrabers\TVBestVideoInfoGraber.cs" />
+    <Compile Include="Model\Search\IVideoInfoGrabers\FilminVideoInfoGraber.cs" />
+    <Compile Include="Model\Search\IVideoInfoGrabers\VideoInfoGrabingArgegator.cs" />
     <Compile Include="ViewModel\DetailsWindow\DetailsWindowViewModel.cs" />
     <Compile Include="View\DetailsWindow\DetailsWindow.xaml.cs">
       <DependentUpon>DetailsWindow.xaml</DependentUpon>
@@ -200,6 +206,7 @@
   <ItemGroup>
     <WCFMetadata Include="Service References\" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
