@@ -58,11 +58,11 @@
                                 <ColumnDefinition />
                             </Grid.ColumnDefinitions>
 
-                            <ContentPresenter x:Name="AdditionalPresenter" VerticalAlignment="Stretch" Visibility="Collapsed" Opacity="0" />
-                            <Border Background="{DynamicResource ControlBackgroundBrush}" CornerRadius="{DynamicResource DefaultCornerRadius}" Grid.Column="1">
-                                <Image x:Name="Poster" Margin="1,1,1,1" Source="{Binding Path=[Poster], Mode=OneWay}" />
+                            <ContentPresenter Grid.Column="0" x:Name="AdditionalPresenter" HorizontalAlignment="Center" VerticalAlignment="Stretch" Visibility="Collapsed" Opacity="0" />
+                            <Border Grid.Column="1" Background="{DynamicResource ControlBackgroundBrush}" CornerRadius="{DynamicResource DefaultCornerRadius}" >
+                                <Image x:Name="Poster" Margin="1" Source="{Binding Path=[Poster], Mode=OneWay}" />
                             </Border>
-                            <StackPanel Orientation="Vertical" Grid.Column="2">
+                            <StackPanel Grid.Column="2" Orientation="Vertical" >
                                 <TextBlock Margin="3,2,0,0" TextTrimming="CharacterEllipsis" Foreground="{DynamicResource WindowLabelTextColor}" 
                                            Text="{Binding Path=[Name], Mode=OneWay}" HorizontalAlignment="Left" />
                                 <TextBlock Margin="3,0,0,0" TextTrimming="CharacterEllipsis" Foreground="{DynamicResource OutsideFontColor}"
@@ -78,6 +78,12 @@
 
         <DataTemplate x:Key="SearchingListBoxItemTemplate">
             <ContentControl Style="{StaticResource BaseListItemStyle}" />
+        </DataTemplate>
+        
+        <DataTemplate x:Key="UserListBoxItemTemplate">
+            <ContentControl Style="{StaticResource BaseListItemStyle}">
+                <Button Margin="1,0,2,0" Width="15" />
+            </ContentControl>
         </DataTemplate>
     </custom:CustomWindow.Resources>
     
@@ -152,8 +158,8 @@
                 </Grid>
 
                 <!-- Main List -->
-                <ListBox x:Name="listView" Grid.Row="1" Margin="5,3,5,3.5" ItemTemplate="{StaticResource SearchingListBoxItemTemplate}" HorizontalContentAlignment="Stretch"
-                         ItemsSource="{Binding Path=ActiveUserTableProperty.Rows, Mode=TwoWay}" ScrollViewer.HorizontalScrollBarVisibility="Disabled" />
+                <ListBox x:Name="listView" Grid.Row="1" Margin="5,3,5,3.5" ItemsSource="{Binding Path=ActiveUserTableProperty.Rows, Mode=TwoWay}" 
+                         ItemTemplate="{StaticResource UserListBoxItemTemplate}" HorizontalContentAlignment="Stretch" ScrollViewer.HorizontalScrollBarVisibility="Disabled" />
 
                 <!-- Userbar -->
                 <ContentControl Style="{DynamicResource UserBarPlateStyle}" Margin="0,0,5,0" HorizontalAlignment="Right" Grid.Row="2"/> 
