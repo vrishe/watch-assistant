@@ -1,6 +1,7 @@
 ﻿using System.Data;
 using System.Windows;
 using System.Windows.Input;
+using System;
 
 namespace watch_assistant.ViewModel.DetailsWindow
 {
@@ -25,6 +26,14 @@ namespace watch_assistant.ViewModel.DetailsWindow
         public DetailsWindowViewModel(Window owner, DataRow details)
             : base(owner)
         {
+            try
+            {
+                watch_assistant.Model.Search.VideoInfoGraber.GetInfo(details);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
             Details = details;
         }
 
