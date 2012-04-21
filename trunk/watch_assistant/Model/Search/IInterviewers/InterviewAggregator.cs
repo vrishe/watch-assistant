@@ -44,7 +44,7 @@ namespace watch_assistant.Model.Search.IInterviewers
             foreach (var interviewer in _interviewers) interviewer.Value.Start(query);
             foreach (var interviewer in _interviewers)
                 if (interviewer.Value.IsAlive)
-                    interviewer.Value.Join();
+                    interviewer.Value.Join(); 
 
             AggregateResults();
       //      MessageBox.Show(_interviewResult.Rows.Count.ToString());
@@ -202,25 +202,53 @@ namespace watch_assistant.Model.Search.IInterviewers
             _interviewers.Add(new KeyValuePair<InterviewerBase, Thread>
                 (new AOSInterviewer(), new Thread((object query) =>
                 {
-                    _interviewers[0].Key.ConductInterview((string[])query);
+                    try
+                    {
+                        _interviewers[0].Key.ConductInterview((string[])query);
+                    }
+                    catch (Exception e)
+                    {
+                        MessageBox.Show(e.Message);
+                    }
          //           MessageBox.Show("AOS Results Number: " + _interviewers[0].Key.InterviewResult.Rows.Count.ToString());
                 })));
             _interviewers.Add(new KeyValuePair<InterviewerBase, Thread>(
                 new ASeeInterviewer(), new Thread((object query) =>
                 {
-                    _interviewers[1].Key.ConductInterview((string[])query);
+                    try
+                    {
+                        _interviewers[1].Key.ConductInterview((string[])query);
+                    }
+                    catch (Exception e)
+                    {
+                        MessageBox.Show(e.Message);
+                    }
             //        MessageBox.Show("ASee Results Number: " + _interviewers[1].Key.InterviewResult.Rows.Count.ToString());
                 })));
             _interviewers.Add(new KeyValuePair<InterviewerBase, Thread>(
                 new TVBestInterviewer(), new Thread((object query) =>
                 {
-                    _interviewers[2].Key.ConductInterview((string[])query);
+                    try
+                    {
+                        _interviewers[2].Key.ConductInterview((string[])query);
+                    }
+                    catch (Exception e)
+                    {
+                        MessageBox.Show(e.Message);
+                    }
             //        MessageBox.Show("TVBest Results Number: " + _interviewers[2].Key.InterviewResult.Rows.Count.ToString());
                 })));
             _interviewers.Add(new KeyValuePair<InterviewerBase, Thread>(
                 new FilminInterviewer(), new Thread((object query) =>
                 {
-                    _interviewers[3].Key.ConductInterview((string[])query);
+                    try
+                    {
+                        _interviewers[3].Key.ConductInterview((string[])query);
+                    }
+                    catch (Exception e)
+                    {
+                        MessageBox.Show(e.Message);
+                    }
              //       MessageBox.Show("Filmin Results Number: " + _interviewers[3].Key.InterviewResult.Rows.Count.ToString());
                 })));
         }
