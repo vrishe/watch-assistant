@@ -96,7 +96,7 @@
                             CommandParameter="{Binding ElementName=tbSearch, Path=Text, Mode=OneWay}" />
                 </Grid>
 
-                <ListBox x:Name="searchView" Grid.Row="1" Margin="5,3,5,3.5" ItemsSource="{Binding Path=SearchResultTable.Rows, Mode=OneWay}" 
+                <ListBox x:Name="searchView" Grid.Row="1" Margin="5,3,5,3.5" ItemsSource="{Binding Path=SearchResultTable.Rows, Mode=OneWay}" mwvm:MainWindowViewModel.AttachDetailsDoubleClickOpen="True"
                          ItemTemplate="{StaticResource SearchingListBoxItemTemplate}" HorizontalContentAlignment="Stretch" ScrollViewer.HorizontalScrollBarVisibility="Disabled" />
             </Grid>
         </custom:WindowPage>

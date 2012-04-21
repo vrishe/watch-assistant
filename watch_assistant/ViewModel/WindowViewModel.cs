@@ -24,8 +24,7 @@ namespace watch_assistant.ViewModel
             if (owner == null)
                 throw new ArgumentNullException("owner");
 
-            this._owner = owner;
-            this._owner.CommandBindings.Add(new CommandBinding(ApplicationCommands.Close, (s, e) => { _owner.Close(); }));
+            _owner = owner;
         }
 
         #endregion (Constructors)
