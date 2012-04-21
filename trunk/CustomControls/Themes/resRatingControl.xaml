@@ -6,7 +6,7 @@
         M 0 4.5 L 4 4.5 L 6 0 L 8 4.5 L 12 4.5 L 9 8 L 10 12 L 6 10 L 2 12 L 3 8 Z
     </StreamGeometry>
 
-    <Style x:Key="{x:Type local:RatingItem}" TargetType="{x:Type local:RatingItem}">
+    <Style TargetType="{x:Type local:RatingItem}">
         <Setter Property="MinWidth" Value="10"/>
         <Setter Property="MinHeight" Value="10"/>
         <Setter Property="Template">
@@ -55,14 +55,14 @@
         </Setter>
     </Style>
 
-    <Style x:Key="{x:Type local:RatingControl}" TargetType="{x:Type local:RatingControl}">
+    <Style TargetType="{x:Type local:RatingControl}">
         <Setter Property="MinWidth" Value="10"/>
         <Setter Property="MinHeight" Value="10"/>
         <Setter Property="ToolTip" Value="{Binding RelativeSource={RelativeSource Self}, Path=PersonalRatingPreview}" />
         <Setter Property="ItemsPanel">
             <Setter.Value>
                 <ItemsPanelTemplate>
-                    <StackPanel IsItemsHost="True" Orientation="Vertical" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
+                    <StackPanel IsItemsHost="True" Orientation="Horizontal" />
                 </ItemsPanelTemplate>
             </Setter.Value>
         </Setter>

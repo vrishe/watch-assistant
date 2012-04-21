@@ -73,7 +73,18 @@
     <SolidColorBrush x:Key="brushControlButtonGlow" Color="#B0FFFFFF" />
     <SolidColorBrush x:Key="brushControlButtonStroke" Color="Beige" />
     <SolidColorBrush x:Key="brushCloseButtonGlow" Color="Red" />
+    
+    <!-- RatingControl brushes -->
 
+    <SolidColorBrush x:Key="RatingItemFillUnrated" Color="#989898" />
+    <SolidColorBrush x:Key="RatingItemStrokeUnrated" Color="LightGray" />
+    <SolidColorBrush x:Key="RatingItemFillCommonRated" Color="Cornsilk" />
+    <SolidColorBrush x:Key="RatingItemStrokeCommonRated" Color="Goldenrod" />
+    <SolidColorBrush x:Key="RatingItemFillPersonalRated" Color="Gold" />
+    <SolidColorBrush x:Key="RatingItemStrokePersonalRated" Color="Goldenrod" />
+    <SolidColorBrush x:Key="RatingItemFillHighlighted" Color="LightGoldenrodYellow" />
+    <SolidColorBrush x:Key="RatingItemStrokeHighlighted" Color="Goldenrod" />
+    
     <!-- CheckBox Brushes -->
 
     <SolidColorBrush x:Key="CheckBoxBackgroundBrush" Color="#FFF4F4F4"/>

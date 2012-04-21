@@ -50,7 +50,7 @@
 
         <DataTemplate x:Key="SearchingListBoxItemTemplate">
             <ContentControl Style="{StaticResource BaseListItemStyle}" >
-                <custom:RatingControl VerticalAlignment="Center" Cursor="Hand" Margin="1,0,2,0" Width="10" PersonalRating="0" SelectionDirection="LastToFirst">
+                <custom:RatingControl Style="{DynamicResource RatingControlStyle}" PersonalRating="0">
                     <custom:RatingItem />
                     <custom:RatingItem />
                     <custom:RatingItem />
@@ -61,7 +61,12 @@
         
         <DataTemplate x:Key="UserListBoxItemTemplate">
             <ContentControl Style="{StaticResource BaseListItemStyle}">
-                <Button Margin="1,0,2,0" Width="15" />
+                <custom:RatingControl Style="{DynamicResource RatingControlStyle}" PersonalRating="0">
+                    <custom:RatingItem />
+                    <custom:RatingItem />
+                    <custom:RatingItem />
+                    <custom:RatingItem />
+                </custom:RatingControl>
             </ContentControl>
         </DataTemplate>
     </custom:CustomWindow.Resources>
