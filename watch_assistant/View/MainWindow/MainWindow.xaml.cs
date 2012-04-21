@@ -2,7 +2,6 @@
 using CustomControls;
 using System.Data;
 using System;
-using watch_assistant.Model.Search.IVideoInfoGrabers;
 
 namespace watch_assistant.View.MainWindow
 {
