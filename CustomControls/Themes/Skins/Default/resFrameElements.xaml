@@ -7,10 +7,6 @@
         <ResourceDictionary Source="resColors.xaml" />
     </ResourceDictionary.MergedDictionaries>
 
-    <StreamGeometry x:Key="RatingStar">
-        M 0 4.5 L 4 4.5 L 6 0 L 8 4.5 L 12 4.5 L 9 8 L 10 12 L 6 10 L 2 12 L 3 8 Z
-    </StreamGeometry>
-
     <Style x:Key="WindowFrameBorder" TargetType="{x:Type Border}" BasedOn="{x:Null}">
         <Setter Property="CornerRadius" Value="{Binding Source={x:Static SystemParameters.BorderWidth}}"/>
         <Setter Property="Background" Value="{StaticResource WindowFrameBrush}" />
@@ -68,13 +64,13 @@
                         FlowDirection="LeftToRight"
                         MaxHeight="40"
                         MaxWidth="120">
-                                <StackPanel Orientation="Vertical" Margin="0,0,2,0">
-                                    <Label x:Name="Nickname" HorizontalAlignment="Left">A2 Inc.</Label>
-                                    <TextBlock x:Name="DetailsOpenLink" HorizontalAlignment="Left">Details</TextBlock>
-                                </StackPanel>
-                                <Border Background="{StaticResource ImageBackgroundColor}" CornerRadius="5">
-                                    <Image x:Name="Avatar" Margin="1,1,1,1"/>
-                                </Border>
+                        <StackPanel Orientation="Vertical" Margin="0,0,2,0">
+                            <Label x:Name="Nickname" HorizontalAlignment="Left">A2 Inc.</Label>
+                            <TextBlock x:Name="DetailsOpenLink" HorizontalAlignment="Left">Details</TextBlock>
+                        </StackPanel>
+                        <Border Background="{StaticResource ImageBackgroundColor}" CornerRadius="{Binding Source={x:Static SystemParameters.BorderWidth}}">
+                            <Image x:Name="Avatar" Margin="1,1,1,1"/>
+                        </Border>
                     </StackPanel>
                 </ControlTemplate>
             </Setter.Value>
@@ -82,19 +78,21 @@
     </Style>
 
     <Style x:Key="RatingItemStyle" TargetType="{x:Type local:RatingItem}">
-        <Setter Property="MinWidth" Value="10"/>
-        <Setter Property="MinHeight" Value="10"/>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type local:RatingItem}">
                     <ControlTemplate.Resources>
                         <local:DoublesToRectConverter x:Key="DoublesToRectConverter" />
+
+                        <StreamGeometry x:Key="RatingStar">
+                            M 0 4.5 L 4 4.5 L 6 0 L 8 4.5 L 12 4.5 L 9 8 L 10 12 L 6 10 L 2 12 L 3 8 Z
+                        </StreamGeometry>
                     </ControlTemplate.Resources>
 
                     <Viewbox StretchDirection="Both" Stretch="UniformToFill">
                         <Grid>
                             <Path x:Name="FigureBackground" Data="{StaticResource RatingStar}" StrokeThickness="1" StrokeLineJoin="Round" Stroke="{StaticResource RatingItemStrokeUnrated}" Fill="{StaticResource RatingItemFillUnrated}" />
-                            <Path x:Name="FigureForeground" Data="{StaticResource RatingStar}" StrokeThickness="1" StrokeLineJoin="Round" Stroke="{StaticResource RatingItemStrokeCommonRated}" Fill="{StaticResource RatingItemFillCommonRated}" Visibility="Collapsed" >
+                            <Path x:Name="FigureForeground" Data="{StaticResource RatingStar}" StrokeThickness="1" StrokeLineJoin="Round" Stroke="Transparent" Fill="{StaticResource RatingItemFillCommonRated}" Visibility="Collapsed" >
                                 <Path.Clip>
                                     <RectangleGeometry>
                                         <RectangleGeometry.Rect>
@@ -122,6 +120,7 @@
                             <Setter TargetName="FigureBackground" Property="Fill" Value="{StaticResource RatingItemFillPersonalRated}" />
                         </Trigger>
                         <Trigger Property="PreviewState" Value="PreviewCommonRating">
+                            <Setter TargetName="FigureBackground" Property="Stroke" Value="{StaticResource RatingItemStrokeCommonRated}" />
                             <Setter TargetName="FigureForeground" Property="Visibility" Value="Visible" />
                         </Trigger>
                     </ControlTemplate.Triggers>
@@ -130,20 +129,15 @@
         </Setter>
     </Style>
 
-    <Style x:Key="RatingControlStyle" TargetType="{x:Type local:RatingControl}">
-        <Setter Property="VerticalAlignment" Value="Center" />
+    <Style x:Key="RatingControlStyle" TargetType="{x:Type local:RatingControl}" >
+        <Setter Property="VerticalAlignment" Value="Stretch" />
         <Setter Property="Cursor" Value="Hand" />
         <Setter Property="Margin" Value="1,0,2,0" />
-        <Setter Property="Width" Value="10" />
+        <Setter Property="Width" Value="8" />
+        <Setter Property="RatingRangeMax" Value="5" />
+        <Setter Property="Orientation" Value="Vertical" />
         <Setter Property="SelectionDirection" Value="LastToFirst" />
         <Setter Property="ItemContainerStyle" Value="{StaticResource RatingItemStyle}" />
-        <Setter Property="ItemsPanel">
-            <Setter.Value>
-                <ItemsPanelTemplate>
-                    <StackPanel IsItemsHost="True" Orientation="Vertical" />
-                </ItemsPanelTemplate>
-            </Setter.Value>
-        </Setter>
     </Style>
     
 

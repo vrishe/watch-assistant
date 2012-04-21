@@ -78,10 +78,10 @@
 
     <SolidColorBrush x:Key="RatingItemFillUnrated" Color="#989898" />
     <SolidColorBrush x:Key="RatingItemStrokeUnrated" Color="LightGray" />
-    <SolidColorBrush x:Key="RatingItemFillCommonRated" Color="Cornsilk" />
+    <SolidColorBrush x:Key="RatingItemFillCommonRated" Color="Goldenrod" Opacity="0.5" />
     <SolidColorBrush x:Key="RatingItemStrokeCommonRated" Color="Goldenrod" />
     <SolidColorBrush x:Key="RatingItemFillPersonalRated" Color="Gold" />
-    <SolidColorBrush x:Key="RatingItemStrokePersonalRated" Color="Goldenrod" />
+    <SolidColorBrush x:Key="RatingItemStrokePersonalRated" Color="DarkGoldenrod" />
     <SolidColorBrush x:Key="RatingItemFillHighlighted" Color="LightGoldenrodYellow" />
     <SolidColorBrush x:Key="RatingItemStrokeHighlighted" Color="Goldenrod" />
     

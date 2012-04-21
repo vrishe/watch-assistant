@@ -6,7 +6,7 @@
         xmlns:custom="clr-namespace:CustomControls;assembly=CustomControls"
         xmlns:mwv="clr-namespace:watch_assistant.View.MainWindow"
         xmlns:mwvm="clr-namespace:watch_assistant.ViewModel.MainWindow"
-        
+                             
         MinWidth="214" MinHeight="150"
         Height="480" Width="640">
 
@@ -49,19 +49,13 @@
         </Style>
 
         <DataTemplate x:Key="SearchingListBoxItemTemplate">
-            <ContentControl Style="{StaticResource BaseListItemStyle}" >
-                <custom:RatingControl Style="{DynamicResource RatingControlStyle}" PersonalRating="0">
-                    <custom:RatingItem />
-                    <custom:RatingItem />
-                    <custom:RatingItem />
-                    <custom:RatingItem />
-                </custom:RatingControl>
-            </ContentControl>
+            <ContentControl Style="{StaticResource BaseListItemStyle}" />
         </DataTemplate>
         
         <DataTemplate x:Key="UserListBoxItemTemplate">
             <ContentControl Style="{StaticResource BaseListItemStyle}">
-                <custom:RatingControl Style="{DynamicResource RatingControlStyle}" PersonalRating="0">
+                <custom:RatingControl Style="{DynamicResource RatingControlStyle}" PersonalRating="0" >
+                    <custom:RatingItem />
                     <custom:RatingItem />
                     <custom:RatingItem />
                     <custom:RatingItem />
