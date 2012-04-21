@@ -75,7 +75,8 @@
         <!-- Search window part -->
         <custom:WindowPage>
             <custom:WindowPage.MidHeaderCell>
-                <Label HorizontalAlignment="Center">SEARCH</Label>
+                <TextBlock Text="Search" TextTrimming="CharacterEllipsis" Foreground="{DynamicResource WindowLabelTextColor}"
+                           VerticalAlignment="Center" HorizontalAlignment="Center" />
             </custom:WindowPage.MidHeaderCell>
 
             <Grid Grid.Row="1">
@@ -110,7 +111,8 @@
                 <Label Margin="5.5,0,0,0">Menu</Label>
             </custom:WindowPage.LeftHeaderCell>
             <custom:WindowPage.MidHeaderCell>
-                <Label HorizontalAlignment="Center">Watch Assistant</Label>
+                <TextBlock Text="Watch Assistant" TextTrimming="CharacterEllipsis" Foreground="{DynamicResource WindowLabelTextColor}" 
+                           VerticalAlignment="Center" HorizontalAlignment="Center" />
             </custom:WindowPage.MidHeaderCell>
             <custom:WindowPage.RightHeaderCell>
                 <ContentControl Style="{DynamicResource SystemButtonsContainerStyle}" Margin="0,0,5,0"/>
