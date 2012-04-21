@@ -12,7 +12,7 @@ namespace watch_assistant.Model.Search
         /// <param name="videoItem">A video to grab info about</param>
         public static void GetInfo(System.Data.DataRow videoItem)
         {
-            string site = Regex.Match(((String[])videoItem["HRef"])[0], @"//([^\.]*)\.").Groups[1].ToString();
+            string site = GetServerName(((String[])videoItem["HRef"])[0]);
             switch (site)
             {
                 case "animeonline":
@@ -28,6 +28,14 @@ namespace watch_assistant.Model.Search
                     GetInfoFromFilmin(videoItem);
                     break;
             }
+        }
+
+        /// <summary>
+        /// Gets a server name from the Uri
+        /// </summary>
+        public static string GetServerName(string uri)
+        {
+            return Regex.Match(uri, @"//([^\.]*)\.").Groups[1].ToString();
         }
 
         /// <summary>
