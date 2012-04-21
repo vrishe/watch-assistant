@@ -7,29 +7,48 @@
     </StreamGeometry>
 
     <Style x:Key="{x:Type local:RatingItem}" TargetType="{x:Type local:RatingItem}">
-        <Setter Property="MinWidth" Value="13"/>
-        <Setter Property="MinHeight" Value="13"/>
-        <Setter Property="ToolTip" Value="{Binding Content, RelativeSource={RelativeSource Self}}"/>
+        <Setter Property="MinWidth" Value="10"/>
+        <Setter Property="MinHeight" Value="10"/>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type local:RatingItem}">
-                    <Path x:Name="Star" Data="{StaticResource RatingStar}"
-											HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
-											StrokeThickness="1" StrokeLineJoin="Round"
-											Stroke="#989898" Fill="Snow"/>
+                    <ControlTemplate.Resources>
+                        <local:DoublesToRectConverter x:Key="DoublesToRectConverter" />
+                    </ControlTemplate.Resources>
+                    
+                    <Viewbox StretchDirection="Both" Stretch="UniformToFill">
+                        <Grid>
+                            <Path x:Name="FigureBackground" Data="{StaticResource RatingStar}" StrokeThickness="1" StrokeLineJoin="Round" Stroke="#989898" Fill="LightGray" />
+                            <Path x:Name="FigureForeground" Data="{StaticResource RatingStar}" StrokeThickness="1" StrokeLineJoin="Round" Stroke="Goldenrod" Fill="Cornsilk" Visibility="Collapsed" >
+                                <Path.Clip>
+                                    <RectangleGeometry>
+                                        <RectangleGeometry.Rect>
+                                            <MultiBinding Converter="{StaticResource DoublesToRectConverter}">
+                                                <Binding ElementName="FigureForeground" Path="ActualWidth" />
+                                                <Binding ElementName="FigureForeground" Path="ActualHeight" />
+                                            </MultiBinding>
+                                        </RectangleGeometry.Rect>
+                                        <RectangleGeometry.Transform>
+                                            <ScaleTransform ScaleX="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=Fraction}" ScaleY="1" />
+                                        </RectangleGeometry.Transform>
+                                    </RectangleGeometry>
+                                </Path.Clip>
+                            </Path>
+                        </Grid>
+                    </Viewbox>
+
                     <ControlTemplate.Triggers>
-                        <Trigger Property="IsHighlighted" Value="True">
-                            <Setter TargetName="Star" Property="Stroke" Value="Orange"/>
-                            <Setter TargetName="Star" Property="Fill" Value="Yellow"/>
+                        <Trigger Property="PreviewState" Value="PreviewHighlight">
+                            <Setter TargetName="FigureBackground" Property="Stroke" Value="Goldenrod" />
+                            <Setter TargetName="FigureBackground" Property="Fill" Value="Yellow" />                            
                         </Trigger>
-                        <MultiTrigger>
-                            <MultiTrigger.Conditions>
-                                <Condition Property="IsSelected" Value="True"/>
-                                <Condition Property="IsHighlighted" Value="False"/>
-                            </MultiTrigger.Conditions>
-                            <Setter TargetName="Star" Property="Stroke" Value="Goldenrod"/>
-                            <Setter TargetName="Star" Property="Fill" Value="Gold"/>
-                        </MultiTrigger>
+                        <Trigger Property="PreviewState" Value="PreviewPersonalRating">
+                            <Setter TargetName="FigureBackground" Property="Stroke" Value="Goldenrod" />
+                            <Setter TargetName="FigureBackground" Property="Fill" Value="Gold" />
+                        </Trigger>
+                        <Trigger Property="PreviewState" Value="PreviewCommonRating">
+                            <Setter TargetName="FigureForeground" Property="Visibility" Value="Visible" />
+                        </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
             </Setter.Value>
@@ -37,8 +56,9 @@
     </Style>
 
     <Style x:Key="{x:Type local:RatingControl}" TargetType="{x:Type local:RatingControl}">
-        <Setter Property="MinWidth" Value="13"/>
-        <Setter Property="MinHeight" Value="13"/>
+        <Setter Property="MinWidth" Value="10"/>
+        <Setter Property="MinHeight" Value="10"/>
+        <Setter Property="ToolTip" Value="{Binding RelativeSource={RelativeSource Self}, Path=PersonalRatingPreview}" />
         <Setter Property="ItemsPanel">
             <Setter.Value>
                 <ItemsPanelTemplate>

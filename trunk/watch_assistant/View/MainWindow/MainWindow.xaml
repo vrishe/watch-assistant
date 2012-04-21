@@ -21,35 +21,7 @@
                             <mwvm:FormatStringConverter x:Key="StringValueModifier" />
                             <sys:String x:Key="ListViewItemGenreLabel">Genre: {0}</sys:String>
                             <sys:String x:Key="ListViewItemYearLabel">Year: {0}</sys:String>
-
-                            <!--<Storyboard x:Key="HoverOn" TargetName="AdditionalPresenter">
-                                <ObjectAnimationUsingKeyFrames BeginTime="00:00:00" Storyboard.TargetName="AdditionalPresenter" Storyboard.TargetProperty="(UIElement.Visibility)">
-                                    <DiscreteObjectKeyFrame KeyTime="00:00:00.2500000" Value="{x:Static Visibility.Visible}" />
-                                </ObjectAnimationUsingKeyFrames>
-                                <DoubleAnimation BeginTime="00:00:00" Duration="00:00:00.5000000" To="0.85" Storyboard.TargetProperty="(UIElement.Opacity)" />
-                            </Storyboard>
-
-                            <Storyboard x:Key="HoverOff" TargetName="AdditionalPresenter">
-                                <ObjectAnimationUsingKeyFrames BeginTime="00:00:00" Storyboard.TargetProperty="(UIElement.Visibility)">
-                                    <DiscreteObjectKeyFrame KeyTime="00:00:00.2500000" Value="{x:Static Visibility.Collapsed}" />
-                                </ObjectAnimationUsingKeyFrames>
-                                <DoubleAnimation BeginTime="00:00:00" Duration="00:00:00.5000000" To="0" Storyboard.TargetProperty="(UIElement.Opacity)" />
-                            </Storyboard>-->
                         </ControlTemplate.Resources>
-
-                        <!--<ControlTemplate.Triggers>
-                            <EventTrigger RoutedEvent="MouseEnter">
-                                <EventTrigger.Actions>
-                                    <BeginStoryboard Storyboard="{StaticResource HoverOn}" />
-                                </EventTrigger.Actions>
-                            </EventTrigger>
-
-                            <EventTrigger RoutedEvent="MouseLeave">
-                                <EventTrigger.Actions>
-                                    <BeginStoryboard Storyboard="{StaticResource HoverOff}" />
-                                </EventTrigger.Actions>
-                            </EventTrigger>
-                        </ControlTemplate.Triggers>-->
 
                         <Grid Height="45" Margin="1">
                             <Grid.ColumnDefinitions>
@@ -67,7 +39,7 @@
                                            Text="{Binding Path=[Name], Mode=OneWay}" HorizontalAlignment="Left" />
                                 <TextBlock Margin="3,0,0,0" TextTrimming="CharacterEllipsis" Foreground="{DynamicResource OutsideFontColor}"
                                            Text="{Binding Path=[Genre], Mode=OneWay, Converter={StaticResource StringValueModifier}, ConverterParameter={StaticResource ListViewItemGenreLabel}}"  />
-                                <TextBlock Margin="3,0,0,0" TextTrimming="CharacterEllipsis" Foreground="{DynamicResource OutsideFontColor}" 
+                                <TextBlock Margin="3,0,0,0" TextTrimming="WordEllipsis" Foreground="{DynamicResource OutsideFontColor}" 
                                            Text="{Binding Path=[Year], Mode=OneWay, Converter={StaticResource StringValueModifier}, ConverterParameter={StaticResource ListViewItemYearLabel}}" />
                             </StackPanel>
                         </Grid>
@@ -78,10 +50,11 @@
 
         <DataTemplate x:Key="SearchingListBoxItemTemplate">
             <ContentControl Style="{StaticResource BaseListItemStyle}" >
-                <custom:RatingControl VerticalAlignment="Stretch" Cursor="Hand" Margin="1,0,2,0" Width="15" PersonalRating="0">
-                    <custom:RatingItem Content="One star"/>
-                    <custom:RatingItem Content="Two stars"/>
-                    <custom:RatingItem Content="Three stars"/>
+                <custom:RatingControl VerticalAlignment="Center" Cursor="Hand" Margin="1,0,2,0" Width="10" PersonalRating="0" SelectionDirection="LastToFirst">
+                    <custom:RatingItem />
+                    <custom:RatingItem />
+                    <custom:RatingItem />
+                    <custom:RatingItem />
                 </custom:RatingControl>
             </ContentControl>
         </DataTemplate>
