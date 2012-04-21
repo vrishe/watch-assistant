@@ -75,18 +75,11 @@ namespace watch_assistant.ViewModel.MainWindow
             _owner.CommandBindings.Add(new CommandBinding(
                 SearchCommand, (s, e) => 
                 {
-                    try
-                    {
-                        _interviewer.ClearInterviewResults();
-                        if (!_bgInterview.IsBusy)
-                            _bgInterview.RunWorkerAsync(e.Parameter);
-                        else
-                            System.Media.SystemSounds.Beep.Play();
-                    }
-                    catch (Exception ex)
-                    {
-                        MessageBox.Show(ex.Message.ToString());
-                    }
+                    _interviewer.ClearInterviewResults();
+                    if (!_bgInterview.IsBusy)
+                        _bgInterview.RunWorkerAsync(e.Parameter);
+                    else
+                        System.Media.SystemSounds.Beep.Play();
                 }
             ));
         }
