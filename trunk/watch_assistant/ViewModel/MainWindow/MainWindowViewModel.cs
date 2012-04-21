@@ -50,7 +50,6 @@ namespace watch_assistant.ViewModel.MainWindow
             set { SetValue(SearchResultTableProperty, value); }
         }
 
-        // Using a DependencyProperty as the backing store for SearchResultList.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty SearchResultTableProperty =
             DependencyProperty.Register("SearchResultTable", typeof(DataTable), typeof(MainWindowViewModel), new UIPropertyMetadata(null));
 
@@ -60,9 +59,25 @@ namespace watch_assistant.ViewModel.MainWindow
             set { SetValue(ActiveUserTableProperty, value); }
         }
 
-        // Using a DependencyProperty as the backing store for ActiveUserList.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty ActiveUserTableProperty =
-            DependencyProperty.Register("ActiveUserTable", typeof(DataTable), typeof(MainWindowViewModel), new UIPropertyMetadata(null));       
+            DependencyProperty.Register("ActiveUserTable", typeof(DataTable), typeof(MainWindowViewModel), new UIPropertyMetadata(null));
+
+
+
+        public static bool GetAttachDetailsDoubleClickOpen(DependencyObject obj)
+        {
+            return (bool)obj.GetValue(AttachDetailsDoubleClickOpenProperty);
+        }
+
+        public static void SetAttachDetailsDoubleClickOpen(DependencyObject obj, bool value)
+        {
+            obj.SetValue(AttachDetailsDoubleClickOpenProperty, value);
+        }
+
+        public static readonly DependencyProperty AttachDetailsDoubleClickOpenProperty =
+            DependencyProperty.RegisterAttached("AttachDetailsDoubleClickOpen", typeof(bool), typeof(MainWindowViewModel), new UIPropertyMetadata(0));
+
+        
 
         #endregion (Properties)
 

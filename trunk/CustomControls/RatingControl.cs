@@ -5,9 +5,12 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Markup;
+using System.Windows.Media;
 
 namespace CustomControls
 {
+
+    // TODO: RatingControl improvements pending...
     public class DoublesToRectConverter : IMultiValueConverter
     {
         #region IMultiValueConverter members
@@ -33,7 +36,6 @@ namespace CustomControls
         FirstToLast,
         LastToFirst
     }
-
     internal enum PreviewState
     {
         PreviewHighlight,
@@ -41,6 +43,85 @@ namespace CustomControls
         PreviewPersonalRating,
         PreviewCommonRating,
     }
+
+    //public class RatingItemData : DependencyObject
+    //{
+    //    #region Properties
+
+    //    public Brush UnratedFillColor
+    //    {
+    //        get { return (Brush)GetValue(UnratedFillColorProperty); }
+    //        set { SetValue(UnratedFillColorProperty, value); }
+    //    }
+    //    public static readonly DependencyProperty UnratedFillColorProperty =
+    //        DependencyProperty.Register("UnratedFillColor", typeof(Brush), typeof(RatingItemData), new UIPropertyMetadata(new SolidColorBrush(Colors.Gray)));
+
+    //    public Brush UnratedStrokeColor
+    //    {
+    //        get { return (Brush)GetValue(UnratedStrokeColorProperty); }
+    //        set { SetValue(UnratedStrokeColorProperty, value); }
+    //    }
+    //    public static readonly DependencyProperty UnratedStrokeColorProperty =
+    //        DependencyProperty.Register("UnratedStrokeColor", typeof(Brush), typeof(RatingItemData), new UIPropertyMetadata(new SolidColorBrush(Colors.LightGray)));
+
+    //    public Brush CommonRatedFillColor
+    //    {
+    //        get { return (Brush)GetValue(CommonRatedFillColorProperty); }
+    //        set { SetValue(CommonRatedFillColorProperty, value); }
+    //    }
+    //    public static readonly DependencyProperty CommonRatedFillColorProperty =
+    //        DependencyProperty.Register("CommonRatedFillColor", typeof(Brush), typeof(RatingItemData), new UIPropertyMetadata(new SolidColorBrush(Colors.Goldenrod)));
+
+    //    public Brush CommonRatedStrokeColor
+    //    {
+    //        get { return (Brush)GetValue(CommonRatedStrokeColorProperty); }
+    //        set { SetValue(CommonRatedStrokeColorProperty, value); }
+    //    }
+    //    public static readonly DependencyProperty CommonRatedStrokeColorProperty =
+    //        DependencyProperty.Register("CommonRatedStrokeColor", typeof(Brush), typeof(RatingItemData), new UIPropertyMetadata(new SolidColorBrush(Colors.Goldenrod) { Opacity = .5 }));
+
+    //    public Brush PersonalRatedFillColor
+    //    {
+    //        get { return (Brush)GetValue(PersonalRatedFillColorProperty); }
+    //        set { SetValue(PersonalRatedFillColorProperty, value); }
+    //    }
+    //    public static readonly DependencyProperty PersonalRatedFillColorProperty =
+    //        DependencyProperty.Register("PersonalRatedFillColor", typeof(Brush), typeof(RatingItemData), new UIPropertyMetadata(new SolidColorBrush(Colors.Gold)));
+
+    //    public Brush PersonalRatedStrokeColor
+    //    {
+    //        get { return (Brush)GetValue(PersonalRatedStrokeColorProperty); }
+    //        set { SetValue(PersonalRatedStrokeColorProperty, value); }
+    //    }
+    //    public static readonly DependencyProperty PersonalRatedStrokeColorProperty =
+    //        DependencyProperty.Register("PersonalRatedStrokeColor", typeof(Brush), typeof(RatingItemData), new UIPropertyMetadata(new SolidColorBrush(Colors.Goldenrod)));
+
+    //    public Brush HighlitedFillColor
+    //    {
+    //        get { return (Brush)GetValue(HighlitedFillColorProperty); }
+    //        set { SetValue(HighlitedFillColorProperty, value); }
+    //    }
+    //    public static readonly DependencyProperty HighlitedFillColorProperty =
+    //        DependencyProperty.Register("HighlitedFillColor", typeof(Brush), typeof(RatingItemData), new UIPropertyMetadata(new SolidColorBrush(Colors.LightGoldenrodYellow)));
+
+    //    public Brush HighlightedStrokeColor
+    //    {
+    //        get { return (Brush)GetValue(HighlightedStrokeColorProperty); }
+    //        set { SetValue(HighlightedStrokeColorProperty, value); }
+    //    }
+    //    public static readonly DependencyProperty HighlightedStrokeColorProperty =
+    //        DependencyProperty.Register("HighlightedStrokeColor", typeof(Brush), typeof(RatingItemData), new UIPropertyMetadata(new SolidColorBrush(Colors.Goldenrod)));
+
+    //    public PathGeometry PathData
+    //    {
+    //        get { return (PathGeometry)GetValue(PathDataProperty); }
+    //        set { SetValue(PathDataProperty, value); }
+    //    }
+    //    public static readonly DependencyProperty PathDataProperty =
+    //        DependencyProperty.Register("PathData", typeof(PathGeometry), typeof(RatingItemData), new UIPropertyMetadata(new PathGeometry()));
+
+    //    #endregion (Properties)
+    //}
 
     public class RatingItem : Control
     {
@@ -65,6 +146,14 @@ namespace CustomControls
         public static readonly DependencyProperty PreviewStateProperty =
             DependencyProperty.Register("PreviewState", typeof(PreviewState), typeof(RatingItem), 
             new FrameworkPropertyMetadata(PreviewState.PreviewUnrated, FrameworkPropertyMetadataOptions.AffectsRender, null, CoercePreviewStateValue));
+
+        //public RatingItemData Data
+        //{
+        //    get { return (RatingItemData)GetValue(DataProperty); }
+        //    set { SetValue(DataProperty, value); }
+        //}
+        //public static readonly DependencyProperty DataProperty =
+        //    DependencyProperty.Register("Data", typeof(RatingItemData), typeof(RatingItem), new UIPropertyMetadata(new RatingItemData()));
 
         #endregion (Properties)
 
@@ -135,7 +224,7 @@ namespace CustomControls
     #endregion (Constructuctors)
     }
 
-    [StyleTypedProperty(Property = "RatingItemStyle", StyleTargetType = typeof(RatingItem))]
+    [StyleTypedProperty(Property = "ItemContainerStyle", StyleTargetType = typeof(RatingItem))]
     public class RatingControl : ItemsControl
     {
         private enum RatingItemUpdate
@@ -147,6 +236,16 @@ namespace CustomControls
         }
 
         #region Properties
+
+        // Orientation
+        public Orientation Orientation
+        {
+            get { return (Orientation)GetValue(OrientationProperty); }
+            set { SetValue(OrientationProperty, value); }
+        }
+
+        public static readonly DependencyProperty OrientationProperty =
+            DependencyProperty.Register("Orientation", typeof(Orientation), typeof(RatingControl), new UIPropertyMetadata(Orientation.Horizontal));        
 
         // SelectionDirection
         public SelectionDirection SelectionDirection

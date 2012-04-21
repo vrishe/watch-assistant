@@ -2,18 +2,15 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:local="clr-namespace:CustomControls">
     
-    <StreamGeometry x:Key="RatingStar">
-        M 0 4.5 L 4 4.5 L 6 0 L 8 4.5 L 12 4.5 L 9 8 L 10 12 L 6 10 L 2 12 L 3 8 Z
-    </StreamGeometry>
-
     <Style TargetType="{x:Type local:RatingItem}">
-        <Setter Property="MinWidth" Value="10"/>
-        <Setter Property="MinHeight" Value="10"/>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type local:RatingItem}">
                     <ControlTemplate.Resources>
                         <local:DoublesToRectConverter x:Key="DoublesToRectConverter" />
+                        <StreamGeometry x:Key="RatingStar">
+                            M 0 4.5 L 4 4.5 L 6 0 L 8 4.5 L 12 4.5 L 9 8 L 10 12 L 6 10 L 2 12 L 3 8 Z
+                        </StreamGeometry>
                     </ControlTemplate.Resources>
                     
                     <Viewbox StretchDirection="Both" Stretch="UniformToFill">
@@ -56,20 +53,22 @@
     </Style>
 
     <Style TargetType="{x:Type local:RatingControl}">
-        <Setter Property="MinWidth" Value="10"/>
-        <Setter Property="MinHeight" Value="10"/>
+        <Setter Property="HorizontalContentAlignment" Value="Center" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
         <Setter Property="ToolTip" Value="{Binding RelativeSource={RelativeSource Self}, Path=PersonalRatingPreview}" />
         <Setter Property="ItemsPanel">
             <Setter.Value>
                 <ItemsPanelTemplate>
-                    <StackPanel IsItemsHost="True" Orientation="Horizontal" />
+                    <StackPanel IsItemsHost="True" Orientation="{Binding RelativeSource={RelativeSource AncestorType={x:Type local:RatingControl}}, Path=Orientation}" />
                 </ItemsPanelTemplate>
             </Setter.Value>
         </Setter>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type local:RatingControl}">
-                    <ItemsPresenter/>
+                    <Border Padding="{TemplateBinding Padding}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}">
+                        <ItemsPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"  VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
+                    </Border>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
