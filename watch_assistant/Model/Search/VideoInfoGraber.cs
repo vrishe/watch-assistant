@@ -65,15 +65,26 @@ namespace watch_assistant.Model.Search
                 catch { }
             }
             if (String.IsNullOrEmpty(videoItem["Description"].ToString()))
-            {
+            { // (?:\s)*
                 videoItem["Description"] =
-                    Regex.Match(answerContent, "(?:<[^>]*>)*Описание:(?:<[^>]*>)*<br />([^<]*)<br />").Groups[1].ToString();
-                if (String.IsNullOrEmpty((String)videoItem["Description"]))
-                    videoItem["Description"] =
                         Regex.Match(answerContent, "<p class=\"review\" align=\"justify\">([^<]*)</p>").Groups[1].ToString();
+                if (String.IsNullOrEmpty((String)videoItem["Description"]))
+                {
+                    Match tmp = Regex.Match(
+                        answerContent,
+                        @"(?:<[^>]*>(?:\s)*)*?Описание:(?:(?:\s)*<[^>]*>(?:\s)*)*(.*?)</",
+                        RegexOptions.Singleline);
+                    videoItem["Description"] =
+                        tmp.Groups[1].ToString();
+                }                    
+
+                videoItem["Description"] = ((String)videoItem["Description"]).Replace("<br />", "\n");
+                videoItem["Description"] = ((String)videoItem["Description"]).Replace("</p>", "");
+                videoItem["Description"] = ((String)videoItem["Description"]).Replace("&copy;", ""); 
                 videoItem["Description"] = ((String)videoItem["Description"]).Replace("&hellip;", "...");
                 videoItem["Description"] = ((String)videoItem["Description"]).Replace("&laquo;", "\"");
                 videoItem["Description"] = ((String)videoItem["Description"]).Replace("&raquo;", "\"");
+                videoItem["Description"] = ((String)videoItem["Description"]).Replace("&ndash;", "-");
             }
         }
 
@@ -108,14 +119,14 @@ namespace watch_assistant.Model.Search
         /// Gets all missing data about video from tvbest.com.ua
         /// </summary>
         /// <param name="videoItem">A video to grab info about</param>
-        private static void GetInfoFromTVBest(System.Data.DataRow videoItem)
+        private static void GetInfoFromFilmin(System.Data.DataRow videoItem)
         {
             WebClient wc = new WebClient();
             string answerContent = wc.DownloadString(((String[])videoItem["HRef"])[0]);
             if (String.IsNullOrEmpty(answerContent))
                 throw new WebException("Filmin server doesn't reply");
 
-            string videoItemBeginingString = "<div class=\"filminfo\">";
+            string videoItemBeginingString = "<div class=\"filminfo\"";
             Match videoItemRef = Regex.Match(answerContent, videoItemBeginingString);
             if (!videoItemRef.Success)
                 throw new WebException("Wrong URI");
@@ -130,7 +141,7 @@ namespace watch_assistant.Model.Search
         /// Gets all missing data about video from filmin.ru
         /// </summary>
         /// <param name="videoItem">A video to grab info about</param>
-        private static void GetInfoFromFilmin(System.Data.DataRow videoItem)
+        private static void GetInfoFromTVBest(System.Data.DataRow videoItem)
         {
             WebClient wc = new WebClient();
             string answerContent = wc.DownloadString(((String[])videoItem["HRef"])[0]);
