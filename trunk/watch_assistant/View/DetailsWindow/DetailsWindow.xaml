@@ -13,7 +13,7 @@
 
     <custom:WindowPage>
         <custom:WindowPage.MidHeaderCell>
-            <Label HorizontalAlignment="Center">Item name</Label>
+            <Label HorizontalAlignment="Center">Details</Label>
         </custom:WindowPage.MidHeaderCell>
         <custom:WindowPage.RightHeaderCell>
             <ContentControl Style="{DynamicResource SystemButtonsContainerStyle}" Margin="0,0,5,0"/>
@@ -29,20 +29,18 @@
             <Grid Grid.Column="0"
                   Margin="5">
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="*" />
-                    <RowDefinition Height="Auto" />
+                    <RowDefinition />
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
-                <Border CornerRadius="{DynamicResource DefaultCornerRadius}"
-                        Grid.Row="0">
-                    <Image x:Name="Poster" Source="\Resources\App.ico" Margin="1,1,1,1"/>
+                
+                <Border CornerRadius="5" Grid.Row="0">
+                    <Image x:Name="Poster" Source="{Binding Path=Details[Poster]}" Margin="1,1,1,1"/>
                 </Border>
-                <ComboBox Margin="0,5,0,0" Grid.Row="1"/>
-                <ComboBox Margin="0,1,0,0" Grid.Row="2"/>
-                <ComboBox Margin="0,1,0,0" Grid.Row="3"/>
-                <Button Margin="0,5,0,0" Grid.Row="5">Play</Button>
+                <ComboBox Margin="0,5,0,0" Grid.Row="1" ItemsSource="{Binding Path=Details[Text]}"/>
+                <ComboBox Margin="0,1,0,0" Grid.Row="2" ItemsSource="{Binding Path=Details[HRef]}"/>
+                <Button Margin="0,5,0,0" Grid.Row="4">Play</Button>
             </Grid>
 
             <Border Background="{DynamicResource ControlBackgroundBrush}"
@@ -51,10 +49,17 @@
                     CornerRadius="1"
                     Grid.Column="1"
                     Margin="0,5,5,5">
-                <StackPanel>
-                    <Label x:Name="MovieName" HorizontalAlignment="Left" Margin="3,0,0,0">Movie name sample</Label>
-                    <TextBlock x:Name="MovieDescription" Margin="3,0,0,0">Movie description sample</TextBlock>
-                </StackPanel>
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition />
+                    </Grid.RowDefinitions>
+
+                    <TextBlock x:Name="MovieName" Foreground="{DynamicResource WindowLabelTextColor}"  Margin="3,0,0,0" Grid.Row="0" 
+                               HorizontalAlignment="Stretch" TextAlignment="Left" Text="{Binding Path=Details[Name]}" />
+                    <TextBlock x:Name="MovieDescription" Margin="3,0,0,0" Grid.Row="1" 
+                               Text="{Binding Path=Details[Description]}" TextWrapping="Wrap" />
+                </Grid>
             </Border>
         </Grid>
     </custom:WindowPage>

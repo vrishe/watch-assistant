@@ -11,9 +11,6 @@ namespace watch_assistant.View.DetailsWindow
         public DetailsWindow()
         {
             InitializeComponent();
-
-            DataContext = new watch_assistant.ViewModel.DetailsWindow.DetailsWindowViewModel(this);
-            //this.PosterGridColumn
         }
     }
 }

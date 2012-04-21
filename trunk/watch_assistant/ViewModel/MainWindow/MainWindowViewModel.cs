@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
+using System.Windows.Media;
 
 namespace watch_assistant.ViewModel.MainWindow
 {
@@ -31,6 +33,7 @@ namespace watch_assistant.ViewModel.MainWindow
     class MainWindowViewModel : WindowViewModel
     {
         #region Fields
+
         private readonly Model.Dictionary.Thesaurus _thesaurus = new Model.Dictionary.Thesaurus();
         private readonly Model.Search.IInterviewers.InterviewAggregator _interviewer = new Model.Search.IInterviewers.InterviewAggregator();
         private BackgroundWorker _bgInterview = new BackgroundWorker();
@@ -63,7 +66,6 @@ namespace watch_assistant.ViewModel.MainWindow
             DependencyProperty.Register("ActiveUserTable", typeof(DataTable), typeof(MainWindowViewModel), new UIPropertyMetadata(null));
 
 
-
         public static bool GetAttachDetailsDoubleClickOpen(DependencyObject obj)
         {
             return (bool)obj.GetValue(AttachDetailsDoubleClickOpenProperty);
@@ -75,11 +77,74 @@ namespace watch_assistant.ViewModel.MainWindow
         }
 
         public static readonly DependencyProperty AttachDetailsDoubleClickOpenProperty =
-            DependencyProperty.RegisterAttached("AttachDetailsDoubleClickOpen", typeof(bool), typeof(MainWindowViewModel), new UIPropertyMetadata(0));
-
-        
+            DependencyProperty.RegisterAttached("AttachDetailsDoubleClickOpen", typeof(bool), typeof(MainWindowViewModel),
+            new UIPropertyMetadata(false, AttachDetailsDoubleClickOpenValueChanged));      
 
         #endregion (Properties)
+
+        #region Methods
+
+        #region UI behaviors
+
+        private static void OpenDetailsWindow(object sender, MouseButtonEventArgs e)
+        {
+            if (e.LeftButton == MouseButtonState.Pressed)
+            {
+                var list = sender as ListBox;
+                if (list != null)
+                {
+                    if (e.ClickCount > 1)
+                    {
+                        if (list.SelectedItem != null)
+                        {
+                            var details = new View.DetailsWindow.DetailsWindow() { Owner = Application.Current.MainWindow };
+                            details.DataContext = new watch_assistant.ViewModel.DetailsWindow.DetailsWindowViewModel(details, list.SelectedItem as DataRow);
+                            details.Show();
+                        }
+                    }
+                    else
+                    {
+                        list.SelectedItem = null;
+                    }
+                }
+            }
+        }
+
+        #endregion (UI behaviors)
+
+        private static void AttachDetailsDoubleClickOpenValueChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
+        {
+            if ((bool)e.NewValue == true)
+            {
+                (sender as ListBox).PreviewMouseLeftButtonDown += OpenDetailsWindow;
+            }
+            else
+            {
+                (sender as ListBox).PreviewMouseLeftButtonDown -= OpenDetailsWindow;
+            }
+        }
+
+        private void InitializeBGInterview()
+        {
+            _bgInterview.DoWork += new DoWorkEventHandler((s, e) =>
+            {
+                try
+                {
+                    _interviewer.ConductInterview(_thesaurus.GetPhrasePermutations((string)e.Argument));
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message.ToString());
+                }
+            });
+            _bgInterview.RunWorkerCompleted += new RunWorkerCompletedEventHandler((s, e) =>
+            {
+                SearchResultTable = _interviewer.InterviewResult;
+            });
+            //_bgInterview.ProgressChanged += new ProgressChangedEventHandler(backgroundWorker1_ProgressChanged);
+        }
+
+        #endregion (Methods)
 
         #region Constructors
 
@@ -100,30 +165,5 @@ namespace watch_assistant.ViewModel.MainWindow
         }
 
         #endregion (Constructors)
-
-        #region Methods
-
-        private void InitializeBGInterview()
-        {
-            _bgInterview.DoWork += new DoWorkEventHandler((s, e) =>
-            {
-                string[] tmp = _thesaurus.GetPhrasePermutations((string)e.Argument);
-                try
-                {
-                    _interviewer.ConductInterview((string[])tmp);
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show(ex.Message.ToString());
-                }
-            });
-            _bgInterview.RunWorkerCompleted += new RunWorkerCompletedEventHandler((s, e) =>
-            {
-                SearchResultTable = _interviewer.InterviewResult;
-            });
-            //_bgInterview.ProgressChanged += new ProgressChangedEventHandler(backgroundWorker1_ProgressChanged);
-        }
-
-        #endregion (Methods)
     }
 }

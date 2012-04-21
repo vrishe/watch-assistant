@@ -4,8 +4,6 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
-using System.Windows.Markup;
-using System.Windows.Media;
 
 namespace CustomControls
 {
@@ -161,16 +159,16 @@ namespace CustomControls
 
         #region Property event handlers
 
-        private static object CoerceFractionValue(DependencyObject obj, object baseValue)
+        private static object CoerceFractionValue(DependencyObject sender, object baseValue)
         {
             if (baseValue == DependencyProperty.UnsetValue) return (double)FractionProperty.DefaultMetadata.DefaultValue;
             return Math.Max(Math.Min((double)baseValue, (double)FractionProperty.DefaultMetadata.DefaultValue), 0.0);
         }
 
-        private static object CoercePreviewStateValue(DependencyObject obj, object baseValue)
+        private static object CoercePreviewStateValue(DependencyObject sender, object baseValue)
         {
             PreviewState previewState = (PreviewState)baseValue;
-            if ((previewState == PreviewState.PreviewCommonRating || previewState == PreviewState.PreviewPersonalRating) && !((obj as RatingItem).Fraction > .0)) return PreviewState.PreviewUnrated;
+            if ((previewState == PreviewState.PreviewCommonRating || previewState == PreviewState.PreviewPersonalRating) && !((sender as RatingItem).Fraction > .0)) return PreviewState.PreviewUnrated;
             return baseValue;
         }
 
@@ -329,29 +327,29 @@ namespace CustomControls
 
         #region Property event handlers
 
-        private static object CoerceRatingRangeMaxValue(DependencyObject obj, object baseValue)
+        private static object CoerceRatingRangeMaxValue(DependencyObject sender, object baseValue)
         {
-            var rating = (RatingControl)obj;
+            var rating = (RatingControl)sender;
             var value = (double)baseValue;         
             return value > rating.RatingRangeMin && Math.Floor(value - rating.RatingRangeMin) >= rating.Items.Count ? value : rating.RatingRangeMax;
         }
 
-        private static object CoerceRatingRangeMinValue(DependencyObject obj, object baseValue)
+        private static object CoerceRatingRangeMinValue(DependencyObject sender, object baseValue)
         {
-            var rating = (RatingControl)obj;
+            var rating = (RatingControl)sender;
             var value = (double)baseValue;
             return value < rating.RatingRangeMax ? value : rating.RatingRangeMin;
         }
 
-        private static object CoerceRatingValue(DependencyObject obj, object baseValue)
+        private static object CoerceRatingValue(DependencyObject sender, object baseValue)
         {
-            var rating = (RatingControl)obj;
+            var rating = (RatingControl)sender;
             return Math.Max(Math.Min((double)baseValue, rating.RatingRangeMax), rating.RatingRangeMin);
         }
 
-        private static void RatingAttributesValueChanged(DependencyObject obj, DependencyPropertyChangedEventArgs e)
+        private static void RatingAttributesValueChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
         {
-            var rating = (RatingControl)obj;
+            var rating = (RatingControl)sender;
             rating.UpdateItems(RatingItemUpdate.SetRate, null);
         }
 
