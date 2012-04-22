@@ -5,6 +5,8 @@ using System.Data;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 
 namespace watch_assistant.ViewModel.MainWindow
 {
@@ -16,7 +18,7 @@ namespace watch_assistant.ViewModel.MainWindow
         private readonly Model.Search.IInterviewers.InterviewAggregator _interviewer = new Model.Search.IInterviewers.InterviewAggregator();
         private BackgroundWorker _bgInterview = new BackgroundWorker();
 
-        private readonly Dictionary<string, DataTable> _userData = new Dictionary<string, DataTable>();
+        private readonly ObservableCollection<DataTable> _userData = new ObservableCollection<DataTable>();
 
         #region Commands
         public static readonly RoutedUICommand SearchCommand = new RoutedUICommand("Activates searching process", "Search", typeof(MainWindowViewModel));
@@ -29,20 +31,23 @@ namespace watch_assistant.ViewModel.MainWindow
         public DataTable SearchResultTable
         {
             get { return (DataTable)GetValue(SearchResultTableProperty); }
-            set { SetValue(SearchResultTableProperty, value); }
+            private set { SetValue(SearchResultTablePropertyKey, value); }
         }
 
-        public static readonly DependencyProperty SearchResultTableProperty =
-            DependencyProperty.Register("SearchResultTable", typeof(DataTable), typeof(MainWindowViewModel), new UIPropertyMetadata(null));
+        private static readonly DependencyPropertyKey SearchResultTablePropertyKey =
+            DependencyProperty.RegisterReadOnly("SearchResultTable", typeof(DataTable), typeof(MainWindowViewModel), new UIPropertyMetadata(null));
+        public static readonly DependencyProperty SearchResultTableProperty = SearchResultTablePropertyKey.DependencyProperty;
 
-        public DataTable ActiveUserList
+
+        public Collection<DataTable> UserDataLists
         {
-            get { return (DataTable)GetValue(ActiveUserTableProperty); }
-            set { SetValue(ActiveUserTableProperty, value); }
+            get { return (Collection<DataTable>)GetValue(UserDataListsProperty); }
+            private set { SetValue(UserDataListsPropertyKey, value); }
         }
 
-        public static readonly DependencyProperty ActiveUserTableProperty =
-            DependencyProperty.Register("ActiveUserTable", typeof(DataTable), typeof(MainWindowViewModel), new UIPropertyMetadata(null));
+        private static readonly DependencyPropertyKey UserDataListsPropertyKey =
+            DependencyProperty.RegisterReadOnly("UserDataLists", typeof(Collection<DataTable>), typeof(MainWindowViewModel), new UIPropertyMetadata(null));
+        public static readonly DependencyProperty UserDataListsProperty = UserDataListsPropertyKey.DependencyProperty;
 
         #region Attached
 
@@ -86,6 +91,15 @@ namespace watch_assistant.ViewModel.MainWindow
 
         #endregion (Property event handlers)
 
+        #region Arbitary event handlers
+
+        private void UserDataCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            UserDataLists = new Collection<DataTable>(sender as ObservableCollection<DataTable>);
+        }
+
+        #endregion (Arbitary event handlers)
+
         #region UI behaviors
 
         private static void ListBoxMouseButtonEventHandler(object sender, MouseButtonEventArgs e)
@@ -126,6 +140,7 @@ namespace watch_assistant.ViewModel.MainWindow
         private void SearchCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
             SearchResultTable = _interviewer.InterviewResult;
+            _userData.Add(SearchResultTable);
             CommandManager.InvalidateRequerySuggested();
         }
         private void CanExecuteSearchTask(object sender, CanExecuteRoutedEventArgs e)
@@ -165,13 +180,14 @@ namespace watch_assistant.ViewModel.MainWindow
             _bgInterview.DoWork += SearchTask;
             _bgInterview.RunWorkerCompleted += SearchCompleted;
             // _bgInterview.ProgressChanged += new ProgressChangedEventHandler(backgroundWorker1_ProgressChanged);
+            _userData.CollectionChanged += UserDataCollectionChanged;
 
             // Command bindings
             _owner.CommandBindings.Add(new CommandBinding(SearchCommand, RunSearchTask, CanExecuteSearchTask));
 
             // Temporary list definitions
-            _userData.Add("Favorites", new DataTable());
-            _userData.Add("Interest", new DataTable());
+            _userData.Add(new DataTable() { TableName = "Favorites" });
+            _userData.Add(new DataTable() { TableName = "Interest" });
         }
 
         #endregion (Constructors)

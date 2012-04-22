@@ -12,18 +12,13 @@ namespace watch_assistant.ViewModel.DetailsWindow
         public string Dub { get; set; }
         public List<string> HRefs { get; set; }
 
-        public RefsForDub() { }
         public RefsForDub(string dub, List<string> hrefs)
         {
             Dub = dub;
             HRefs = hrefs;
         }
-
-        public override string ToString()
-        {
-            return Dub;
-        }
     }
+
     class DetailsWindowViewModel : WindowViewModel
     {
         #region Properties
