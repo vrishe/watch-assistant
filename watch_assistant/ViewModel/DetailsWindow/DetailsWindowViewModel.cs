@@ -29,12 +29,17 @@ namespace watch_assistant.ViewModel.DetailsWindow
             try
             {
                 watch_assistant.Model.Search.VideoInfoGraber.GetInfo(details);
+                Details = details;
+                // Code here =)
+
+                _owner.DataContext = this;
+                _owner.Show();
+
             }
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message);
             }
-            Details = details;
         }
 
         #endregion // Constructors

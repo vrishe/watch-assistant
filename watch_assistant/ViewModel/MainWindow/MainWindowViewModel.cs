@@ -76,9 +76,7 @@ namespace watch_assistant.ViewModel.MainWindow
         // Using a DependencyProperty as the backing store for IsControlReacheableAtViewModel.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty IsControlReacheableAtViewModelProperty =
             DependencyProperty.RegisterAttached("IsControlReacheableAtViewModel", typeof(bool), typeof(MainWindowViewModel),
-            new UIPropertyMetadata(false, ReacheablePropertyValueChanged));
-
-        
+            new UIPropertyMetadata(false));        
 
         #endregion (Attached)
 
@@ -167,9 +165,10 @@ namespace watch_assistant.ViewModel.MainWindow
 
         private static void RunDetailsWindow(DataRow detailData)
         {
-            var details = new View.DetailsWindow.DetailsWindow() { Owner = Application.Current.MainWindow };
-            details.DataContext = new watch_assistant.ViewModel.DetailsWindow.DetailsWindowViewModel(details, detailData);
-            details.Show();
+            new watch_assistant.ViewModel.DetailsWindow.DetailsWindowViewModel(
+                new View.DetailsWindow.DetailsWindow() { Owner = Application.Current.MainWindow }, 
+                detailData
+            );
         }
 
         #endregion (Command logic)

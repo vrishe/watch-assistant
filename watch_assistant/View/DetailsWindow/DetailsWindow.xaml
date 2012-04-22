@@ -46,7 +46,7 @@
                 </Border>
                 <StackPanel Orientation="Vertical" VerticalAlignment="Bottom" Grid.Row="1">
                     <TextBlock Text="Watch at:" TextTrimming="None" Margin="0,5,0,0" HorizontalAlignment="Left"/>
-                    <ComboBox Margin="0,1,0,0" ItemsSource="{Binding Path=Details[HRef]}"/>
+                    <ComboBox Margin="0,1,0,0" ItemsSource="{Binding Path=Details[HRef]}" />
                     <Button Margin="0,5,0,0">Play</Button>
                 </StackPanel>
             </Grid>
