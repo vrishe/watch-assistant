@@ -4,32 +4,10 @@ using System.ComponentModel;
 using System.Data;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
 using System.Windows.Input;
-using System.Windows.Media;
 
 namespace watch_assistant.ViewModel.MainWindow
 {
-    class FormatStringConverter : IValueConverter
-    {
-        #region Implementation
-
-        public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
-        {
-            string val = value.ToString();
-            return parameter != null ? String.Format((string)parameter, val) : val;
-        }
-
-
-        public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
-        {
-            string val = value.ToString();
-            return parameter != null ? val.Replace((string)parameter, String.Empty) : val;
-        }
-
-        #endregion
-    }
-
     class MainWindowViewModel : WindowViewModel
     {
         #region Fields
@@ -37,7 +15,9 @@ namespace watch_assistant.ViewModel.MainWindow
         private readonly Model.Dictionary.Thesaurus _thesaurus = new Model.Dictionary.Thesaurus();
         private readonly Model.Search.IInterviewers.InterviewAggregator _interviewer = new Model.Search.IInterviewers.InterviewAggregator();
         private BackgroundWorker _bgInterview = new BackgroundWorker();
-        private readonly Dictionary<string, DataTable> _userLists = new Dictionary<string, DataTable>();
+
+        private Grid _buttonTabGrid;
+        private readonly Dictionary<string, DataTable> _userData = new Dictionary<string, DataTable>();
 
         #region Commands
         public static readonly RoutedUICommand SearchCommand = new RoutedUICommand("Activates searching process", "Search", typeof(MainWindowViewModel));
@@ -56,7 +36,7 @@ namespace watch_assistant.ViewModel.MainWindow
         public static readonly DependencyProperty SearchResultTableProperty =
             DependencyProperty.Register("SearchResultTable", typeof(DataTable), typeof(MainWindowViewModel), new UIPropertyMetadata(null));
 
-        public DataTable ActiveUserTable
+        public DataTable ActiveUserList
         {
             get { return (DataTable)GetValue(ActiveUserTableProperty); }
             set { SetValue(ActiveUserTableProperty, value); }
@@ -65,6 +45,7 @@ namespace watch_assistant.ViewModel.MainWindow
         public static readonly DependencyProperty ActiveUserTableProperty =
             DependencyProperty.Register("ActiveUserTable", typeof(DataTable), typeof(MainWindowViewModel), new UIPropertyMetadata(null));
 
+        #region Attached
 
         public static bool GetAttachDetailsDoubleClickOpen(DependencyObject obj)
         {
@@ -78,15 +59,56 @@ namespace watch_assistant.ViewModel.MainWindow
 
         public static readonly DependencyProperty AttachDetailsDoubleClickOpenProperty =
             DependencyProperty.RegisterAttached("AttachDetailsDoubleClickOpen", typeof(bool), typeof(MainWindowViewModel),
-            new UIPropertyMetadata(false, AttachDetailsDoubleClickOpenValueChanged));      
+            new UIPropertyMetadata(false, AttachDetailsDoubleClickOpenValueChanged));
+
+
+
+        public static bool GetIsControlReacheableAtViewModel(DependencyObject obj)
+        {
+            return (bool)obj.GetValue(IsControlReacheableAtViewModelProperty);
+        }
+
+        public static void SetIsControlReacheableAtViewModel(DependencyObject obj, bool value)
+        {
+            obj.SetValue(IsControlReacheableAtViewModelProperty, value);
+        }
+
+        // Using a DependencyProperty as the backing store for IsControlReacheableAtViewModel.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty IsControlReacheableAtViewModelProperty =
+            DependencyProperty.RegisterAttached("IsControlReacheableAtViewModel", typeof(bool), typeof(MainWindowViewModel),
+            new UIPropertyMetadata(false, ReacheablePropertyValueChanged));
+
+        
+
+        #endregion (Attached)
 
         #endregion (Properties)
 
         #region Methods
 
+        #region Property event handlers
+
+        private static void AttachDetailsDoubleClickOpenValueChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
+        {
+            if (e.Property == AttachDetailsDoubleClickOpenProperty)
+            {
+                if ((bool)e.NewValue == true)
+                {
+                    (sender as ListBox).PreviewMouseLeftButtonDown += ListBoxMouseButtonEventHandler;
+                }
+                else
+                {
+                    (sender as ListBox).PreviewMouseLeftButtonDown -= ListBoxMouseButtonEventHandler;
+                }
+            }
+            //else if (e
+        }
+
+        #endregion (Property event handlers)
+
         #region UI behaviors
 
-        private static void OpenDetailsWindow(object sender, MouseButtonEventArgs e)
+        private static void ListBoxMouseButtonEventHandler(object sender, MouseButtonEventArgs e)
         {
             if (e.LeftButton == MouseButtonState.Pressed)
             {
@@ -95,12 +117,7 @@ namespace watch_assistant.ViewModel.MainWindow
                 {
                     if (e.ClickCount > 1)
                     {
-                        if (list.SelectedItem != null)
-                        {
-                            var details = new View.DetailsWindow.DetailsWindow() { Owner = Application.Current.MainWindow };
-                            details.DataContext = new watch_assistant.ViewModel.DetailsWindow.DetailsWindowViewModel(details, list.SelectedItem as DataRow);
-                            details.Show();
-                        }
+                        if (list.SelectedItem != null) RunDetailsWindow(list.SelectedItem as DataRow);
                     }
                     else
                     {
@@ -112,37 +129,50 @@ namespace watch_assistant.ViewModel.MainWindow
 
         #endregion (UI behaviors)
 
-        private static void AttachDetailsDoubleClickOpenValueChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
+        #region Command logic
+
+        private void SearchTask(object sender, DoWorkEventArgs e)
         {
-            if ((bool)e.NewValue == true)
+            try
             {
-                (sender as ListBox).PreviewMouseLeftButtonDown += OpenDetailsWindow;
+                var strings = _thesaurus.GetPhrasePermutations((string)e.Argument);
+                _interviewer.ConductInterview(strings);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message.ToString());
+            }
+        }
+        private void SearchCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            SearchResultTable = _interviewer.InterviewResult;
+            CommandManager.InvalidateRequerySuggested();
+        }
+        private void CanExecuteSearchTask(object sender, CanExecuteRoutedEventArgs e)
+        {
+            e.CanExecute = !_bgInterview.IsBusy;
+        }
+        private void RunSearchTask(object sender, ExecutedRoutedEventArgs e)
+        {
+            if (!_bgInterview.IsBusy)
+            {
+                _interviewer.ClearInterviewResults();
+                _bgInterview.RunWorkerAsync(e.Parameter);
             }
             else
             {
-                (sender as ListBox).PreviewMouseLeftButtonDown -= OpenDetailsWindow;
+                System.Media.SystemSounds.Beep.Play();
             }
         }
 
-        private void InitializeBGInterview()
+        private static void RunDetailsWindow(DataRow detailData)
         {
-            _bgInterview.DoWork += new DoWorkEventHandler((s, e) =>
-            {
-                try
-                {
-                    _interviewer.ConductInterview(_thesaurus.GetPhrasePermutations((string)e.Argument));
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show(ex.Message.ToString());
-                }
-            });
-            _bgInterview.RunWorkerCompleted += new RunWorkerCompletedEventHandler((s, e) =>
-            {
-                SearchResultTable = _interviewer.InterviewResult;
-            });
-            //_bgInterview.ProgressChanged += new ProgressChangedEventHandler(backgroundWorker1_ProgressChanged);
+            var details = new View.DetailsWindow.DetailsWindow() { Owner = Application.Current.MainWindow };
+            details.DataContext = new watch_assistant.ViewModel.DetailsWindow.DetailsWindowViewModel(details, detailData);
+            details.Show();
         }
+
+        #endregion (Command logic)
 
         #endregion (Methods)
 
@@ -151,17 +181,12 @@ namespace watch_assistant.ViewModel.MainWindow
         public MainWindowViewModel(Window owner)
             : base(owner)
         {
-            InitializeBGInterview();
-            _owner.CommandBindings.Add(new CommandBinding(
-                SearchCommand, (s, e) => 
-                {
-                    _interviewer.ClearInterviewResults();
-                    if (!_bgInterview.IsBusy)
-                        _bgInterview.RunWorkerAsync(e.Parameter);
-                    else
-                        System.Media.SystemSounds.Beep.Play();
-                }
-            ));
+            _bgInterview.DoWork += SearchTask;
+            _bgInterview.RunWorkerCompleted += SearchCompleted;
+            // _bgInterview.ProgressChanged += new ProgressChangedEventHandler(backgroundWorker1_ProgressChanged);
+
+            // Command bindings
+            _owner.CommandBindings.Add(new CommandBinding(SearchCommand, RunSearchTask, CanExecuteSearchTask));
         }
 
         #endregion (Constructors)
