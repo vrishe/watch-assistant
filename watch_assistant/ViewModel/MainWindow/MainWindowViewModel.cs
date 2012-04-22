@@ -16,7 +16,6 @@ namespace watch_assistant.ViewModel.MainWindow
         private readonly Model.Search.IInterviewers.InterviewAggregator _interviewer = new Model.Search.IInterviewers.InterviewAggregator();
         private BackgroundWorker _bgInterview = new BackgroundWorker();
 
-        private Grid _buttonTabGrid;
         private readonly Dictionary<string, DataTable> _userData = new Dictionary<string, DataTable>();
 
         #region Commands
@@ -59,24 +58,7 @@ namespace watch_assistant.ViewModel.MainWindow
 
         public static readonly DependencyProperty AttachDetailsDoubleClickOpenProperty =
             DependencyProperty.RegisterAttached("AttachDetailsDoubleClickOpen", typeof(bool), typeof(MainWindowViewModel),
-            new UIPropertyMetadata(false, AttachDetailsDoubleClickOpenValueChanged));
-
-
-
-        public static bool GetIsControlReacheableAtViewModel(DependencyObject obj)
-        {
-            return (bool)obj.GetValue(IsControlReacheableAtViewModelProperty);
-        }
-
-        public static void SetIsControlReacheableAtViewModel(DependencyObject obj, bool value)
-        {
-            obj.SetValue(IsControlReacheableAtViewModelProperty, value);
-        }
-
-        // Using a DependencyProperty as the backing store for IsControlReacheableAtViewModel.  This enables animation, styling, binding, etc...
-        public static readonly DependencyProperty IsControlReacheableAtViewModelProperty =
-            DependencyProperty.RegisterAttached("IsControlReacheableAtViewModel", typeof(bool), typeof(MainWindowViewModel),
-            new UIPropertyMetadata(false));        
+            new UIPropertyMetadata(false, AttachDetailsDoubleClickOpenValueChanged));  
 
         #endregion (Attached)
 
@@ -99,7 +81,7 @@ namespace watch_assistant.ViewModel.MainWindow
                     (sender as ListBox).PreviewMouseLeftButtonDown -= ListBoxMouseButtonEventHandler;
                 }
             }
-            //else if (e
+            //else if ...
         }
 
         #endregion (Property event handlers)
@@ -186,6 +168,10 @@ namespace watch_assistant.ViewModel.MainWindow
 
             // Command bindings
             _owner.CommandBindings.Add(new CommandBinding(SearchCommand, RunSearchTask, CanExecuteSearchTask));
+
+            // Temporary list definitions
+            _userData.Add("Favorites", new DataTable());
+            _userData.Add("Interest", new DataTable());
         }
 
         #endregion (Constructors)
