@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -30,21 +31,25 @@ namespace watch_assistant.Model.Search.IInterviewers
                 // If category is not Video then go to the next search result
                 if (!((String)videoItem["Name"]).Contains("Онлайн: ")) continue;
                 else videoItem["Name"] = ((string)videoItem["Name"]).Substring(8);
-                videoItem["HRef"] = new string[] { videoItemRef.Groups[1].ToString() };
+                //videoItem["HRef"] = new string[] { videoItemRef.Groups[1].ToString() };
                 //videoItem["RussianAudio"] = (((String)videoItem["Name"]).Contains("(RUS)") ? true : false);
+                List<KeyValuePair<string, string>> list = new List<KeyValuePair<string, string>>();
                 int tmp = ((String)videoItem["Name"]).LastIndexOf("(SUB)");
                 if (tmp >= 0)
                 {
-                    videoItem["Text"] = new string[] { "SUB" };
+                    //videoItem["Text"] = new string[] { "SUB" };
+                    list.Add(new KeyValuePair<string, string>(videoItemRef.Groups[1].ToString(), "SUB"));
                     videoItem["Name"] = ((String)videoItem["Name"]).Remove(tmp, 5);
                 }
                 else
                 {
                     tmp = ((String)videoItem["Name"]).LastIndexOf("(RUS)");
-                    videoItem["Text"] = new string[] { "RUS" };
+                    //videoItem["Text"] = new string[] { "DUB" };
+                    list.Add(new KeyValuePair<string, string>(videoItemRef.Groups[1].ToString(), "DUB"));
                     if (tmp >= 0)
                         videoItem["Name"] = ((String)videoItem["Name"]).Remove(tmp, 5).Trim();
                 }
+                videoItem["HRefs"] = list;
                 videoItem["Poster"] = Regex.Match(answerContent, "<!--TBegin--><a href=\"([^\"]*)\"").Groups[1].ToString();
                 if (String.IsNullOrEmpty(videoItem["Poster"].ToString()))
                     videoItem["Poster"] = Regex.Match(answerContent, @"<!--dle_image_begin:([^\|]*)\|").Groups[1].ToString();

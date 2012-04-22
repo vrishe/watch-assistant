@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Net;
@@ -109,7 +110,7 @@ namespace watch_assistant.Model.Search.IInterviewers
             _interviewResult = new DataTable(GetClassType());
 
             _interviewResult.Columns.Add("Name", typeof(String));
-            _interviewResult.Columns.Add("HRef", typeof(String[]));
+            //_interviewResult.Columns.Add("HRef", typeof(String[]));
             _interviewResult.Columns.Add("Poster", typeof(String));
             _interviewResult.Columns.Add("Genre", typeof(String));
             _interviewResult.Columns.Add("Year", typeof(Int32));
@@ -117,7 +118,8 @@ namespace watch_assistant.Model.Search.IInterviewers
             //_interviewResult.Columns.Add("VideoQuality", typeof(String));
             //_interviewResult.Columns.Add("RussianAudio", typeof(Boolean));
             //_interviewResult.Columns.Add("RussianSub", typeof(Boolean));
-            _interviewResult.Columns.Add("Text", typeof(String[]));
+            //_interviewResult.Columns.Add("Text", typeof(String[]));
+            _interviewResult.Columns.Add("HRefs", typeof(List<KeyValuePair<string, string>>));
         }
 
         /// <summary>

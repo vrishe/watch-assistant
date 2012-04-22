@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -61,11 +62,14 @@ namespace watch_assistant.Model.Search.IInterviewers
                 if (!videoItemRef.Groups[2].ToString().ToLower().Contains(query.ToLower())) continue;
 
                 DataRow videoItem = _interviewResult.NewRow();
-                videoItem["HRef"] = new string[] { videoItemRef.Groups[1].ToString() };
+                //videoItem["HRef"] = new string[] { videoItemRef.Groups[1].ToString() };
+                List<KeyValuePair<string, string>> list = new List<KeyValuePair<string, string>>();
+                list.Add(new KeyValuePair<string, string>(videoItemRef.Groups[1].ToString(), "DUB"));
+                videoItem["HRefs"] = list;
                 Match tmp = Regex.Match(videoItemRef.Groups[2].ToString(), @"(.*)\((([0-9]{4})\))\Z");
                 videoItem["Name"] = tmp.Groups[1].ToString().Trim();
                 videoItem["Year"] = Int32.Parse(tmp.Groups[3].ToString());
-                videoItem["Text"] = new string[] { "RUS" };
+                //videoItem["Text"] = new string[] { "DUB" };
                 tmp = Regex.Match(answerContent, "<!--TBegin--><a href=\"([^\"]*).*<!--TEnd-->(.*)</div>");
                 videoItem["Poster"] = tmp.Groups[1].ToString();
                 videoItem["Description"] = tmp.Groups[2].ToString();

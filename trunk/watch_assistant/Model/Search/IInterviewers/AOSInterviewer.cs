@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -29,21 +30,25 @@ namespace watch_assistant.Model.Search.IInterviewers
                 // If category is not Video then go to the next search result
                 Match category = Regex.Match(answerContent, @"\sКатегория:\s[^A-ZА-Я]*([^<]*)<");
                 if (!category.Groups[1].ToString().Contains("Аниме")) continue;
-                videoItem["HRef"] = new string[] {videoItemRef.Groups[1].ToString()};
+                //videoItem["HRef"] = new string[] {videoItemRef.Groups[1].ToString()};
              //   videoItem["RussianAudio"] = (((String)videoItem["Name"]).Contains("(RUS)") ? true : false);
+                List<KeyValuePair<string, string>> list = new List<KeyValuePair<string, string>>();
                 int spare = ((String)videoItem["Name"]).LastIndexOf("(SUB)");
                 if (spare >= 0)
                 {
-                    videoItem["Text"] = new string[] { "SUB" };
+                    //videoItem["Text"] = new string[] { "SUB" };
+                    list.Add(new KeyValuePair<string,string>(videoItemRef.Groups[1].ToString(), "SUB"));
                     videoItem["Name"] = ((String)videoItem["Name"]).Remove(spare, 5);
                 }
                 else
                 {
                     spare = ((String)videoItem["Name"]).LastIndexOf("(RUS)");
-                    videoItem["Text"] = new string[] { "RUS" };
+                    //videoItem["Text"] = new string[] { "DUB" };
+                    list.Add(new KeyValuePair<string,string>(videoItemRef.Groups[1].ToString(), "DUB"));
                     if (spare >= 0)
                         videoItem["Name"] = ((String)videoItem["Name"]).Remove(spare, 5).Trim();
                 }
+                videoItem["HRefs"] = list;
                 videoItem["Poster"] = Regex.Match(answerContent, "<div class='img_'><a href=\"([^\"]*)\"").Groups[1].ToString();
 
                 Match genre = Regex.Match(answerContent, @"Жанр:(?:\s?)(?:&nbsp;)?(?:<[^>]*>)?(?:\s?)(?:&nbsp;)?([а-яА-Я]+[^<]*)");
