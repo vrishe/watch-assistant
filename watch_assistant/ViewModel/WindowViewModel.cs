@@ -25,6 +25,7 @@ namespace watch_assistant.ViewModel
                 throw new ArgumentNullException("owner");
 
             _owner = owner;
+            _owner.DataContext = this;
         }
 
         #endregion (Constructors)
