@@ -32,7 +32,6 @@ namespace watch_assistant.ViewModel.DetailsWindow
                 Details = details;
                 // Code here =)
 
-                _owner.DataContext = this;
                 _owner.Show();
 
             }

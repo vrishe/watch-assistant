@@ -14,7 +14,7 @@ namespace watch_assistant.View.MainWindow
         {
             InitializeComponent();
 
-            DataContext = new watch_assistant.ViewModel.MainWindow.MainWindowViewModel(this);
+            new watch_assistant.ViewModel.MainWindow.MainWindowViewModel(this);
         }
     }
 }
