@@ -154,16 +154,20 @@ namespace watch_assistant.Model.Search.IInterviewers
                                 row["Name"] = new string((otherRow["Name"].ToString().ToCharArray()));
                             if (row["Year"].ToString().Length < otherRow["Year"].ToString().Length)
                                 row["Year"] = new string((otherRow["Year"].ToString().ToCharArray()));
-                            string[] href = new string[((String[])row["HRef"]).Length + 1];
-                            for (int i = 0; i < href.Length - 1; i++)
-                                href[i] = new string(((string[])row["HRef"])[i].ToCharArray());
-                            href[href.Length - 1] = new string(((string[])otherRow["HRef"])[0].ToCharArray());
-                            row["HRef"] = href;
-                            string[] text = new string[((String[])row["Text"]).Length + 1];
-                            for (int i = 0; i < text.Length - 1; i++)
-                                text[i] = new string(((string[])row["Text"])[i].ToCharArray());
-                            text[text.Length - 1] = new string(((string[])otherRow["Text"])[0].ToCharArray());
-                            row["Text"] = text;
+                            //string[] href = new string[((String[])row["HRef"]).Length + 1];
+                            //for (int i = 0; i < href.Length - 1; i++)
+                            //    href[i] = new string(((string[])row["HRef"])[i].ToCharArray());
+                            //href[href.Length - 1] = new string(((string[])otherRow["HRef"])[0].ToCharArray());
+                            //row["HRef"] = href;
+                            //string[] text = new string[((String[])row["Text"]).Length + 1];
+                            //for (int i = 0; i < text.Length - 1; i++)
+                            //    text[i] = new string(((string[])row["Text"])[i].ToCharArray());
+                            //text[text.Length - 1] = new string(((string[])otherRow["Text"])[0].ToCharArray());
+                            //row["Text"] = text;
+                            foreach (var item in (List<KeyValuePair<string, string>>)otherRow["HRefs"])
+                                ((List<KeyValuePair<string, string>>)row["Hrefs"]).Add(
+                                    new KeyValuePair<string,string>(item.Key, item.Value));
+
                             if (String.IsNullOrEmpty(row["Description"].ToString()) &&
                                 !String.IsNullOrEmpty(otherRow["Description"].ToString()))
                                 row["Description"] = otherRow["Description"].ToString();
@@ -258,7 +262,7 @@ namespace watch_assistant.Model.Search.IInterviewers
             _interviewResult = new DataTable("Agregated results");
 
             _interviewResult.Columns.Add("Name", typeof(String));
-            _interviewResult.Columns.Add("HRef", typeof(String[]));
+            //_interviewResult.Columns.Add("HRef", typeof(String[]));
             _interviewResult.Columns.Add("Poster", typeof(String));
             _interviewResult.Columns.Add("Genre", typeof(String));
             _interviewResult.Columns.Add("Year", typeof(Int32));
@@ -266,7 +270,8 @@ namespace watch_assistant.Model.Search.IInterviewers
             //_interviewResult.Columns.Add("VideoQuality", typeof(String));
             //_interviewResult.Columns.Add("RussianAudio", typeof(Boolean));
             //_interviewResult.Columns.Add("RussianSub", typeof(Boolean));
-            _interviewResult.Columns.Add("Text", typeof(String[]));
+            //_interviewResult.Columns.Add("Text", typeof(String[]));
+            _interviewResult.Columns.Add("HRefs", typeof(List<KeyValuePair<string, string>>));
         }
 
         #endregion (Methods)
