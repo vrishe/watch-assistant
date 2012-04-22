@@ -113,6 +113,7 @@
     <Compile Include="Model\Search\IInterviewers\FilminInterviewer.cs" />
     <Compile Include="Model\Search\VideoInfoGraber.cs" />
     <Compile Include="ViewModel\DetailsWindow\DetailsWindowViewModel.cs" />
+    <Compile Include="ViewModel\MainWindow\UserListViewModel.cs" />
     <Compile Include="ViewModel\ViewModelConverters.cs" />
     <Compile Include="View\DetailsWindow\DetailsWindow.xaml.cs">
       <DependentUpon>DetailsWindow.xaml</DependentUpon>
@@ -152,6 +153,10 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="View\MainWindow\resMainWindowSpecific.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs">
