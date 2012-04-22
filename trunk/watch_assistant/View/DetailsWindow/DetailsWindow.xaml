@@ -34,7 +34,6 @@
                 <ColumnDefinition />
             </Grid.ColumnDefinitions>
 
-
             <Grid Grid.Column="0"
                   Margin="5">
                 <Grid.RowDefinitions>
@@ -46,17 +45,8 @@
                     <Image x:Name="Poster" Source="{Binding Path=Details[Poster]}" Stretch="Uniform" Margin="3"/>
                 </Border>
                 <StackPanel Orientation="Vertical" VerticalAlignment="Bottom" Grid.Row="1">
-                    <!--<TextBlock Text="Watch at:" TextTrimming="None" Margin="0,5,0,0" HorizontalAlignment="Left"/>-->
-                    <!--<ComboBox Margin="0,1,0,0" ItemsSource="{Binding Path=Details[HRef]}" />-->
-                    <ComboBox x:Name="Box" Margin="0,1,0,0" 
-                              IsSynchronizedWithCurrentItem="True"
-                              ItemsSource="{Binding Path=Dubs.Keys}" 
-                              />
-                    <ComboBox Margin="0,1,0,0">
-                        <ComboBox.ItemsSource>
-                            <Binding Source="Dubs" Path="Servers" />
-                        </ComboBox.ItemsSource>
-                    </ComboBox>
+                    <ComboBox x:Name="Dub" Margin="0,1,0,0" IsSynchronizedWithCurrentItem="True" ItemsSource="{Binding Path=Dubs}" />
+                    <ComboBox Margin="0,1,0,0" IsSynchronizedWithCurrentItem="True" ItemsSource="{Binding ElementName=Dub, Path=SelectedItem.HRefs}" />
                     <Button Margin="0,5,0,0">Play</Button>
                 </StackPanel>
             </Grid>

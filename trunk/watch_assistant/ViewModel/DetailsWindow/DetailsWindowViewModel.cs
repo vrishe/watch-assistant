@@ -7,10 +7,17 @@ using System.Windows.Controls;
 
 namespace watch_assistant.ViewModel.DetailsWindow
 {
-    class VideoItemRef
+    class RefsForDub
     {
-        string Dub { get; set; }
-        List<string> HRefs { get; set; }
+        public string Dub { get; set; }
+        public List<string> HRefs { get; set; }
+
+        public RefsForDub() { }
+        public RefsForDub(string dub, List<string> hrefs)
+        {
+            Dub = dub;
+            HRefs = hrefs;
+        }
 
         public override string ToString()
         {
@@ -32,14 +39,14 @@ namespace watch_assistant.ViewModel.DetailsWindow
             DependencyProperty.Register("Details", typeof(DataRow), typeof(DetailsWindowViewModel), new UIPropertyMetadata(null));
 
         // Combo boxes container reference
-        public Dictionary<string, List<string>> Dubs
+        public List<RefsForDub> Dubs
         {
-            get { return (Dictionary<string, List<string>>)GetValue(DubsProperty); }
+            get { return (List<RefsForDub>)GetValue(DubsProperty); }
             set { SetValue(DubsProperty, value); }
         }
 
         public static readonly DependencyProperty DubsProperty =
-            DependencyProperty.Register("Dubs", typeof(Dictionary<string, List<string>>), typeof(DetailsWindowViewModel), new UIPropertyMetadata(null));
+            DependencyProperty.Register("Dubs", typeof(List<RefsForDub>), typeof(DetailsWindowViewModel), new UIPropertyMetadata(null));
         
         #endregion (Properties)
 
@@ -66,19 +73,26 @@ namespace watch_assistant.ViewModel.DetailsWindow
 
         #region Methods
 
-        private Dictionary<string, List<string>> FillDubs()
+        private List<RefsForDub> FillDubs()
         {
-            Dictionary<string, List<string>> result = new Dictionary<string, List<string>>();
-            foreach (var item in (List<KeyValuePair<string,string>>)Details["HRefs"])
+            List<RefsForDub> result = new List<RefsForDub>();
+            foreach (var item in (List<KeyValuePair<string, string>>)Details["HRefs"])
             {
-                if (!result.ContainsKey(item.Value))
+                bool aded = false;
+                foreach (var dub in result)
+                {
+                    if (dub.Dub == item.Value)
+                    {
+                        dub.HRefs.Add(item.Key);
+                        aded = true;
+                    }
+                }
+                if (!aded)
                 {
                     List<string> tmp = new List<string>();
                     tmp.Add(item.Key);
-                    result.Add(item.Value, tmp);
+                    result.Add(new RefsForDub(item.Value, tmp));
                 }
-                else
-                    result[item.Value].Add(item.Key);
             }
             return result;
         }
