@@ -4,6 +4,7 @@ using System.Windows.Input;
 using System;
 using System.Collections.Generic;
 using System.Windows.Controls;
+using System.Diagnostics;
 
 namespace watch_assistant.ViewModel.DetailsWindow
 {
@@ -21,6 +22,10 @@ namespace watch_assistant.ViewModel.DetailsWindow
 
     class DetailsWindowViewModel : WindowViewModel
     {
+        #region Commands
+        public static readonly RoutedUICommand PlayCommand = new RoutedUICommand("Opens player window", "Play", typeof(DetailsWindowViewModel));
+        #endregion (Commands)
+
         #region Properties
 
         // Details container reference
@@ -57,6 +62,8 @@ namespace watch_assistant.ViewModel.DetailsWindow
                 Dubs = FillDubs();
 
                 _owner.Show();
+
+                _owner.CommandBindings.Add(new CommandBinding(PlayCommand, RunPlayerWindow));
             }
             catch (Exception ex)
             {
@@ -67,6 +74,11 @@ namespace watch_assistant.ViewModel.DetailsWindow
         #endregion (Constructors)
 
         #region Methods
+
+        private static void RunPlayerWindow(object sender, ExecutedRoutedEventArgs e)
+        {
+            Process.Start(new ProcessStartInfo((string)e.Parameter));
+        }
 
         private List<RefsForDub> FillDubs()
         {

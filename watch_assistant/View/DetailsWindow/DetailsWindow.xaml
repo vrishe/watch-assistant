@@ -49,21 +49,22 @@
                     <StackPanel.Resources>
                         <cvt:ReferenceToDomainStringConverter x:Key="ReferenceToDomainStringConverter" />
                     </StackPanel.Resources>
-                    <ComboBox x:Name="Dub" Margin="0,1,0,0" IsSynchronizedWithCurrentItem="True" ItemsSource="{Binding Path=Dubs}">
+                    <ComboBox x:Name="cbDub" Margin="0,1,0,0" IsSynchronizedWithCurrentItem="True" ItemsSource="{Binding Path=Dubs}">
                         <ComboBox.ItemTemplate>
                             <DataTemplate DataType="{x:Type dwvm:RefsForDub}">
-                                <TextBlock Text="{Binding Path=Dub}" Foreground="Black" />
+                                <TextBlock Text="{Binding Path=Dub}"/>
                             </DataTemplate>
                         </ComboBox.ItemTemplate>
                     </ComboBox>
-                    <ComboBox Margin="0,1,0,0" IsSynchronizedWithCurrentItem="True" ItemsSource="{Binding ElementName=Dub, Path=SelectedItem.HRefs}">
+                    <ComboBox x:Name="cbRef" Margin="0,1,0,0" IsSynchronizedWithCurrentItem="True" ItemsSource="{Binding ElementName=cbDub, Path=SelectedItem.HRefs}">
                         <ComboBox.ItemTemplate>
                             <DataTemplate DataType="{x:Type dwvm:RefsForDub}">
-                                <TextBlock Text="{Binding Converter={StaticResource ReferenceToDomainStringConverter}, Mode=OneTime}" />
+                                <TextBlock Text="{Binding Converter={StaticResource ReferenceToDomainStringConverter}}" />
                             </DataTemplate>
                         </ComboBox.ItemTemplate>
                     </ComboBox>
-                    <Button Margin="0,5,0,0">Play</Button>
+                    <Button Margin="0,5,0,0" Command="{x:Static dwvm:DetailsWindowViewModel.PlayCommand}" 
+                            CommandParameter="{Binding ElementName=cbRef, Path=SelectedItem, Mode=OneWay}">Play</Button>
                 </StackPanel>
             </Grid>
 
