@@ -4,6 +4,7 @@
                      
         xmlns:custom="clr-namespace:CustomControls;assembly=CustomControls"
         xmlns:dwvm="clr-namespace:watch_assistant.ViewModel.DetailsWindow"
+        xmlns:cvt="clr-namespace:watch_assistant.ViewModel.Converters"
                      
         MinWidth="400" MinHeight="285"
         Width="525" Height="320">
@@ -45,8 +46,23 @@
                     <Image x:Name="Poster" Source="{Binding Path=Details[Poster]}" Stretch="Uniform" Margin="3"/>
                 </Border>
                 <StackPanel Orientation="Vertical" VerticalAlignment="Bottom" Grid.Row="1">
-                    <ComboBox x:Name="Dub" Margin="0,1,0,0" IsSynchronizedWithCurrentItem="True" ItemsSource="{Binding Path=Dubs}" />
-                    <ComboBox Margin="0,1,0,0" IsSynchronizedWithCurrentItem="True" ItemsSource="{Binding ElementName=Dub, Path=SelectedItem.HRefs}" />
+                    <StackPanel.Resources>
+                        <cvt:ReferenceToDomainStringConverter x:Key="ReferenceToDomainStringConverter" />
+                    </StackPanel.Resources>
+                    <ComboBox x:Name="Dub" Margin="0,1,0,0" IsSynchronizedWithCurrentItem="True" ItemsSource="{Binding Path=Dubs}">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate DataType="{x:Type dwvm:RefsForDub}">
+                                <TextBlock Text="{Binding Path=Dub}" Foreground="Black" />
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
+                    <ComboBox Margin="0,1,0,0" IsSynchronizedWithCurrentItem="True" ItemsSource="{Binding ElementName=Dub, Path=SelectedItem.HRefs}">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate DataType="{x:Type dwvm:RefsForDub}">
+                                <TextBlock Text="{Binding Converter={StaticResource ReferenceToDomainStringConverter}, Mode=OneTime}" />
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
                     <Button Margin="0,5,0,0">Play</Button>
                 </StackPanel>
             </Grid>

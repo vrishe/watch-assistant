@@ -1,5 +1,6 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:dat="clr-namespace:System.Data;assembly=System.Data"
                     
                     xmlns:custom="clr-namespace:CustomControls;assembly=CustomControls">
 
@@ -70,5 +71,4 @@
             </custom:RatingControl>
         </ContentControl>
     </DataTemplate>
-
 </ResourceDictionary>
