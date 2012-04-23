@@ -152,18 +152,7 @@ namespace watch_assistant.ViewModel.MainWindow
                 var strings = _thesaurus.GetPhrasePermutations((string)e.Argument);
                 _interviewer.ConductInterview(strings);
 
-                /*----- Delete this -----*/
-                DataTable tmpChart = _interviewer.InterviewResult.Copy();
-                tmpChart.Columns.Add("Raiting", typeof(Double));
-                Random r = new Random();
-                foreach (DataRow row in tmpChart.Rows)
-                    row["Raiting"] = r.Next(10) + r.NextDouble();
-                /*----- Delete this -----*/
-
-                // TODO: Change second argument of RaitingAnalyzer to Favorites user list
-                Model.RaitingAnalyzer.RaitingAnalyzer.AssignItemsPriority(_interviewer.InterviewResult, tmpChart);
-
-                _interviewer.InterviewResult.DefaultView.Sort = "Raiting DESC";
+                //_interviewer.InterviewResult.DefaultView.Sort = "Raiting DESC";
             }
             catch (Exception ex)
             {
