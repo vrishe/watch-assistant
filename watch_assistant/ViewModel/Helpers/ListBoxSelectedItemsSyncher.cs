@@ -11,22 +11,24 @@ namespace watch_assistant.ViewModel.Helpers
 {
     public class ListBoxSelectedItemsSyncher : DependencyObject
     {
-        internal class Syncher : IDisposable
+        #region Private types
+
+        private class Syncher : IDisposable
         {
 
             private ListBox _listbox;
             public ListBox ListBox { get { return _listbox; } }
 
             private IList _listToSync;
-            public IList ListToSync
+            public IList SynchronizedList
             {
                 get { return _listToSync; }
 
                 set
                 {
-                    detachTheListToSynch();
+                    detachTheSynchronizedListh();
                     _listToSync = value;
-                    attachTheListToSynch();
+                    attachTheSynchronizedListh();
                 }
             }
 
@@ -34,7 +36,7 @@ namespace watch_assistant.ViewModel.Helpers
             {
                 _listbox = listbox;
                 _listToSync = listToSync;
-                attachTheListToSynch();
+                attachTheSynchronizedListh();
             }
 
             void collectionChangedList_CollectionChanged(object sender,
@@ -84,13 +86,14 @@ namespace watch_assistant.ViewModel.Helpers
             {
                 if (_listbox == null) return;
                 _listbox.SelectionChanged -= _list_SelectionChanged;
-                detachTheListToSynch();
+                detachTheSynchronizedListh();
                 _listbox = null;
             }
             #endregion
 
             #region private methods
-            private void attachTheListToSynch()
+
+            private void attachTheSynchronizedListh()
             {
                 _listbox.SelectionChanged -= _list_SelectionChanged;
                 if (_listToSync == null) return;
@@ -110,58 +113,83 @@ namespace watch_assistant.ViewModel.Helpers
                      += new SelectionChangedEventHandler(_list_SelectionChanged);
             }
 
-            private void detachTheListToSynch()
+            private void detachTheSynchronizedListh()
             {
                 INotifyCollectionChanged collectionChangedList = null;
                 if ((collectionChangedList = _listToSync as INotifyCollectionChanged) != null)
                     collectionChangedList.CollectionChanged -= collectionChangedList_CollectionChanged;
             }
             #endregion
+        }
+
+        #endregion (Private types)
+
+        #region Fields
 
         private static List<Syncher> _synchers = new List<Syncher>();
 
+        #endregion (Fields)
+
         #region Properties
 
+        #region Attached
+
         /// <summary>
-        /// ListToSync Attached Dependency Property
+        /// Gets the SynchronizedList property.  This dependency property 
+        /// indicates ....
         /// </summary>
-        public static readonly DependencyProperty ListToSyncProperty =
-          DependencyProperty.RegisterAttached("ListToSync",
-                       typeof(IList), typeof(ListBoxSelectedItemsSyncher),
-            new FrameworkPropertyMetadata((IList)new List<Object>(),
-              FrameworkPropertyMetadataOptions.BindsTwoWayByDefault,
-                     new PropertyChangedCallback(OnListToSyncChanged)));
-
-
-      private static void OnListToSyncChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-      {
-        ListBox listBox = d as ListBox;
- 
-        if(!(d is  ListBox))
-         throw new  ArgumentException("ListBoxSelectedItemsSyncher is only applyable to Listbox");
- 
-        Syncher synch = (from Syncher syncher 
-	                  in _synchers where syncher.ListBox == listBox select syncher)
-                                 .FirstOrDefault();
-        if (synch != null)
+        public static IList GetSynchronizedList(DependencyObject d)
         {
-          synch.ListToSync = e.NewValue as IList;
-        } else
-        {
-          synch = new  Syncher(listBox, e.NewValue as IList);
-          _synchers.Add(synch);
-          listBox.Unloaded += new  RoutedEventHandler(listBox_Unloaded);
+            return (IList)d.GetValue(SynchronizedListProperty);
         }
-      }
+
+        /// <summary>
+        /// Sets the SynchronizedList property.  This dependency property 
+        /// indicates ....
+        /// </summary>
+        public static void SetSynchronizedList(DependencyObject d, IList value)
+        {
+            d.SetValue(SynchronizedListProperty, value);
+        }
+
+        /// <summary>
+        /// SynchronizedList Attached Dependency Property
+        /// </summary>
+        public static readonly DependencyProperty SynchronizedListProperty = 
+            DependencyProperty.RegisterAttached("SynchronizedList", typeof(IList), typeof(ListBoxSelectedItemsSyncher), 
+            new FrameworkPropertyMetadata(new List<object>(), FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, OnSynchronizedListChanged));
+
+        #endregion (Attached)
+
+        #endregion (Properties)
+
+
+        private static void OnSynchronizedListChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            ListBox listBox = d as ListBox;
+ 
+            if(!(d is  ListBox))
+                throw new  ArgumentException("ListBoxSelectedItemsSyncher is only applyable to Listbox");
+ 
+            Syncher synch = (from Syncher syncher 
+	                        in _synchers where syncher.ListBox == listBox select syncher)
+                                        .FirstOrDefault();
+            if (synch != null)
+            {
+                synch.SynchronizedList = e.NewValue as IList;
+            } 
+            else
+            {
+                synch = new  Syncher(listBox, e.NewValue as IList);
+                _synchers.Add(synch);
+                listBox.Unloaded += new  RoutedEventHandler(listBox_Unloaded);
+            }
+        }
 
         static void listBox_Unloaded(object sender, RoutedEventArgs e)
         {
             ListBox listBox = sender as ListBox;
-            Syncher synch = (from Syncher syncher
-                          in _synchers
-                             where syncher.ListBox == listBox
-                             select syncher)
-                              .FirstOrDefault();
+            Syncher synch = (from Syncher syncher in _synchers where syncher.ListBox == listBox select syncher).FirstOrDefault();
             if (synch != null)
             {
                 _synchers.Remove(synch);
@@ -170,26 +198,5 @@ namespace watch_assistant.ViewModel.Helpers
             }
         }
 
-        /// <summary>
-        /// Gets the ListToSync property.  This dependency property 
-        /// indicates ....
-        /// </summary>
-        public static IList GetListToSync(DependencyObject d)
-        {
-            return (IList)d.GetValue(ListToSyncProperty);
-        }
-
-        /// <summary>
-        /// Sets the ListToSync property.  This dependency property 
-        /// indicates ....
-        /// </summary>
-        public static void SetListToSync(DependencyObject d, IList value)
-        {
-            d.SetValue(ListToSyncProperty, value);
-        }
-
-        #endregion
-
-        }
     }
 }
