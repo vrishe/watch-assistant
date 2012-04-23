@@ -56,19 +56,4 @@
         </Setter>
     </Style>
 
-    <DataTemplate x:Key="SearchingListBoxItemTemplate">
-        <ContentControl Style="{StaticResource BaseListItemStyle}" />
-    </DataTemplate>
-
-    <DataTemplate x:Key="UserListBoxItemTemplate">
-        <ContentControl Style="{StaticResource BaseListItemStyle}">
-            <custom:RatingControl Style="{DynamicResource RatingControlStyle}" PersonalRating="0" >
-                <custom:RatingItem />
-                <custom:RatingItem />
-                <custom:RatingItem />
-                <custom:RatingItem />
-                <custom:RatingItem />
-            </custom:RatingControl>
-        </ContentControl>
-    </DataTemplate>
 </ResourceDictionary>

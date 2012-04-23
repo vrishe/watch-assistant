@@ -5,6 +5,7 @@
                      
         xmlns:custom="clr-namespace:CustomControls;assembly=CustomControls"
         xmlns:mwvm="clr-namespace:watch_assistant.ViewModel.MainWindow"
+        xmlns:vmh="clr-namespace:watch_assistant.ViewModel.Helpers"
                      
         MinWidth="214" MinHeight="150"
         Height="480" Width="640">
@@ -14,11 +15,6 @@
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="/Resources/View/resMainWindowSpecific.xaml" />
             </ResourceDictionary.MergedDictionaries>
-
-            <DataTemplate DataType="{x:Type dat:DataTable}">
-                <ListBox x:Name="listView" Margin="5,3,5,3.5" ItemsSource="{Binding Path=Rows, Mode=OneWay}"
-                         ItemTemplate="{StaticResource UserListBoxItemTemplate}" HorizontalContentAlignment="Stretch" ScrollViewer.HorizontalScrollBarVisibility="Disabled" />
-            </DataTemplate>
         </ResourceDictionary>
     </custom:CustomWindow.Resources>
     
@@ -53,8 +49,19 @@
                             CommandParameter="{Binding ElementName=tbSearch, Path=Text, Mode=OneWay}" />
                 </Grid>
 
-                <ListBox x:Name="searchView" Grid.Row="1" Margin="5,3,5,3.5" ItemsSource="{Binding Path=SearchResultTable.Rows, Mode=OneWay}" mwvm:MainWindowViewModel.AttachDetailsDoubleClickOpen="True"
-                         ItemTemplate="{StaticResource SearchingListBoxItemTemplate}" HorizontalContentAlignment="Stretch" ScrollViewer.HorizontalScrollBarVisibility="Disabled" />
+                <ListBox x:Name="searchView" Grid.Row="1" Margin="5,3,5,3.5" ItemsSource="{Binding Path=SearchResultTable.Rows, Mode=OneWay}" HorizontalContentAlignment="Stretch" SelectionMode="Extended"
+                         mwvm:MainWindowViewModel.AreListBoxBehaviorsAttached="True" vmh:ListBoxSelectedItemsSyncher.ListToSync="{Binding UserManipulationSelection}" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                    <ListBox.ContextMenu>
+                        <ContextMenu>
+                            <MenuItem Header="{StaticResource ContextMenuAddToHeader}" />     <!-- LOOK HERE -->                           
+                        </ContextMenu>
+                    </ListBox.ContextMenu>
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <ContentControl Style="{StaticResource BaseListItemStyle}" />
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
             </Grid>
         </custom:WindowPage>
 
@@ -82,24 +89,33 @@
 
                 <!-- Tab Buttons -->
                 <TabControl x:Name="UserListTabs" Margin="5,0,5,0" Grid.Row="0" Grid.RowSpan="2" IsSynchronizedWithCurrentItem="True" ItemsSource="{Binding Path=UserDataLists, Mode=OneWay}">
+                    <TabControl.Resources>
+                        <DataTemplate DataType="{x:Type dat:DataTable}">
+                            <ListBox x:Name="listView" Margin="5,3,5,3.5" ItemsSource="{Binding Path=Rows, Mode=OneWay}" HorizontalContentAlignment="Stretch" SelectionMode="Multiple" 
+                                     mwvm:MainWindowViewModel.AreListBoxBehaviorsAttached="True" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                                <ListBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <ContentControl Style="{StaticResource BaseListItemStyle}">
+                                            <custom:RatingControl Style="{DynamicResource RatingControlStyle}" PersonalRating="0" >
+                                                <custom:RatingItem />
+                                                <custom:RatingItem />
+                                                <custom:RatingItem />
+                                                <custom:RatingItem />
+                                                <custom:RatingItem />
+                                            </custom:RatingControl>
+                                        </ContentControl>
+                                    </DataTemplate>
+                                </ListBox.ItemTemplate>
+                            </ListBox>
+                        </DataTemplate>
+                    </TabControl.Resources>
                     <TabControl.ItemContainerStyle>
                         <Style TargetType="{x:Type TabItem}">
                             <Setter Property="Header" Value="{Binding Path=TableName}" />
                         </Style>
                     </TabControl.ItemContainerStyle>
                 </TabControl>
-                <!--<Grid x:Name="TabButtonsGrid" Margin="5,0,5,0" Grid.Row="0">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="*" />
-                    </Grid.ColumnDefinitions>
-                    <Button Grid.Column="0" HorizontalContentAlignment="Center">Favorites</Button>
-                    <Button Grid.Column="1" HorizontalContentAlignment="Center">Interest</Button>
-                </Grid>-->
-
-                <!-- Main List -->
-
-
+                
                 <!-- Userbar -->
                 <ContentControl Style="{DynamicResource UserBarPlateStyle}" Margin="0,0,5,0" HorizontalAlignment="Right" Grid.Row="2"/> 
             </Grid>

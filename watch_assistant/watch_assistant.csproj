@@ -113,6 +113,8 @@
     <Compile Include="Model\Search\IInterviewers\FilminInterviewer.cs" />
     <Compile Include="Model\Search\VideoInfoGraber.cs" />
     <Compile Include="ViewModel\DetailsWindow\DetailsWindowViewModel.cs" />
+    <Compile Include="ViewModel\Helpers\ListBoxSelectedItemsSyncher.cs" />
+    <Compile Include="ViewModel\Helpers\PropertyBindingProxy.cs" />
     <Compile Include="ViewModel\ViewModelConverters.cs" />
     <Compile Include="View\DetailsWindow\DetailsWindow.xaml.cs">
       <DependentUpon>DetailsWindow.xaml</DependentUpon>
