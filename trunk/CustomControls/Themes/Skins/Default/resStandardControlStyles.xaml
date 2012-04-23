@@ -2107,8 +2107,6 @@
                             <Popup IsOpen="{Binding Path=IsSubmenuOpen, RelativeSource={RelativeSource TemplatedParent}}" Placement="Right" x:Name="SubMenuPopup" Focusable="false" AllowsTransparency="true" PopupAnimation="{DynamicResource {x:Static SystemParameters.MenuPopupAnimationKey}}" VerticalOffset="-3">
                                 <Grid x:Name="SubMenu">
                                     <Border x:Name="SubMenuBorder" Background="{DynamicResource TabControlHeaderBrush}" BorderBrush="{DynamicResource ControlBorderBrush}" BorderThickness="1" />
-
-
                                     <StackPanel IsItemsHost="True" KeyboardNavigation.DirectionalNavigation="Cycle" />
                                 </Grid>
                             </Popup>
@@ -2293,7 +2291,7 @@
     <Style d:IsControlPart="True" TargetType="{x:Type TabItem}">
         <Setter Property="HorizontalContentAlignment" Value="Center" />
         <Setter Property="VerticalContentAlignment" Value="Center" />
-        <Setter Property="Padding" Value="8,5,8,5" />
+        <Setter Property="Padding" Value="8,5,8,4" />
         <Setter Property="MinWidth" Value="5" />
         <Setter Property="MinHeight" Value="5" />
         <Setter Property="Template">

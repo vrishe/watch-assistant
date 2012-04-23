@@ -129,7 +129,7 @@ namespace watch_assistant.ViewModel.MainWindow
                         {
                             if (e.ClickCount > 1)
                             {
-                                if (list.SelectedItem != null) RunDetailsWindow(list.SelectedItem as DataRow);
+                                if (list.SelectedItem != null) RunDetailsWindow((list.SelectedItem as DataRowView).Row);
                             }
                             else
                             {
@@ -221,6 +221,7 @@ namespace watch_assistant.ViewModel.MainWindow
             _bgInterview.DoWork += SearchTask;
             _bgInterview.RunWorkerCompleted += SearchCompleted;
             // _bgInterview.ProgressChanged += new ProgressChangedEventHandler(backgroundWorker1_ProgressChanged);
+
             _userData.CollectionChanged += UserDataCollectionChanged;
 
             // Command bindings

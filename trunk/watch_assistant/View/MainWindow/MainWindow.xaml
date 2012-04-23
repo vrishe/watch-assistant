@@ -14,6 +14,13 @@
          <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="/Resources/View/resMainWindowSpecific.xaml" />
+                
+                <ResourceDictionary>
+                    <DataTemplate x:Key="UserListsManagementItemTemplate">
+                        <TextBlock Text="{Binding Path=TableName}" />
+                    </DataTemplate>
+                </ResourceDictionary>
+                
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </custom:CustomWindow.Resources>
@@ -26,13 +33,7 @@
         </Grid.ColumnDefinitions>
 
         <!-- Search window part -->
-        <custom:WindowPage>
-            <custom:WindowPage.Resources>
-                <DataTemplate x:Key="UserListsManagementMenuItemTemplate">
-                    <TextBlock Text="{Binding Path=TableName}" />
-                </DataTemplate>
-            </custom:WindowPage.Resources>
-            
+        <custom:WindowPage>           
             <custom:WindowPage.MidHeaderCell>
                 <TextBlock Text="Search" TextTrimming="CharacterEllipsis" Foreground="{DynamicResource WindowLabelTextColor}" VerticalAlignment="Center" HorizontalAlignment="Center" />
             </custom:WindowPage.MidHeaderCell>
@@ -59,10 +60,10 @@
                          vmmw:MainWindowViewModel.AreListBoxBehaviorsAttached="True" vmh:ListBoxHelper.SelectedItemsMirrorList="{Binding UserManipulationSelection}" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
                     <ListBox.ContextMenu>
                         <ContextMenu>
-                            <MenuItem Header="{StaticResource ContextMenuAddToHeader}" ItemsSource="{Binding Path=UserDataLists, Mode=OneWay}"
-                                      ItemTemplate="{StaticResource UserListsManagementMenuItemTemplate}">
+                            <MenuItem Header="{StaticResource ContextMenuAddToHeader}" ItemsSource="{Binding Path=UserDataLists, Mode=OneWay}">
                                 <MenuItem.ItemContainerStyle>
                                     <Style TargetType="{x:Type MenuItem}">
+                                        <Setter Property="Header" Value="{Binding Path=TableName}" />
                                         <Setter Property="Command" Value="{x:Static vmmw:MainWindowViewModel.UserListAddItemCommand}" />
                                     </Style>
                                 </MenuItem.ItemContainerStyle>
@@ -93,45 +94,30 @@
                 <ContentControl Style="{DynamicResource SystemButtonsContainerStyle}" Margin="0,0,5,0"/>
             </custom:WindowPage.RightHeaderCell>
 
-            <Grid VerticalAlignment="Stretch">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="*"/>
-                    <RowDefinition Height="Auto"/>
-                </Grid.RowDefinitions>
-
-                <!-- Tab Buttons -->
-                <TabControl x:Name="UserListTabs" Margin="5,0,5,0" Grid.Row="0" Grid.RowSpan="2" IsSynchronizedWithCurrentItem="True" ItemsSource="{Binding Path=UserDataLists, Mode=OneWay}">
-                    <TabControl.ItemTemplate>
-                        <DataTemplate>
-                            <TextBlock Text="{Binding Path=TableName}" />
-                        </DataTemplate>
-                    </TabControl.ItemTemplate>
-                    <TabControl.ContentTemplate>
-                        <DataTemplate>
-                            <ListBox x:Name="listView" Margin="5,3,5,3.5" ItemsSource="{Binding Path=Rows, Mode=OneWay}" HorizontalContentAlignment="Stretch" SelectionMode="Multiple" 
-                                     vmmw:MainWindowViewModel.AreListBoxBehaviorsAttached="True" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
-                                <ListBox.ItemTemplate>
-                                    <DataTemplate>
-                                        <ContentControl Style="{StaticResource BaseListItemStyle}">
-                                            <custom:RatingControl Style="{DynamicResource RatingControlStyle}" PersonalRating="0" >
-                                                <custom:RatingItem />
-                                                <custom:RatingItem />
-                                                <custom:RatingItem />
-                                                <custom:RatingItem />
-                                                <custom:RatingItem />
-                                            </custom:RatingControl>
-                                        </ContentControl>
-                                    </DataTemplate>
-                                </ListBox.ItemTemplate>
-                            </ListBox>
-                        </DataTemplate>
-                    </TabControl.ContentTemplate>
-                </TabControl>
-                
-                <!-- Userbar -->
-                <ContentControl Style="{DynamicResource UserBarPlateStyle}" Margin="0,0,5,0" HorizontalAlignment="Right" Grid.Row="2"/> 
-            </Grid>
+            <!-- Tab Buttons -->
+            <TabControl x:Name="UserListTabs" IsSynchronizedWithCurrentItem="True" ItemsSource="{Binding Path=UserDataLists, Mode=OneWay}" ItemTemplate="{StaticResource UserListsManagementItemTemplate}">
+                <TabControl.ContentTemplate>
+                    <DataTemplate>
+                        <ListBox x:Name="listView" Margin="5,3,5,3.5" ItemsSource="{Binding Path=Rows, Mode=OneWay}" HorizontalContentAlignment="Stretch" SelectionMode="Multiple" 
+                                    vmmw:MainWindowViewModel.AreListBoxBehaviorsAttached="True" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                            <ListBox.ItemTemplate>
+                                <DataTemplate>
+                                    <ContentControl Style="{StaticResource BaseListItemStyle}">
+                                        <custom:RatingControl Style="{DynamicResource RatingControlStyle}" PersonalRating="0" >
+                                            <custom:RatingItem />
+                                            <custom:RatingItem />
+                                            <custom:RatingItem />
+                                            <custom:RatingItem />
+                                            <custom:RatingItem />
+                                        </custom:RatingControl>
+                                    </ContentControl>
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>
+                        </ListBox>
+                    </DataTemplate>
+                </TabControl.ContentTemplate>
+            </TabControl>
+            
         </custom:WindowPage>
     </Grid>
 </custom:CustomWindow>
