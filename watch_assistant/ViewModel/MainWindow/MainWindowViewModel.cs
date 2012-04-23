@@ -32,14 +32,14 @@ namespace watch_assistant.ViewModel.MainWindow
 
         #region Properties
 
-        public DataTable SearchResultTable
+        public DataView SearchResultView
         {
-            get { return (DataTable)GetValue(SearchResultTableProperty); }
+            get { return (DataView)GetValue(SearchResultTableProperty); }
             private set { SetValue(SearchResultTablePropertyKey, value); }
         }
 
         private static readonly DependencyPropertyKey SearchResultTablePropertyKey =
-            DependencyProperty.RegisterReadOnly("SearchResultTable", typeof(DataTable), typeof(MainWindowViewModel), new UIPropertyMetadata(null));
+            DependencyProperty.RegisterReadOnly("SearchResultTable", typeof(DataView), typeof(MainWindowViewModel), new UIPropertyMetadata(null));
         public static readonly DependencyProperty SearchResultTableProperty = SearchResultTablePropertyKey.DependencyProperty;
 
 
@@ -151,6 +151,19 @@ namespace watch_assistant.ViewModel.MainWindow
             {
                 var strings = _thesaurus.GetPhrasePermutations((string)e.Argument);
                 _interviewer.ConductInterview(strings);
+
+                /*----- Delete this -----*/
+                DataTable tmpChart = _interviewer.InterviewResult.Copy();
+                tmpChart.Columns.Add("Raiting", typeof(Double));
+                Random r = new Random();
+                foreach (DataRow row in tmpChart.Rows)
+                    row["Raiting"] = r.Next(10) + r.NextDouble();
+                /*----- Delete this -----*/
+
+                // TODO: Change second argument of RaitingAnalyzer to Favorites user list
+                Model.RaitingAnalyzer.RaitingAnalyzer.AssignItemsPriority(_interviewer.InterviewResult, tmpChart);
+
+                _interviewer.InterviewResult.DefaultView.Sort = "Raiting DESC";
             }
             catch (Exception ex)
             {
@@ -159,7 +172,7 @@ namespace watch_assistant.ViewModel.MainWindow
         }
         private void SearchCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
-            SearchResultTable = _interviewer.InterviewResult;
+            SearchResultView = _interviewer.InterviewResult.DefaultView;
             CommandManager.InvalidateRequerySuggested();
         }
         private void CanExecuteSearchTask(object sender, CanExecuteRoutedEventArgs e)

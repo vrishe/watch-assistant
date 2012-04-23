@@ -14,7 +14,7 @@ namespace watch_assistant.Model.Search.IInterviewers
 
         protected DataTable _interviewResult;
 
-        private ResourceDictionary _dictionary = new ResourceDictionary();
+        private readonly ResourceDictionary _dictionary = new ResourceDictionary();
 
         #endregion (Fields)
 
