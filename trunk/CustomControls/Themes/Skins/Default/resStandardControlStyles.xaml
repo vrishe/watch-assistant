@@ -2214,28 +2214,8 @@
                         <!-- Background="{DynamicResource TabControlHeaderBrush}"  -->
                         <Border CornerRadius="2,2,0,0" x:Name="border" Margin="0,0,0,-2" Panel.ZIndex="100">
                             <TabPanel x:Name="HeaderPanel" IsItemsHost="true" Panel.ZIndex="1" KeyboardNavigation.TabIndex="1" RenderTransformOrigin="0.5,0.5" Width="Auto" Height="Auto" Margin="4,0,0,0" />
-                                <!--<TabPanel.LayoutTransform>
-                                    <TransformGroup>
-                                        <ScaleTransform ScaleX="1" ScaleY="1" />
-                                        <SkewTransform AngleX="0" AngleY="0" />
-                                        <RotateTransform Angle="0" />
-                                        <TranslateTransform X="0" Y="0" />
-                                    </TransformGroup>
-                                </TabPanel.LayoutTransform>
-                                <TabPanel.RenderTransform>
-                                    <TransformGroup>
-                                        <ScaleTransform ScaleX="1" ScaleY="1" />
-                                        <SkewTransform AngleX="0" AngleY="0" />
-                                        <RotateTransform />
-                                        <TranslateTransform X="0" Y="0" />
-                                    </TransformGroup>
-                                </TabPanel.RenderTransform>
-                            </TabPanel>-->
                         </Border>
-                        <Grid Grid.Row="1" x:Name="ContentPanel">
-                            <ContentPresenter x:Name="PART_SelectedContentHost" ContentSource="SelectedContent" Width="{Binding ElementName=ContentPanel, Path=ActualWidth}" Height="{Binding ElementName=ContentPanel, Path=ActualHeight}"/>
-                        </Grid>
-                        <!-- Background="{DynamicResource TabControlContentBrush}" BorderBrush="{DynamicResource TabControlContentBorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="3,3,1,1" -->
+                        <ContentPresenter Grid.Row="1" x:Name="ContentPanel" ContentSource="SelectedContent" />
                         
                     </Grid>
                     <ControlTemplate.Triggers>
