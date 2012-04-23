@@ -7,6 +7,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
+using System.Windows.Data;
 
 namespace watch_assistant.ViewModel.MainWindow
 {
@@ -21,7 +22,10 @@ namespace watch_assistant.ViewModel.MainWindow
         private readonly ObservableCollection<DataTable> _userData = new ObservableCollection<DataTable>();
 
         #region Commands
+
         public static readonly RoutedUICommand SearchCommand = new RoutedUICommand("Activates searching process", "Search", typeof(MainWindowViewModel));
+        public static readonly RoutedUICommand UserListAddItem = new RoutedUICommand("Adds an item to one of user lists", "User list add item", typeof(MainWindowViewModel));
+
         #endregion (Commands)
 
         #endregion (Fields)
@@ -49,21 +53,31 @@ namespace watch_assistant.ViewModel.MainWindow
             DependencyProperty.RegisterReadOnly("UserDataLists", typeof(Collection<DataTable>), typeof(MainWindowViewModel), new UIPropertyMetadata(null));
         public static readonly DependencyProperty UserDataListsProperty = UserDataListsPropertyKey.DependencyProperty;
 
+        public IList<object> UserManipulationSelection
+        {
+            get { return (IList<object>)GetValue(UserManipulationSelectionProperty); }
+            set { SetValue(UserManipulationSelectionProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for UserManipulationSelection.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty UserManipulationSelectionProperty =
+            DependencyProperty.Register("UserManipulationSelection", typeof(IList<object>), typeof(MainWindowViewModel), new UIPropertyMetadata(new List<object>()));
+
         #region Attached
 
-        public static bool GetAttachDetailsDoubleClickOpen(DependencyObject obj)
+        public static bool GetAreListBoxBehaviorsAttached(DependencyObject obj)
         {
-            return (bool)obj.GetValue(AttachDetailsDoubleClickOpenProperty);
+            return (bool)obj.GetValue(AreListBoxBehaviorsAttached);
         }
 
-        public static void SetAttachDetailsDoubleClickOpen(DependencyObject obj, bool value)
+        public static void SetAreListBoxBehaviorsAttached(DependencyObject obj, bool value)
         {
-            obj.SetValue(AttachDetailsDoubleClickOpenProperty, value);
+            obj.SetValue(AreListBoxBehaviorsAttached, value);
         }
 
-        public static readonly DependencyProperty AttachDetailsDoubleClickOpenProperty =
-            DependencyProperty.RegisterAttached("AttachDetailsDoubleClickOpen", typeof(bool), typeof(MainWindowViewModel),
-            new UIPropertyMetadata(false, AttachDetailsDoubleClickOpenValueChanged));  
+        public static readonly DependencyProperty AreListBoxBehaviorsAttached =
+            DependencyProperty.RegisterAttached("AreListBoxBehaviorsAttached", typeof(bool), typeof(MainWindowViewModel),
+            new UIPropertyMetadata(false, AreListBoxBehaviorsAttachedValueChanged));  
 
         #endregion (Attached)
 
@@ -73,17 +87,18 @@ namespace watch_assistant.ViewModel.MainWindow
 
         #region Property event handlers
 
-        private static void AttachDetailsDoubleClickOpenValueChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
+        private static void AreListBoxBehaviorsAttachedValueChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
         {
-            if (e.Property == AttachDetailsDoubleClickOpenProperty)
+            if (e.Property == AreListBoxBehaviorsAttached)
             {
+                ListBox lb = sender as ListBox;
                 if ((bool)e.NewValue == true)
-                {
-                    (sender as ListBox).PreviewMouseLeftButtonDown += ListBoxMouseButtonEventHandler;
+                {                   
+                    lb.PreviewMouseLeftButtonDown += ListBoxMouseButtonEventHandler;
                 }
                 else
                 {
-                    (sender as ListBox).PreviewMouseLeftButtonDown -= ListBoxMouseButtonEventHandler;
+                    lb.PreviewMouseLeftButtonDown -= ListBoxMouseButtonEventHandler;
                 }
             }
             //else if ...
@@ -104,20 +119,25 @@ namespace watch_assistant.ViewModel.MainWindow
 
         private static void ListBoxMouseButtonEventHandler(object sender, MouseButtonEventArgs e)
         {
-            if (e.LeftButton == MouseButtonState.Pressed)
+            var list = sender as ListBox;
+            switch (e.ChangedButton)
             {
-                var list = sender as ListBox;
-                if (list != null)
-                {
-                    if (e.ClickCount > 1)
+                case MouseButton.Left:
+                    if (e.ButtonState == MouseButtonState.Pressed)
                     {
-                        if (list.SelectedItem != null) RunDetailsWindow(list.SelectedItem as DataRow);
+                        if (list != null)
+                        {
+                            if (e.ClickCount > 1)
+                            {
+                                if (list.SelectedItem != null) RunDetailsWindow(list.SelectedItem as DataRow);
+                            }
+                            else
+                            {
+                                list.SelectedItem = null;
+                            }
+                        }
                     }
-                    else
-                    {
-                        list.SelectedItem = null;
-                    }
-                }
+                    break;
             }
         }
 
@@ -140,7 +160,6 @@ namespace watch_assistant.ViewModel.MainWindow
         private void SearchCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
             SearchResultTable = _interviewer.InterviewResult;
-            _userData.Add(SearchResultTable);
             CommandManager.InvalidateRequerySuggested();
         }
         private void CanExecuteSearchTask(object sender, CanExecuteRoutedEventArgs e)
@@ -159,6 +178,8 @@ namespace watch_assistant.ViewModel.MainWindow
                 System.Media.SystemSounds.Beep.Play();
             }
         }
+
+        //private void 
 
         private static void RunDetailsWindow(DataRow detailData)
         {

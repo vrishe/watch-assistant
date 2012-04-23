@@ -12,6 +12,8 @@
         <sys:String x:Key="GenreLabelPrefix">Genre:</sys:String>
         <sys:String x:Key="YearLabelPrefix">Year:</sys:String>
         <sys:String x:Key="DescriptionLabelPrefix">Description:</sys:String>
+        
+        <sys:String x:Key="ContextMenuAddToHeader">Add to:</sys:String>
     </Application.Resources>
     
 </Application>
