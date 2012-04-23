@@ -27,6 +27,12 @@
 
         <!-- Search window part -->
         <custom:WindowPage>
+            <custom:WindowPage.Resources>
+                <DataTemplate x:Key="UserListsManagementMenuItemTemplate">
+                    <TextBlock Text="{Binding Path=TableName}" />
+                </DataTemplate>
+            </custom:WindowPage.Resources>
+            
             <custom:WindowPage.MidHeaderCell>
                 <TextBlock Text="Search" TextTrimming="CharacterEllipsis" Foreground="{DynamicResource WindowLabelTextColor}" VerticalAlignment="Center" HorizontalAlignment="Center" />
             </custom:WindowPage.MidHeaderCell>
@@ -50,10 +56,17 @@
                 </Grid>
 
                 <ListBox x:Name="searchView" Grid.Row="1" Margin="5,3,5,3.5" ItemsSource="{Binding Path=SearchResultTable.Rows, Mode=OneWay}" HorizontalContentAlignment="Stretch" SelectionMode="Extended"
-                         vmmw:MainWindowViewModel.AreListBoxBehaviorsAttached="True" vmh:ListBoxSelectedItemsSyncher.SynchronizedList="{Binding UserManipulationSelection}" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                         vmmw:MainWindowViewModel.AreListBoxBehaviorsAttached="True" vmh:ListBoxHelper.SelectedItemsMirrorList="{Binding UserManipulationSelection}" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
                     <ListBox.ContextMenu>
                         <ContextMenu>
-                            <MenuItem Header="{StaticResource ContextMenuAddToHeader}" />     <!-- LOOK HERE -->                           
+                            <MenuItem Header="{StaticResource ContextMenuAddToHeader}" ItemsSource="{Binding Path=UserDataLists, Mode=OneWay}"
+                                      ItemTemplate="{StaticResource UserListsManagementMenuItemTemplate}">
+                                <MenuItem.ItemContainerStyle>
+                                    <Style TargetType="{x:Type MenuItem}">
+                                        <Setter Property="Command" Value="{x:Static vmmw:MainWindowViewModel.UserListAddItemCommand}" />
+                                    </Style>
+                                </MenuItem.ItemContainerStyle>
+                            </MenuItem>
                         </ContextMenu>
                     </ListBox.ContextMenu>
                     <ListBox.ItemTemplate>
@@ -89,8 +102,13 @@
 
                 <!-- Tab Buttons -->
                 <TabControl x:Name="UserListTabs" Margin="5,0,5,0" Grid.Row="0" Grid.RowSpan="2" IsSynchronizedWithCurrentItem="True" ItemsSource="{Binding Path=UserDataLists, Mode=OneWay}">
-                    <TabControl.Resources>
-                        <DataTemplate DataType="{x:Type dat:DataTable}">
+                    <TabControl.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding Path=TableName}" />
+                        </DataTemplate>
+                    </TabControl.ItemTemplate>
+                    <TabControl.ContentTemplate>
+                        <DataTemplate>
                             <ListBox x:Name="listView" Margin="5,3,5,3.5" ItemsSource="{Binding Path=Rows, Mode=OneWay}" HorizontalContentAlignment="Stretch" SelectionMode="Multiple" 
                                      vmmw:MainWindowViewModel.AreListBoxBehaviorsAttached="True" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
                                 <ListBox.ItemTemplate>
@@ -108,12 +126,7 @@
                                 </ListBox.ItemTemplate>
                             </ListBox>
                         </DataTemplate>
-                    </TabControl.Resources>
-                    <TabControl.ItemContainerStyle>
-                        <Style TargetType="{x:Type TabItem}">
-                            <Setter Property="Header" Value="{Binding Path=TableName}" />
-                        </Style>
-                    </TabControl.ItemContainerStyle>
+                    </TabControl.ContentTemplate>
                 </TabControl>
                 
                 <!-- Userbar -->

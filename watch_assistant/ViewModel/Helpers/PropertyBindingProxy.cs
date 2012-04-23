@@ -20,8 +20,7 @@ namespace watch_assistant.ViewModel.Helpers
             FrameworkPropertyMetadata inMetadata = new FrameworkPropertyMetadata(
                 delegate(DependencyObject p, DependencyPropertyChangedEventArgs args)
                 {
-                    if (null != BindingOperations.GetBinding(p, OutProperty))
-                        (p as Proxy).Out = args.NewValue;
+                    if (BindingOperations.GetBinding(p, OutProperty) != null) (p as Proxy).Out = args.NewValue;
                 }
             );
 

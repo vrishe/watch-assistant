@@ -24,7 +24,7 @@ namespace watch_assistant.ViewModel.MainWindow
         #region Commands
 
         public static readonly RoutedUICommand SearchCommand = new RoutedUICommand("Activates searching process", "Search", typeof(MainWindowViewModel));
-        public static readonly RoutedUICommand UserListAddItem = new RoutedUICommand("Adds an item to one of user lists", "User list add item", typeof(MainWindowViewModel));
+        public static readonly RoutedUICommand UserListAddItemCommand = new RoutedUICommand("Adds an item to one of user lists", "User list add item", typeof(MainWindowViewModel));
 
         #endregion (Commands)
 
@@ -179,7 +179,14 @@ namespace watch_assistant.ViewModel.MainWindow
             }
         }
 
-        //private void 
+        private void CanExecuteUserListAddItemTask(object sender, CanExecuteRoutedEventArgs e)
+        {
+            e.CanExecute = true;
+        }
+        private void RunUserListAddItemTask(object sender, ExecutedRoutedEventArgs e)
+        {
+            MessageBox.Show("Lololo!");
+        }
 
         private static void RunDetailsWindow(DataRow detailData)
         {
@@ -205,6 +212,7 @@ namespace watch_assistant.ViewModel.MainWindow
 
             // Command bindings
             _owner.CommandBindings.Add(new CommandBinding(SearchCommand, RunSearchTask, CanExecuteSearchTask));
+            _owner.CommandBindings.Add(new CommandBinding(UserListAddItemCommand, RunUserListAddItemTask, CanExecuteUserListAddItemTask));
 
             // Temporary list definitions
             _userData.Add(new DataTable() { TableName = "Favorites" });

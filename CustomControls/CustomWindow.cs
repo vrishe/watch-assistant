@@ -44,6 +44,8 @@ namespace CustomControls
 
         #region Fields
 
+        private ResourceDictionary _activeLayoutDictionary;
+
         private Control _frame;
 
         private readonly Dictionary<FrameworkElement, ResizeOperation> _resizeBorders = new Dictionary<FrameworkElement,ResizeOperation>();
@@ -161,18 +163,10 @@ namespace CustomControls
         }
         private void UpdateFrameAppearance(string strResourceFile)
         {
-            ResourceDictionary currentResources = new ResourceDictionary();
-
-            foreach (DictionaryEntry entry in Resources)
-            {
-                currentResources[entry.Key] = entry.Value;
-            }
-
-            Uri uri = new Uri(strResourceFile, UriKind.Relative);
-            ResourceDictionary fromFile = Application.LoadComponent(uri) as ResourceDictionary;
-            currentResources.MergedDictionaries.Add(fromFile);
-
-            Resources = currentResources;
+            var loadedDictionary = Application.LoadComponent(new Uri(strResourceFile, UriKind.Relative)) as ResourceDictionary;
+            if (_activeLayoutDictionary != null) Resources.MergedDictionaries.Remove(_activeLayoutDictionary);
+            _activeLayoutDictionary = loadedDictionary;
+            Resources.MergedDictionaries.Add(_activeLayoutDictionary);
         }
         private void UpdateFrameBehaviors()
         {
