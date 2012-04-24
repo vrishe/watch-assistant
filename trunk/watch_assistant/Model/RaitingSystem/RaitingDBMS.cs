@@ -8,6 +8,10 @@ using watch_assistant.Properties;
 
 namespace watch_assistant.Model.RaitingSystem
 {
+    // TODO: Распределить выполнение жанрового анализатора в программе (см. подробнее)
+    // 1. В момент загрузки проги синхронизироваться с текущим рейтингом жанров
+    // 2. В момент обновления списка фавов выполнить AssignGenresPriority
+    // 3. Перед закрытием проги сериализовать текущий рейтинг жанров
     static class RaitingDBMS
     {
         #region RaitingAnalyzer
@@ -19,10 +23,10 @@ namespace watch_assistant.Model.RaitingSystem
             /// </summary>
             public static void AssignGenresPriority(DataTable chart)
             {
+                _raitingSummary = new Dictionary<string, double>();
                 foreach (DataRow chartRow in chart.Rows)
                     if ((Double)chartRow["Raiting"] > 0)
                         AssignGenrePriority(chartRow);
-                SerializeRaitingSummary();
             }
             /// <summary>
             /// Assign genre values in user raiting system for every genre from chartRow
