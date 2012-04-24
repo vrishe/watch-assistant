@@ -24,6 +24,7 @@ namespace watch_assistant.ViewModel.MainWindow
         #region Commands
 
         public static readonly RoutedUICommand SearchCommand = new RoutedUICommand("Activates searching process", "Search", typeof(MainWindowViewModel));
+        //public static readonly RoutedUICommand DetailsShowCommand = new RoutedUICommand("Runs 'details' window", "Details show", typeof(MainWindowViewModel));
         public static readonly RoutedUICommand UserListAddItemCommand = new RoutedUICommand("Adds an item to one of user lists", "User list add item", typeof(MainWindowViewModel));
 
         #endregion (Commands)
@@ -129,7 +130,7 @@ namespace watch_assistant.ViewModel.MainWindow
                         {
                             if (e.ClickCount > 1)
                             {
-                                if (list.SelectedItem != null) RunDetailsWindow((list.SelectedItem as DataRowView).Row);
+                                if (list.SelectedItem != null) DetailsShowTask((list.SelectedItem as DataRowView).Row);
                             }
                             else
                             {
@@ -181,6 +182,25 @@ namespace watch_assistant.ViewModel.MainWindow
             }
         }
 
+
+        private static void DetailsShowTask(DataRow detailData)
+        {
+            new watch_assistant.ViewModel.DetailsWindow.DetailsWindowViewModel(
+                new View.DetailsWindow.DetailsWindow() { Owner = Application.Current.MainWindow },
+                detailData
+            );
+        }
+        //private void CanExecuteDetailsShowTask (object sender, CanExecuteRoutedEventArgs e)
+        //{
+        //    ListBox lb = e.OriginalSource as ListBox;
+        //    e.CanExecute = lb != null && lb.SelectedItems.Count == 1;
+        //}
+        //private void RunDetailsShowTask(object sender, ExecutedRoutedEventArgs e)
+        //{
+        //    if (e.Parameter != null) DetailsShowTask((e.Parameter as DataRowView).Row);
+        //}
+
+
         private void CanExecuteUserListAddItemTask(object sender, CanExecuteRoutedEventArgs e)
         {
             e.CanExecute = true;
@@ -190,13 +210,6 @@ namespace watch_assistant.ViewModel.MainWindow
             MessageBox.Show("Lololo!");
         }
 
-        private static void RunDetailsWindow(DataRow detailData)
-        {
-            new watch_assistant.ViewModel.DetailsWindow.DetailsWindowViewModel(
-                new View.DetailsWindow.DetailsWindow() { Owner = Application.Current.MainWindow }, 
-                detailData
-            );
-        }
 
         #endregion (Command logic)
 
@@ -215,6 +228,7 @@ namespace watch_assistant.ViewModel.MainWindow
 
             // Command bindings
             _owner.CommandBindings.Add(new CommandBinding(SearchCommand, RunSearchTask, CanExecuteSearchTask));
+            //_owner.CommandBindings.Add(new CommandBinding(DetailsShowCommand, RunDetailsShowTask, CanExecuteDetailsShowTask));
             _owner.CommandBindings.Add(new CommandBinding(UserListAddItemCommand, RunUserListAddItemTask, CanExecuteUserListAddItemTask));
 
             // Temporary list definitions
