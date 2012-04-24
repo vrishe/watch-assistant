@@ -46,10 +46,10 @@
     <Compile Include="RatingControl.cs" />
     <Compile Include="SystemCommands.cs" />
     <Compile Include="WindowPage.cs" />
-    <Page Include="Themes\Generic.xaml">
+    <EmbeddedResource Include="Themes\Generic.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
-    </Page>
+    </EmbeddedResource>
     <Compile Include="CustomButton.cs" />
     <Compile Include="CustomWindow.cs">
       <SubType>Code</SubType>

@@ -1,17 +1,45 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Data;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Input;
-using System.Collections.ObjectModel;
-using System.Collections.Specialized;
+using System.Windows.Controls.Primitives;
 using System.Windows.Data;
+using System.Windows.Input;
 
 namespace watch_assistant.ViewModel.MainWindow
 {
-    class MainWindowViewModel : WindowViewModel
+    public class DataTableToMenuItemCollectionConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            var command = parameter as ICommand;
+            if (command == null) throw new ArgumentException(
+                String.Format("Parameter must be a descendant of ICommand ('{0}')", parameter != null ? parameter.GetType().ToString() : "null")
+                );
+
+            var incoming = value as IEnumerable<DataTable>;
+            if (incoming == null ) return incoming;
+
+            var result = new Collection<MenuItem>();
+            foreach (DataTable table in value as IEnumerable<DataTable>)
+            {
+                result.Add(new MenuItem() { Header = table.TableName, Command = MainWindowViewModel.UserListAddItemCommand });
+            }
+            CommandManager.InvalidateRequerySuggested();
+            return result;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    public class MainWindowViewModel : WindowViewModel
     {
         #region Fields
 
@@ -68,17 +96,17 @@ namespace watch_assistant.ViewModel.MainWindow
 
         public static bool GetAreListBoxBehaviorsAttached(DependencyObject obj)
         {
-            return (bool)obj.GetValue(AreListBoxBehaviorsAttached);
+            return (bool)obj.GetValue(AreListBoxBehaviorsAttachedProperty);
         }
 
         public static void SetAreListBoxBehaviorsAttached(DependencyObject obj, bool value)
         {
-            obj.SetValue(AreListBoxBehaviorsAttached, value);
+            obj.SetValue(AreListBoxBehaviorsAttachedProperty, value);
         }
 
-        public static readonly DependencyProperty AreListBoxBehaviorsAttached =
+        public static readonly DependencyProperty AreListBoxBehaviorsAttachedProperty =
             DependencyProperty.RegisterAttached("AreListBoxBehaviorsAttached", typeof(bool), typeof(MainWindowViewModel),
-            new UIPropertyMetadata(false, AreListBoxBehaviorsAttachedValueChanged));  
+            new UIPropertyMetadata(false, AttachedPropertyValueChanged));
 
         #endregion (Attached)
 
@@ -88,21 +116,21 @@ namespace watch_assistant.ViewModel.MainWindow
 
         #region Property event handlers
 
-        private static void AreListBoxBehaviorsAttachedValueChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
+        private static void AttachedPropertyValueChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
         {
-            if (e.Property == AreListBoxBehaviorsAttached)
+            if (e.Property == AreListBoxBehaviorsAttachedProperty)
             {
                 ListBox lb = sender as ListBox;
                 if ((bool)e.NewValue == true)
                 {                   
-                    lb.PreviewMouseLeftButtonDown += ListBoxMouseButtonEventHandler;
+                    lb.PreviewMouseDown += ListBoxMouseButtonEventHandler;
                 }
                 else
                 {
-                    lb.PreviewMouseLeftButtonDown -= ListBoxMouseButtonEventHandler;
+                    lb.PreviewMouseDown -= ListBoxMouseButtonEventHandler;
                 }
             }
-            //else if ...
+            // else if () { }
         }
 
         #endregion (Property event handlers)
@@ -138,6 +166,10 @@ namespace watch_assistant.ViewModel.MainWindow
                             }
                         }
                     }
+                    break;
+
+                case MouseButton.Right:
+                    list.SelectedItem = null;
                     break;
             }
         }
@@ -203,7 +235,7 @@ namespace watch_assistant.ViewModel.MainWindow
 
         private void CanExecuteUserListAddItemTask(object sender, CanExecuteRoutedEventArgs e)
         {
-            e.CanExecute = true;
+            e.CanExecute = UserManipulationSelection.Count > 0;
         }
         private void RunUserListAddItemTask(object sender, ExecutedRoutedEventArgs e)
         {

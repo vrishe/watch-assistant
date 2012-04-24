@@ -5,29 +5,29 @@ using System;
 
 namespace watch_assistant.ViewModel.Helpers
 {
-    public class Proxy : FrameworkElement
+    public class PropertyBindingProxy : FrameworkElement
     {
         public static readonly DependencyProperty InProperty;
         public static readonly DependencyProperty OutProperty;
 
-        public Proxy()
+        public PropertyBindingProxy()
         {
             Visibility = Visibility.Collapsed;
         }
 
-        static Proxy()
+        static PropertyBindingProxy()
         {
             FrameworkPropertyMetadata inMetadata = new FrameworkPropertyMetadata(
                 delegate(DependencyObject p, DependencyPropertyChangedEventArgs args)
                 {
-                    if (BindingOperations.GetBinding(p, OutProperty) != null) (p as Proxy).Out = args.NewValue;
+                    if (BindingOperations.GetBinding(p, OutProperty) != null) (p as PropertyBindingProxy).Out = args.NewValue;
                 }
             );
 
             inMetadata.BindsTwoWayByDefault = false;
             inMetadata.DefaultUpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged;
 
-            InProperty = DependencyProperty.Register("In", typeof(object), typeof(Proxy), inMetadata);
+            InProperty = DependencyProperty.Register("In", typeof(object), typeof(PropertyBindingProxy), inMetadata);
 
             FrameworkPropertyMetadata outMetadata = new FrameworkPropertyMetadata(
                 delegate(DependencyObject p, DependencyPropertyChangedEventArgs args)
@@ -36,7 +36,7 @@ namespace watch_assistant.ViewModel.Helpers
 
                     if (source.BaseValueSource != BaseValueSource.Local)
                     {
-                        Proxy proxy = p as Proxy;
+                        PropertyBindingProxy proxy = p as PropertyBindingProxy;
                         if (!object.ReferenceEquals(args.NewValue, proxy.In))
                         {
                             Dispatcher.CurrentDispatcher.BeginInvoke(
@@ -51,7 +51,7 @@ namespace watch_assistant.ViewModel.Helpers
             outMetadata.BindsTwoWayByDefault = true;
             outMetadata.DefaultUpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged;
 
-            OutProperty = DependencyProperty.Register("Out", typeof(object), typeof(Proxy), outMetadata);
+            OutProperty = DependencyProperty.Register("Out", typeof(object), typeof(PropertyBindingProxy), outMetadata);
         }
 
         public object In

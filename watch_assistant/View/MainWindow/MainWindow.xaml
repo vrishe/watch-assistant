@@ -15,12 +15,12 @@
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="/Resources/View/resMainWindowSpecific.xaml" />
                 
-                <ResourceDictionary>
-                    <DataTemplate x:Key="UserListsManagementItemTemplate">
-                        <TextBlock Text="{Binding Path=TableName}" />
-                    </DataTemplate>
-                </ResourceDictionary>
-                
+                <ResourceDictionary>                   
+                    <!--<Style x:Key="UserListSubmenuItemStyle" BasedOn="{StaticResource {x:Type MenuItem}}" TargetType="{x:Type MenuItem}">
+                        <Setter Property="Header" Value="{Binding Path=TableName}" />
+                        <Setter Property="Command" Value="{x:Static vmmw:MainWindowViewModel.UserListAddItemCommand}" />
+                    </Style>-->
+                </ResourceDictionary>                
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </custom:CustomWindow.Resources>
@@ -65,19 +65,19 @@
                         <MouseBinding Command="{x:Static vmmw:MainWindowViewModel.DetailsShowCommand}" CommandParameter="{Binding RelativeSource={x:Static RelativeSource.Self},Path=SelectedValue}" MouseAction="LeftDoubleClick" />
                     </ListBox.InputBindings>-->
                     
+                    <ListBox.Resources>
+                        <vmmw:DataTableToMenuItemCollectionConverter x:Key="DataTableToMenuItemCollectionConverter" />
+                    </ListBox.Resources>
+                    
                     <ListBox.ContextMenu>
                         <ContextMenu>
-                            <MenuItem Header="{StaticResource ContextMenuAddToHeader}" HorizontalContentAlignment="Left" ItemsSource="{Binding Path=UserDataLists, Mode=OneWay}">
-                                <MenuItem.ItemContainerStyle>
-                                    <Style TargetType="{x:Type MenuItem}">
-                                        <Setter Property="Header" Value="{Binding Path=TableName}" />
-                                        <Setter Property="Icon" Value="/Resources/App.ico" />
-                                        <Setter Property="Command" Value="{x:Static vmmw:MainWindowViewModel.UserListAddItemCommand}" />
-                                    </Style>
-                                </MenuItem.ItemContainerStyle>
-                            </MenuItem>
+                            <MenuItem Header="{StaticResource ContextMenuAddToHeader}" 
+                                      ItemsSource="{Binding Path=UserDataLists, 
+                                Converter={StaticResource DataTableToMenuItemCollectionConverter}, 
+                                ConverterParameter={x:Static vmmw:MainWindowViewModel.UserListAddItemCommand}}" />
                         </ContextMenu>
                     </ListBox.ContextMenu>
+                    
                     <ListBox.ItemTemplate>
                         <DataTemplate>
                             <ContentControl Style="{StaticResource BaseListItemStyle}" />
@@ -103,7 +103,13 @@
             </custom:WindowPage.RightHeaderCell>
 
             <!-- Tab Buttons -->
-            <TabControl x:Name="UserListTabs" IsSynchronizedWithCurrentItem="True" ItemsSource="{Binding Path=UserDataLists, Mode=OneWay}" ItemTemplate="{StaticResource UserListsManagementItemTemplate}">
+            <TabControl x:Name="UserListTabs" IsSynchronizedWithCurrentItem="True" ItemsSource="{Binding Path=UserDataLists, Mode=OneWay}">
+                <TabControl.ItemTemplate>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding Path=TableName}" />
+                    </DataTemplate>
+                </TabControl.ItemTemplate>
+                
                 <TabControl.ContentTemplate>
                     <DataTemplate>
                         <ListBox x:Name="listView" Margin="5,3,5,0" ItemsSource="{Binding Path=Rows, Mode=OneWay}" HorizontalContentAlignment="Stretch" SelectionMode="Multiple" 
