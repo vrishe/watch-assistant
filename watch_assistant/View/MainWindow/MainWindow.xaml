@@ -12,14 +12,7 @@
     <custom:CustomWindow.Resources>
          <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="/Resources/View/resMainWindowSpecific.xaml" />
-                
-                <ResourceDictionary>                   
-                    <!--<Style x:Key="UserListSubmenuItemStyle" BasedOn="{StaticResource {x:Type MenuItem}}" TargetType="{x:Type MenuItem}">
-                        <Setter Property="Header" Value="{Binding Path=TableName}" />
-                        <Setter Property="Command" Value="{x:Static vmmw:MainWindowViewModel.UserListAddItemCommand}" />
-                    </Style>-->
-                </ResourceDictionary>                
+                <ResourceDictionary Source="resMainWindowSpecific.xaml" />              
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </custom:CustomWindow.Resources>
@@ -58,11 +51,8 @@
                     <Button x:Name="bSearch" Grid.Column="1" Margin="2,0,0,0" Content="Search" Command="{x:Static vmmw:MainWindowViewModel.SearchCommand}" CommandParameter="{Binding ElementName=tbSearch, Path=Text, Mode=OneWay}" />
                 </Grid>
 
-                <ListBox x:Name="searchView" Grid.Row="1" Margin="5,3,5,0" ItemsSource="{Binding Path=SearchResultTable, Mode=OneWay}" HorizontalContentAlignment="Stretch" SelectionMode="Extended"
+                <ListBox x:Name="searchView" Grid.Row="1" Margin="5,3,5,0" ItemsSource="{Binding Path=SearchResultTable.Rows, Mode=OneWay}" HorizontalContentAlignment="Stretch" SelectionMode="Extended"
                          vmmw:MainWindowViewModel.AreListBoxBehaviorsAttached="True" vmh:ListBoxHelper.SelectedItemsMirrorList="{Binding UserManipulationSelection}" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
-                    <!--<ListBox.InputBindings>
-                        <MouseBinding Command="{x:Static vmmw:MainWindowViewModel.DetailsShowCommand}" CommandParameter="{Binding RelativeSource={x:Static RelativeSource.Self},Path=SelectedValue}" MouseAction="LeftDoubleClick" />
-                    </ListBox.InputBindings>-->
                     
                     <ListBox.Resources>
                         <vmmw:DataTableToMenuItemCollectionConverter x:Key="DataTableToMenuItemCollectionConverter" />
