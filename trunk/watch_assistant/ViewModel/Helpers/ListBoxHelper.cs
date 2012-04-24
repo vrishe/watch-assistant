@@ -24,17 +24,7 @@ namespace watch_assistant.ViewModel.Helpers
 
             public ListBox Target { get { return _target; } }
 
-            public IList Mirror
-            {
-                get { return _mirror; }
-
-                //set
-                //{
-                //    detachTheSynchronizedListh();
-                //    _mirror = value;
-                //    attachTheSynchronizedList();
-                //}
-            }
+            public IList Mirror { get { return _mirror; } }
 
             #endregion (Properties)
 
@@ -46,8 +36,15 @@ namespace watch_assistant.ViewModel.Helpers
                 {
                     if (e.Action != NotifyCollectionChangedAction.Reset)
                     {
-                        foreach (Object item in e.NewItems) _target.SelectedItems.Add(item);
-                        foreach (Object item in e.OldItems) _target.SelectedItems.Remove(item);
+                        if (e.NewItems != null)
+                        {
+                            foreach (Object item in e.NewItems) _target.SelectedItems.Add(item);
+                        }
+
+                        if (e.OldItems != null)
+                        {
+                            foreach (Object item in e.OldItems) _target.SelectedItems.Remove(item);
+                        }
                     }
                     else
                     {
@@ -55,27 +52,20 @@ namespace watch_assistant.ViewModel.Helpers
                     }
                     CommandManager.InvalidateRequerySuggested();
                 }
-                //if (e.NewItems != null)
-                //{
-                //    foreach (Object item in e.NewItems) _target.SelectedItems.Add(item);
-                //}
-
-                //if (e.OldItems != null)
-                //{
-                //    foreach (Object item in e.OldItems) _target.SelectedItems.Remove(item);
-                //}
-
-                //if (e.Action == NotifyCollectionChangedAction.Reset) _target.SelectedItems.Clear();
-
-                //CommandManager.InvalidateRequerySuggested();
             }
 
             private void SelectionChangedEventHandler(object sender, SelectionChangedEventArgs e)
             {
                 if (_mirror != null)
-                {               
-                    foreach (object item in e.AddedItems) _mirror.Add(item);
-                    foreach (object item in e.RemovedItems) _mirror.Remove(item);
+                {
+                    if (e.AddedItems != null)
+                    {
+                        foreach (var item in e.AddedItems) _mirror.Add(item);
+                    }
+                    if (e.RemovedItems != null)
+                    {
+                        foreach (var item in e.RemovedItems) _mirror.Remove(item);
+                    }
                     CommandManager.InvalidateRequerySuggested();
                 }
             }
