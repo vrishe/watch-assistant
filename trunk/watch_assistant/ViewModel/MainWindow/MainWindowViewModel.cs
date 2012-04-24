@@ -57,7 +57,7 @@ namespace watch_assistant.ViewModel.MainWindow
         #region Commands
 
         public static readonly RoutedUICommand SearchCommand = new RoutedUICommand("Activates searching process", "Search", typeof(MainWindowViewModel));
-        //public static readonly RoutedUICommand DetailsShowCommand = new RoutedUICommand("Runs 'details' window", "Details show", typeof(MainWindowViewModel));
+        public static readonly RoutedUICommand DetailsShowCommand = new RoutedUICommand("Runs 'details' window", "Details show", typeof(MainWindowViewModel));
         public static readonly RoutedUICommand UserListAddItemCommand = new RoutedUICommand("Adds an item to one of user lists", "User list add item", typeof(MainWindowViewModel));
 
         #endregion (Commands)
@@ -127,12 +127,12 @@ namespace watch_assistant.ViewModel.MainWindow
             {
                 ListBox lb = sender as ListBox;
                 if ((bool)e.NewValue == true)
-                {                   
-                    lb.PreviewMouseDown += ListBoxMouseButtonEventHandler;
+                {
+                    lb.MouseDown += ListBoxMouseButtonEventHandler;
                 }
                 else
                 {
-                    lb.PreviewMouseDown -= ListBoxMouseButtonEventHandler;
+                    lb.MouseDown -= ListBoxMouseButtonEventHandler;
                 }
             }
             // else if () { }
@@ -153,28 +153,8 @@ namespace watch_assistant.ViewModel.MainWindow
 
         private static void ListBoxMouseButtonEventHandler(object sender, MouseButtonEventArgs e)
         {
-            var list = sender as ListBox; if (list == null) return;
-
-            switch (e.ChangedButton)
-            {
-                case MouseButton.Left:
-                    if (e.ButtonState == MouseButtonState.Pressed)
-                    {
-                        if (e.ClickCount > 1)
-                        {
-                            if (list.SelectedItem != null) DetailsShowTask(list.SelectedItem as DataRow);
-                        }
-                        else
-                        {
-                            if ( list.IsMouseDirectlyOver ) list.SelectedItem = null;
-                        }
-                    }
-                    break;
-
-                case MouseButton.Right:
-                    if (list.IsMouseDirectlyOver) list.SelectedItem = null;
-                    break;
-            }
+            var list = sender as ListBox; 
+            if (list != null) list.SelectedItem = null;
         }
 
         #endregion (UI behaviors)
@@ -225,15 +205,10 @@ namespace watch_assistant.ViewModel.MainWindow
                 detailData
             );
         }
-        //private void CanExecuteDetailsShowTask (object sender, CanExecuteRoutedEventArgs e)
-        //{
-        //    ListBox lb = e.OriginalSource as ListBox;
-        //    e.CanExecute = lb != null && lb.SelectedItems.Count == 1;
-        //}
-        //private void RunDetailsShowTask(object sender, ExecutedRoutedEventArgs e)
-        //{
-        //    if (e.Parameter != null) DetailsShowTask((e.Parameter as DataRowView).Row);
-        //}
+        private void RunDetailsShowTask(object sender, ExecutedRoutedEventArgs e)
+        {
+            DetailsShowTask(e.Parameter as DataRow);
+        }
 
 
         private void CanExecuteUserListAddItemTask(object sender, CanExecuteRoutedEventArgs e)
@@ -247,6 +222,7 @@ namespace watch_assistant.ViewModel.MainWindow
                 String.Format("UserListAddItemTask command failed: '{0}'", e.Parameter == null ? e.Parameter.ToString() : "null")
                 );
 
+            if (table.Rows.Count == 0) table.Merge(UserManipulationSelection[0].Table.Clone(), true, MissingSchemaAction.Add);
             foreach (DataRow row in UserManipulationSelection) table.ImportRow(row);
         }
 
@@ -268,7 +244,7 @@ namespace watch_assistant.ViewModel.MainWindow
 
             // Command bindings
             _owner.CommandBindings.Add(new CommandBinding(SearchCommand, RunSearchTask, CanExecuteSearchTask));
-            //_owner.CommandBindings.Add(new CommandBinding(DetailsShowCommand, RunDetailsShowTask, CanExecuteDetailsShowTask));
+            _owner.CommandBindings.Add(new CommandBinding(DetailsShowCommand, RunDetailsShowTask/*, CanExecuteDetailsShowTask*/));
             _owner.CommandBindings.Add(new CommandBinding(UserListAddItemCommand, RunUserListAddItemTask, CanExecuteUserListAddItemTask));
 
             // Temporary list definitions
