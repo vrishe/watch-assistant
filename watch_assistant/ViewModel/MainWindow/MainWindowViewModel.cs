@@ -27,7 +27,12 @@ namespace watch_assistant.ViewModel.MainWindow
             var result = new Collection<MenuItem>();
             foreach (DataTable table in value as IEnumerable<DataTable>)
             {
-                result.Add(new MenuItem() { Header = table.TableName, Command = MainWindowViewModel.UserListAddItemCommand });
+                result.Add(new MenuItem() 
+                { 
+                    Header = table.TableName, 
+                    Command = MainWindowViewModel.UserListAddItemCommand, 
+                    CommandParameter = table
+                });
             }
             CommandManager.InvalidateRequerySuggested();
             return result;
@@ -61,36 +66,36 @@ namespace watch_assistant.ViewModel.MainWindow
 
         #region Properties
 
-        public DataView SearchResultView
+        public DataTable SearchResultTable
         {
-            get { return (DataView)GetValue(SearchResultTableProperty); }
+            get { return (DataTable)GetValue(SearchResultTableProperty); }
             private set { SetValue(SearchResultTablePropertyKey, value); }
         }
 
         private static readonly DependencyPropertyKey SearchResultTablePropertyKey =
-            DependencyProperty.RegisterReadOnly("SearchResultTable", typeof(DataView), typeof(MainWindowViewModel), new UIPropertyMetadata(null));
+            DependencyProperty.RegisterReadOnly("SearchResultTable", typeof(DataTable), typeof(MainWindowViewModel), new UIPropertyMetadata(new DataTable() { TableName = "<Empty>" }));
         public static readonly DependencyProperty SearchResultTableProperty = SearchResultTablePropertyKey.DependencyProperty;
 
 
-        public Collection<DataTable> UserDataLists
+        public IEnumerable<DataTable> UserDataLists
         {
             get { return (Collection<DataTable>)GetValue(UserDataListsProperty); }
             private set { SetValue(UserDataListsPropertyKey, value); }
         }
 
         private static readonly DependencyPropertyKey UserDataListsPropertyKey =
-            DependencyProperty.RegisterReadOnly("UserDataLists", typeof(Collection<DataTable>), typeof(MainWindowViewModel), new UIPropertyMetadata(null));
+            DependencyProperty.RegisterReadOnly("UserDataLists", typeof(IEnumerable<DataTable>), typeof(MainWindowViewModel), new UIPropertyMetadata(null));
         public static readonly DependencyProperty UserDataListsProperty = UserDataListsPropertyKey.DependencyProperty;
 
-        public IList<object> UserManipulationSelection
+        public IList<DataRow> UserManipulationSelection
         {
-            get { return (IList<object>)GetValue(UserManipulationSelectionProperty); }
+            get { return (IList<DataRow>)GetValue(UserManipulationSelectionProperty); }
             set { SetValue(UserManipulationSelectionProperty, value); }
         }
 
         // Using a DependencyProperty as the backing store for UserManipulationSelection.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty UserManipulationSelectionProperty =
-            DependencyProperty.Register("UserManipulationSelection", typeof(IList<object>), typeof(MainWindowViewModel), new UIPropertyMetadata(new List<object>()));
+            DependencyProperty.Register("UserManipulationSelection", typeof(IList<DataRow>), typeof(MainWindowViewModel), new UIPropertyMetadata(new List<DataRow>()));
 
         #region Attached
 
@@ -148,28 +153,26 @@ namespace watch_assistant.ViewModel.MainWindow
 
         private static void ListBoxMouseButtonEventHandler(object sender, MouseButtonEventArgs e)
         {
-            var list = sender as ListBox;
+            var list = sender as ListBox; if (list == null) return;
+
             switch (e.ChangedButton)
             {
                 case MouseButton.Left:
                     if (e.ButtonState == MouseButtonState.Pressed)
                     {
-                        if (list != null)
+                        if (e.ClickCount > 1)
                         {
-                            if (e.ClickCount > 1)
-                            {
-                                if (list.SelectedItem != null) DetailsShowTask((list.SelectedItem as DataRowView).Row);
-                            }
-                            else
-                            {
-                                list.SelectedItem = null;
-                            }
+                            if (list.SelectedItem != null) DetailsShowTask(list.SelectedItem as DataRow);
+                        }
+                        else
+                        {
+                            if ( list.IsMouseDirectlyOver ) list.SelectedItem = null;
                         }
                     }
                     break;
 
                 case MouseButton.Right:
-                    list.SelectedItem = null;
+                    if (list.IsMouseDirectlyOver) list.SelectedItem = null;
                     break;
             }
         }
@@ -194,7 +197,7 @@ namespace watch_assistant.ViewModel.MainWindow
         }
         private void SearchCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
-            SearchResultView = _interviewer.InterviewResult.DefaultView;
+            SearchResultTable = _interviewer.InterviewResult.DefaultView.Table.Copy();
             CommandManager.InvalidateRequerySuggested();
         }
         private void CanExecuteSearchTask(object sender, CanExecuteRoutedEventArgs e)
@@ -239,7 +242,12 @@ namespace watch_assistant.ViewModel.MainWindow
         }
         private void RunUserListAddItemTask(object sender, ExecutedRoutedEventArgs e)
         {
-            MessageBox.Show("Lololo!");
+            var table = e.Parameter as DataTable;
+            if (table == null) throw new ArgumentException(
+                String.Format("UserListAddItemTask command failed: '{0}'", e.Parameter == null ? e.Parameter.ToString() : "null")
+                );
+
+            foreach (DataRow row in UserManipulationSelection) table.ImportRow(row);
         }
 
 
