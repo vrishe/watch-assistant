@@ -2052,7 +2052,7 @@
 
     <DropShadowBitmapEffect x:Key="PopupDropShadow" ShadowDepth="1.5" Softness="0.15" />
 
-    <Style TargetType="{x:Type MenuItem}">
+    <Style TargetType="{x:Type MenuItem}" BasedOn="{x:Null}">
         <Style.Triggers>
             <Trigger Property="IsHighlighted" Value="True">
                 <Setter Property="Foreground">
