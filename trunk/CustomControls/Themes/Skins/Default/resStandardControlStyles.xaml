@@ -2269,8 +2269,8 @@
     </Style>
 
     <Style d:IsControlPart="True" TargetType="{x:Type TabItem}">
-        <Setter Property="HorizontalContentAlignment" Value="Center" />
-        <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+        <Setter Property="VerticalContentAlignment" Value="Stretch" />
         <Setter Property="Padding" Value="8,5,8,4" />
         <Setter Property="MinWidth" Value="5" />
         <Setter Property="MinHeight" Value="5" />
@@ -2344,7 +2344,7 @@
                                 </Border>
                             </Grid>
                             <Border x:Name="DisabledVisualTopSelected" Margin="1,0,1,0" Background="{DynamicResource DisabledBackgroundBrush}" CornerRadius="3,3,0,0" IsHitTestVisible="false" Visibility="Collapsed" />
-                            <ContentPresenter HorizontalAlignment="Center" Margin="{TemplateBinding Padding}" x:Name="ContentSite" VerticalAlignment="Center" RecognizesAccessKey="True" ContentSource="Header" />
+                            <ContentPresenter Margin="{TemplateBinding Padding}" x:Name="ContentSite" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"  RecognizesAccessKey="True" ContentSource="Header" />
                         </Grid>
                     </Grid>
                     <ControlTemplate.Triggers>
