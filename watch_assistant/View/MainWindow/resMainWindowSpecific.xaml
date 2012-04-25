@@ -30,7 +30,6 @@
                             <Grid x:Name="BriefDescPlateGrid" Margin="3,0,0,0">
                                 <Grid.Resources>
                                     <Style TargetType="{x:Type TextBlock}">
-                                        <Setter Property="OverridesDefaultStyle" Value="True" />
                                         <Setter Property="Foreground" Value="{DynamicResource OutsideFontColor}" />
                                         <Setter Property="TextTrimming" Value="CharacterEllipsis" />
                                     </Style>
