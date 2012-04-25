@@ -21,11 +21,11 @@
 
                         <ContentPresenter Grid.Column="0" x:Name="AdditionalPresenter" HorizontalAlignment="Center" VerticalAlignment="Stretch" />
                         <Border Grid.Column="1" Background="{DynamicResource ControlBackgroundBrush}" CornerRadius="{DynamicResource DefaultCornerRadius}" >
-                            <Image x:Name="Poster" Margin="1" Source="{Binding Path=[Poster], Mode=OneWay}" />
+                            <Image x:Name="Poster" Margin="1" Source="{Binding Path=Poster, Mode=OneWay}" />
                         </Border>
                         <StackPanel Grid.Column="2" Orientation="Vertical" >
                             <TextBlock Margin="3,2,0,0" TextTrimming="CharacterEllipsis" Foreground="{DynamicResource WindowLabelTextColor}"
-                                        Text="{Binding Path=[Name], Mode=OneWay}" HorizontalAlignment="Left" />
+                                        Text="{Binding Path=Name, Mode=OneWay}" HorizontalAlignment="Left" />
 
                             <Grid x:Name="BriefDescPlateGrid" Margin="3,0,0,0">
                                 <Grid.Resources>
@@ -48,8 +48,8 @@
                                 <TextBlock Text="{DynamicResource GenreLabelPrefix}" Grid.Column="0" Grid.Row="0" />
                                 <TextBlock Text="{DynamicResource YearLabelPrefix}" Grid.Column="0" Grid.Row="1" />
 
-                                <TextBlock Text="{Binding Path=[Genre]}" TextTrimming="None" Grid.Column="1" Grid.Row="0" Margin="5,0,0,0" />
-                                <TextBlock Text="{Binding Path=[Year]}" TextTrimming="None" Grid.Column="1" Grid.Row="1" Margin="5,0,0,0" />
+                                <TextBlock Text="{Binding Path=Genre}" TextTrimming="None" Grid.Column="1" Grid.Row="0" Margin="5,0,0,0" />
+                                <TextBlock Text="{Binding Path=Year}" TextTrimming="None" Grid.Column="1" Grid.Row="1" Margin="5,0,0,0" />
 
                             </Grid>
                         </StackPanel>
