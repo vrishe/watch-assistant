@@ -199,6 +199,18 @@ namespace watch_assistant.ViewModel.MainWindow
         }
 
 
+        private static bool IsItemNonExistent(DataTable table, DataRow row)
+        {
+            foreach (DataRow rowCurrent in table.Rows)
+            {
+                if (rowCurrent["Name"].Equals(row["Name"])) return false;
+
+                var hRefsIncoming = (IList<KeyValuePair<string, string>>)row["HRefs"];
+                var hRefsOwn = new Collection<KeyValuePair<string, string>>((IList<KeyValuePair<string, string>>)rowCurrent["HRefs"]);
+                foreach (KeyValuePair<string, string> hRef in hRefsIncoming) if (hRefsOwn.Contains(hRef)) return false;
+            }
+            return true;
+        }
         private void CanExecuteUserListAddItemTask(object sender, CanExecuteRoutedEventArgs e)
         {
             e.CanExecute = UserManipulationSelection.Count > 0;
@@ -210,10 +222,18 @@ namespace watch_assistant.ViewModel.MainWindow
                 String.Format("UserListAddItemTask command failed: '{0}'", e.Parameter == null ? e.Parameter.ToString() : "null")
                 );
 
-            if (UserManipulationSelection.Count > 0)
+            if (table.Rows.Count == 0) table.Merge(UserManipulationSelection[0].Row.Table.Clone(), true, MissingSchemaAction.Add);
+            foreach (DataRowView rowView in UserManipulationSelection)
             {
-                if (table.Rows.Count == 0) table.Merge(UserManipulationSelection[0].Row.Table.Clone(), true, MissingSchemaAction.Add);
-                foreach (DataRowView rowView in UserManipulationSelection) table.ImportRow(rowView.Row);
+                if (IsItemNonExistent(table, rowView.Row))
+                {
+                    watch_assistant.Model.Search.VideoInfoGraber.GetInfo(rowView.Row);
+                    table.ImportRow(rowView.Row);
+                }
+                else
+                {
+                    // Verify existent item's data
+                }
             }
         }
 

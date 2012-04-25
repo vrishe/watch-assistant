@@ -106,7 +106,7 @@
                             <ListBox.ItemTemplate>
                                 <DataTemplate>
                                     <ContentControl Style="{StaticResource BaseListItemStyle}">
-                                        <custom:RatingControl Style="{DynamicResource RatingControlStyle}" PersonalRating="0" >
+                                        <custom:RatingControl Style="{DynamicResource RatingControlStyle}" PersonalRating="{Binding Path=Rating}" >
                                             <custom:RatingItem />
                                             <custom:RatingItem />
                                             <custom:RatingItem />

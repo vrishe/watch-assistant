@@ -716,6 +716,7 @@
 
 
     <Style TargetType="{x:Type ListBox}">
+        <Setter Property="OverridesDefaultStyle" Value="true" />        
         <Setter Property="SnapsToDevicePixels" Value="true" />
         <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Auto" />
         <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto" />
@@ -756,8 +757,8 @@
 
 
     <Style d:IsControlPart="True" TargetType="{x:Type ListBoxItem}">
-        <Setter Property="SnapsToDevicePixels" Value="true" />
         <Setter Property="OverridesDefaultStyle" Value="true" />
+        <Setter Property="SnapsToDevicePixels" Value="true" />
         <Setter Property="Padding" Value="3" />
         <Setter Property="Foreground" Value="Black" />
         <Setter Property="Template">
@@ -2011,6 +2012,7 @@
     </Style>
 
     <Style TargetType="{x:Type Menu}">
+        <Setter Property="OverridesDefaultStyle" Value="true" />
         <Setter Property="SnapsToDevicePixels" Value="True" />
         <Setter Property="Template">
             <Setter.Value>
@@ -2031,6 +2033,7 @@
     </Style>
 
     <Style TargetType="{x:Type ContextMenu}">
+        <Setter Property="OverridesDefaultStyle" Value="true" />
         <Setter Property="SnapsToDevicePixels" Value="True" />
         <Setter Property="Template">
             <Setter.Value>
@@ -2062,6 +2065,8 @@
                 </Setter>
             </Trigger>
         </Style.Triggers>
+
+        <Setter Property="OverridesDefaultStyle" Value="true" />
         <Setter Property="HorizontalContentAlignment" Value="{Binding Path=HorizontalContentAlignment, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}" />
         <Setter Property="VerticalContentAlignment" Value="{Binding Path=VerticalContentAlignment, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}" />
         <Setter Property="Background" Value="Transparent" />

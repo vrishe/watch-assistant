@@ -47,14 +47,14 @@
                     </StackPanel.Resources>
                     <ComboBox x:Name="cbDub" Margin="0,1,0,0" IsSynchronizedWithCurrentItem="True" ItemsSource="{Binding Path=Dubs}">
                         <ComboBox.ItemTemplate>
-                            <DataTemplate DataType="{x:Type dwvm:RefsForDub}">
+                            <DataTemplate DataType="{x:Type dwvm:DubRefsHolder}">
                                 <TextBlock Text="{Binding Path=Dub}"/>
                             </DataTemplate>
                         </ComboBox.ItemTemplate>
                     </ComboBox>
                     <ComboBox x:Name="cbRef" Margin="0,1,0,0" IsSynchronizedWithCurrentItem="True" ItemsSource="{Binding ElementName=cbDub, Path=SelectedItem.HRefs}">
                         <ComboBox.ItemTemplate>
-                            <DataTemplate DataType="{x:Type dwvm:RefsForDub}">
+                            <DataTemplate DataType="{x:Type dwvm:DubRefsHolder}">
                                 <TextBlock Text="{Binding Converter={StaticResource ReferenceToDomainStringConverter}}" />
                             </DataTemplate>
                         </ComboBox.ItemTemplate>
