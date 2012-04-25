@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
@@ -6,7 +7,6 @@ using System.ComponentModel;
 using System.Data;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using System.Windows.Input;
 
@@ -21,11 +21,11 @@ namespace watch_assistant.ViewModel.MainWindow
                 String.Format("Parameter must be a descendant of ICommand ('{0}')", parameter != null ? parameter.GetType().ToString() : "null")
                 );
 
-            var incoming = value as IEnumerable<DataTable>;
+            var incoming = value as IEnumerable;
             if (incoming == null ) return incoming;
 
             var result = new Collection<MenuItem>();
-            foreach (DataTable table in value as IEnumerable<DataTable>)
+            foreach (DataTable table in value as IEnumerable)
             {
                 result.Add(new MenuItem() 
                 { 
@@ -52,8 +52,6 @@ namespace watch_assistant.ViewModel.MainWindow
         private readonly Model.Search.IInterviewers.InterviewAggregator _interviewer = new Model.Search.IInterviewers.InterviewAggregator();
         private BackgroundWorker _bgInterview = new BackgroundWorker();
 
-        private readonly ObservableCollection<DataTable> _userData = new ObservableCollection<DataTable>();
-
         #region Commands
 
         public static readonly RoutedUICommand SearchCommand = new RoutedUICommand("Activates searching process", "Search", typeof(MainWindowViewModel));
@@ -77,25 +75,24 @@ namespace watch_assistant.ViewModel.MainWindow
         public static readonly DependencyProperty SearchResultTableProperty = SearchResultTablePropertyKey.DependencyProperty;
 
 
-        public IEnumerable<DataTable> UserDataLists
+
+        public ObservableCollection<DataTable> UserListsData
         {
-            get { return (Collection<DataTable>)GetValue(UserDataListsProperty); }
-            private set { SetValue(UserDataListsPropertyKey, value); }
+            get { return (ObservableCollection<DataTable>)GetValue(UserListsDataProperty); }
+            set { SetValue(UserListsDataProperty, value); }
         }
 
-        private static readonly DependencyPropertyKey UserDataListsPropertyKey =
-            DependencyProperty.RegisterReadOnly("UserDataLists", typeof(IEnumerable<DataTable>), typeof(MainWindowViewModel), new UIPropertyMetadata(null));
-        public static readonly DependencyProperty UserDataListsProperty = UserDataListsPropertyKey.DependencyProperty;
+        public static readonly DependencyProperty UserListsDataProperty =
+            DependencyProperty.Register("UserListsData", typeof(ObservableCollection<DataTable>), typeof(MainWindowViewModel), new UIPropertyMetadata(new ObservableCollection<DataTable>()));
 
-        public IList<DataRow> UserManipulationSelection
+        public ObservableCollection<DataRowView> UserManipulationSelection
         {
-            get { return (IList<DataRow>)GetValue(UserManipulationSelectionProperty); }
+            get { return (ObservableCollection<DataRowView>)GetValue(UserManipulationSelectionProperty); }
             set { SetValue(UserManipulationSelectionProperty, value); }
         }
 
-        // Using a DependencyProperty as the backing store for UserManipulationSelection.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty UserManipulationSelectionProperty =
-            DependencyProperty.Register("UserManipulationSelection", typeof(IList<DataRow>), typeof(MainWindowViewModel), new UIPropertyMetadata(new List<DataRow>()));
+            DependencyProperty.Register("UserManipulationSelection", typeof(ObservableCollection<DataRowView>), typeof(MainWindowViewModel), new UIPropertyMetadata(new ObservableCollection<DataRowView>()));
 
         #region Attached
 
@@ -139,15 +136,6 @@ namespace watch_assistant.ViewModel.MainWindow
         }
 
         #endregion (Property event handlers)
-
-        #region Arbitary event handlers
-
-        private void UserDataCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
-        {
-            UserDataLists = new Collection<DataTable>(sender as ObservableCollection<DataTable>);
-        }
-
-        #endregion (Arbitary event handlers)
 
         #region UI behaviors
 
@@ -207,7 +195,7 @@ namespace watch_assistant.ViewModel.MainWindow
         }
         private void RunDetailsShowTask(object sender, ExecutedRoutedEventArgs e)
         {
-            DetailsShowTask(e.Parameter as DataRow);
+            DetailsShowTask(((DataRowView)e.Parameter).Row);
         }
 
 
@@ -222,10 +210,12 @@ namespace watch_assistant.ViewModel.MainWindow
                 String.Format("UserListAddItemTask command failed: '{0}'", e.Parameter == null ? e.Parameter.ToString() : "null")
                 );
 
-            if (table.Rows.Count == 0) table.Merge(UserManipulationSelection[0].Table.Clone(), true, MissingSchemaAction.Add);
-            foreach (DataRow row in UserManipulationSelection) table.ImportRow(row);
+            if (UserManipulationSelection.Count > 0)
+            {
+                if (table.Rows.Count == 0) table.Merge(UserManipulationSelection[0].Row.Table.Clone(), true, MissingSchemaAction.Add);
+                foreach (DataRowView rowView in UserManipulationSelection) table.ImportRow(rowView.Row);
+            }
         }
-
 
         #endregion (Command logic)
 
@@ -240,16 +230,14 @@ namespace watch_assistant.ViewModel.MainWindow
             _bgInterview.RunWorkerCompleted += SearchCompleted;
             // _bgInterview.ProgressChanged += new ProgressChangedEventHandler(backgroundWorker1_ProgressChanged);
 
-            _userData.CollectionChanged += UserDataCollectionChanged;
-
             // Command bindings
             _owner.CommandBindings.Add(new CommandBinding(SearchCommand, RunSearchTask, CanExecuteSearchTask));
             _owner.CommandBindings.Add(new CommandBinding(DetailsShowCommand, RunDetailsShowTask/*, CanExecuteDetailsShowTask*/));
             _owner.CommandBindings.Add(new CommandBinding(UserListAddItemCommand, RunUserListAddItemTask, CanExecuteUserListAddItemTask));
 
             // Temporary list definitions
-            _userData.Add(new DataTable() { TableName = "Favorites" });
-            _userData.Add(new DataTable() { TableName = "Interest" });
+            UserListsData.Add(new DataTable() { TableName = "Favorites" });
+            UserListsData.Add(new DataTable() { TableName = "Interest" });            
         }
 
         #endregion (Constructors)
