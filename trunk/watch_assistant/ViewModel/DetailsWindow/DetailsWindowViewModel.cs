@@ -20,7 +20,7 @@ namespace watch_assistant.ViewModel.DetailsWindow
         }
     }
 
-    class DetailsWindowViewModel : WindowViewModel
+    public class DetailsWindowViewModel : WindowViewModel
     {
         #region Commands
         public static readonly RoutedUICommand PlayCommand = new RoutedUICommand("Opens player window", "Play", typeof(DetailsWindowViewModel));
@@ -85,6 +85,11 @@ namespace watch_assistant.ViewModel.DetailsWindow
 
         #region Constructors
 
+        static DetailsWindowViewModel()
+        {
+            CommandManager.RegisterClassCommandBinding(typeof(DetailsWindowViewModel), new CommandBinding(PlayCommand, RunPlayerWindow));
+        }
+
         public DetailsWindowViewModel(Window owner, DataRow details)
             : base(owner)
         {
@@ -95,8 +100,6 @@ namespace watch_assistant.ViewModel.DetailsWindow
                 Dubs = FillDubs();
 
                 _owner.Show();
-
-                _owner.CommandBindings.Add(new CommandBinding(PlayCommand, RunPlayerWindow));
             }
             catch (Exception ex)
             {

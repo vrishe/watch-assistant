@@ -5,6 +5,30 @@ using System.Text.RegularExpressions;
 
 namespace watch_assistant.Model.Search
 {
+    //[Serializable]
+    //public struct KeyValuePair<K, V>
+    //{
+    //    private K _key;
+    //    private V _value;
+
+    //    public K Key 
+    //    { 
+    //        get { return _key; } 
+    //        set { _key = value; } 
+    //    }
+    //    public V Value 
+    //    {
+    //        get { return _value; }
+    //        set { _value = value; }
+    //    }
+
+    //    public KeyValuePair(K key, V value)
+    //    {
+    //        _key = key;
+    //        _value = value;
+    //    }
+    //}
+
     static class VideoInfoGraber
     {
         /// <summary>
