@@ -119,7 +119,7 @@ namespace watch_assistant.Model.Search.IInterviewers
             //_interviewResult.Columns.Add("RussianAudio", typeof(Boolean));
             //_interviewResult.Columns.Add("RussianSub", typeof(Boolean));
             //_interviewResult.Columns.Add("Text", typeof(String[]));
-            _interviewResult.Columns.Add("HRefs", typeof(List<KeyValuePair<string, string>>));
+            _interviewResult.Columns.Add("HRefs", typeof(Dictionary<string,string>));
         }
 
         /// <summary>

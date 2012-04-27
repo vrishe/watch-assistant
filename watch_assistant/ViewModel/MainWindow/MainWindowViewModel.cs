@@ -221,9 +221,9 @@ namespace watch_assistant.ViewModel.MainWindow
             {
                 if (rowCurrent["Name"].Equals(row["Name"])) return false;
 
-                var hRefsIncoming = (IList<KeyValuePair<string, string>>)row["HRefs"];
-                var hRefsOwn = new Collection<KeyValuePair<string, string>>((IList<KeyValuePair<string, string>>)rowCurrent["HRefs"]);
-                foreach (KeyValuePair<string, string> hRef in hRefsIncoming) if (hRefsOwn.Contains(hRef)) return false;
+                var hRefsIncoming = (Dictionary<string, string>)row["HRefs"];
+                var hRefsOwn = new Dictionary<string, string>((Dictionary<string, string>)rowCurrent["HRefs"]);
+                foreach (var hRef in hRefsIncoming) if (hRefsOwn.ContainsKey(hRef.Key)) return false;
             }
             return true;
         }

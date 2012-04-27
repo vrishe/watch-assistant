@@ -164,9 +164,8 @@ namespace watch_assistant.Model.Search.IInterviewers
                             //    text[i] = new string(((string[])row["Text"])[i].ToCharArray());
                             //text[text.Length - 1] = new string(((string[])otherRow["Text"])[0].ToCharArray());
                             //row["Text"] = text;
-                            foreach (var item in (List<KeyValuePair<string, string>>)otherRow["HRefs"])
-                                ((List<KeyValuePair<string, string>>)row["Hrefs"]).Add(
-                                    new KeyValuePair<string,string>(item.Key, item.Value));
+                            foreach (var item in (Dictionary<string, string>)otherRow["HRefs"])
+                                ((Dictionary<string, string>)row["Hrefs"]).Add(item.Key, item.Value);
 
                             if (String.IsNullOrEmpty(row["Description"].ToString()) &&
                                 !String.IsNullOrEmpty(otherRow["Description"].ToString()))
@@ -271,7 +270,7 @@ namespace watch_assistant.Model.Search.IInterviewers
             //_interviewResult.Columns.Add("RussianAudio", typeof(Boolean));
             //_interviewResult.Columns.Add("RussianSub", typeof(Boolean));
             //_interviewResult.Columns.Add("Text", typeof(String[]));
-            _interviewResult.Columns.Add("HRefs", typeof(List<KeyValuePair<string, string>>));
+            _interviewResult.Columns.Add("HRefs", typeof(Dictionary<string, string>));
         }
 
         #endregion (Methods)

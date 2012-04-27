@@ -32,19 +32,19 @@ namespace watch_assistant.Model.Search.IInterviewers
                 if (!category.Groups[1].ToString().Contains("Аниме")) continue;
                 //videoItem["HRef"] = new string[] {videoItemRef.Groups[1].ToString()};
              //   videoItem["RussianAudio"] = (((String)videoItem["Name"]).Contains("(RUS)") ? true : false);
-                List<KeyValuePair<string, string>> list = new List<KeyValuePair<string, string>>();
+                Dictionary<string, string> list = new Dictionary<string, string>();
                 int spare = ((String)videoItem["Name"]).LastIndexOf("(SUB)");
                 if (spare >= 0)
                 {
                     //videoItem["Text"] = new string[] { "SUB" };
-                    list.Add(new KeyValuePair<string,string>(videoItemRef.Groups[1].ToString(), "SUB"));
+                    list.Add(videoItemRef.Groups[1].ToString(), "SUB");
                     videoItem["Name"] = ((String)videoItem["Name"]).Remove(spare, 5);
                 }
                 else
                 {
                     spare = ((String)videoItem["Name"]).LastIndexOf("(RUS)");
                     //videoItem["Text"] = new string[] { "DUB" };
-                    list.Add(new KeyValuePair<string,string>(videoItemRef.Groups[1].ToString(), "DUB"));
+                    list.Add(videoItemRef.Groups[1].ToString(), "DUB");
                     if (spare >= 0)
                         videoItem["Name"] = ((String)videoItem["Name"]).Remove(spare, 5).Trim();
                 }
