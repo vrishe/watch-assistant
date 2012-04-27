@@ -107,7 +107,8 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Model\Dictionary\Thesaurus.cs" />
-    <Compile Include="Model\RaitingSystem\RaitingDBMS.cs" />
+    <Compile Include="Model\ExternalDataManager\ExternalDataManager.cs" />
+    <Compile Include="Model\RatingSystem\RatingDBMS.cs" />
     <Compile Include="Model\Search\IInterviewers\AOSInterviewer.cs" />
     <Compile Include="Model\Search\IInterviewer.cs" />
     <Compile Include="Model\Search\IInterviewers\ASeeInterviewer.cs" />

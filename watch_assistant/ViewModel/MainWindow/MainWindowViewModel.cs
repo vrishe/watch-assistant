@@ -281,7 +281,7 @@ namespace watch_assistant.ViewModel.MainWindow
 
         #region Constructors
 
-        public MainWindowViewModel(Window owner)
+        public MainWindowViewModel(Window owner, ObservableCollection<DataTable> userListsData)
             : base(owner)
         {
             _bgInterview.DoWork += SearchTask;
@@ -294,9 +294,7 @@ namespace watch_assistant.ViewModel.MainWindow
             _owner.CommandBindings.Add(new CommandBinding(UserListAddItemCommand, RunUserListAddItemTask, CanExecuteUserListAddItemTask));
             _owner.CommandBindings.Add(new CommandBinding(UserListRemoveItemCommand, RunUserListRemoveItemTask, CanExecuteUserListRemoveItemTask));
 
-            // Temporary list definitions
-            UserListsData.Add(new DataTable() { TableName = "Favorites" });
-            UserListsData.Add(new DataTable() { TableName = "Interest" });            
+            UserListsData = userListsData;
         }
 
         #endregion (Constructors)

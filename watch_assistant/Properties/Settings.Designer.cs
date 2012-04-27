@@ -26,24 +26,24 @@ namespace watch_assistant.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("")]
-        public string GenreChartFilePath {
+        public string DefaultAppFolderPath {
             get {
-                return ((string)(this["GenreChartFilePath"]));
+                return ((string)(this["DefaultAppFolderPath"]));
             }
             set {
-                this["GenreChartFilePath"] = value;
+                this["DefaultAppFolderPath"] = value;
             }
         }
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("genres.chart")]
-        public string GenreChartFileName {
+        [global::System.Configuration.DefaultSettingValueAttribute("userdb.appdata")]
+        public string UserAppDataFileName {
             get {
-                return ((string)(this["GenreChartFileName"]));
+                return ((string)(this["UserAppDataFileName"]));
             }
             set {
-                this["GenreChartFileName"] = value;
+                this["UserAppDataFileName"] = value;
             }
         }
     }

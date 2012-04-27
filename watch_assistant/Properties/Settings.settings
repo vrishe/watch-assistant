@@ -2,11 +2,11 @@
 <SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="watch_assistant.Properties" GeneratedClassName="Settings">
   <Profiles />
   <Settings>
-    <Setting Name="GenreChartFilePath" Type="System.String" Scope="User">
+    <Setting Name="DefaultAppFolderPath" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
-    <Setting Name="GenreChartFileName" Type="System.String" Scope="User">
-      <Value Profile="(Default)">genres.chart</Value>
+    <Setting Name="UserAppDataFileName" Type="System.String" Scope="User">
+      <Value Profile="(Default)">userdb.appdata</Value>
     </Setting>
   </Settings>
 </SettingsFile>

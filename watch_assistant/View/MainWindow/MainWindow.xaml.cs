@@ -1,7 +1,7 @@
-﻿using System.Windows;
-using CustomControls;
+﻿using System;
+using System.Collections.ObjectModel;
 using System.Data;
-using System;
+using CustomControls;
 
 namespace watch_assistant.View.MainWindow
 {
@@ -14,7 +14,7 @@ namespace watch_assistant.View.MainWindow
         {
             InitializeComponent();
 
-            new watch_assistant.ViewModel.MainWindow.MainWindowViewModel(this);
+            new watch_assistant.ViewModel.MainWindow.MainWindowViewModel(this, (ObservableCollection<DataTable>)AppDomain.CurrentDomain.GetData("userListsData"));
         }
     }
 }

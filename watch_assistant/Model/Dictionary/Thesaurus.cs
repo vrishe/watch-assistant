@@ -238,6 +238,7 @@ namespace watch_assistant.Model.Dictionary
         #endregion (Methods)
 
         #region Constructors
+
         public Thesaurus()
         {
             _instances.Add(new WeakReference(this));
