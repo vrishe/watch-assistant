@@ -38,7 +38,7 @@ namespace watch_assistant.Model.Search
             return Regex.Match(uri, @"//([^\.]*)\.").Groups[1].ToString();
         }
 
-        #region Description grabing
+        #region Description grabbing
         /// <summary>
         /// Gets an HTML page from server and trim it to the video item
         /// content from begining
@@ -180,6 +180,6 @@ namespace watch_assistant.Model.Search
             return html;
         }
 
-        #endregion (Description grabing)
+        #endregion (Description grabbing)
     }
 }

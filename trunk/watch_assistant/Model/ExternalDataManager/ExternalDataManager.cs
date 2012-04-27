@@ -10,26 +10,36 @@ using System.Diagnostics;
 
 namespace watch_assistant.Model.ExternalDataManager
 {
-    internal class ExternalUserTableData
+    [Serializable]
+    public struct ExternalUserRatingTableData
     {
+        private ObservableCollection<DataTable> _userListsData;
+        private DataTable _userRatingPrecomputedData;
 
+        public ObservableCollection<DataTable> UserListsData { get { return _userListsData; } }
+        public DataTable UserRatingPrecomputedData { get { return _userRatingPrecomputedData; } }
+
+        public bool IsReady { get { return _userListsData != null && _userRatingPrecomputedData != null; } }
+
+        public ExternalUserRatingTableData(IEnumerable<DataTable> listsTableSet, DataTable ratingTable)
+        {
+            _userListsData = new ObservableCollection<DataTable>(listsTableSet);
+            _userRatingPrecomputedData = ratingTable;
+        }
     }
 
     static class ExternalDataManager
     {
-        public static void SaveUserTableData(string filePath, Collection<DataTable> userLists, DataTable userChart)
+        public static void SaveUserTableData(string filePath, ExternalUserRatingTableData userListsData)
         {
             FileStream fs = null;
             try
             {
-                if (userLists == null || userChart == null) throw new ArgumentException("Some of the serialized objects seem to be of 'null or empty' state.");
-
                 fs = new FileStream(filePath, FileMode.Create);
 
                 BinaryFormatter bf = new BinaryFormatter(null, new StreamingContext(StreamingContextStates.File));
 
-                bf.Serialize(fs, userLists);
-                bf.Serialize(fs, userChart);
+                bf.Serialize(fs, userListsData);
             }
             finally
             {
@@ -37,10 +47,9 @@ namespace watch_assistant.Model.ExternalDataManager
             }
         }
 
-        public static void LoadUserTableData(string filePath, out Collection<DataTable> userLists, DataTable userChart)
+        public static void LoadUserTableData(string filePath, out ExternalUserRatingTableData userListsData)
         {
-            object userListsDeserializationResult = null;
-            object userChartDeserializationResult = null;
+            var userListsDataDeserializationResult = new ExternalUserRatingTableData();
 
             FileStream fs = null;
             try
@@ -49,7 +58,7 @@ namespace watch_assistant.Model.ExternalDataManager
 
                 BinaryFormatter bf = new BinaryFormatter(null, new StreamingContext(StreamingContextStates.File));
 
-                userListsDeserializationResult = bf.Deserialize(fs);
+                userListsDataDeserializationResult = (ExternalUserRatingTableData)bf.Deserialize(fs);
             }
             catch (IOException) 
             {
@@ -61,8 +70,7 @@ namespace watch_assistant.Model.ExternalDataManager
             {
                 if (fs != null) fs.Close();
 
-                userLists = (Collection<DataTable>)userListsDeserializationResult;
-                userChart = (DataTable)userChartDeserializationResult;
+                userListsData = userListsDataDeserializationResult;
             }
         }
     }
