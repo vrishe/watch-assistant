@@ -6,13 +6,13 @@ using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
 using watch_assistant.Properties;
 
-namespace watch_assistant.Model.RaitingSystem
+namespace watch_assistant.Model.RatingSystem
 {
     // TODO: Распределить выполнение жанрового анализатора в программе (см. подробнее)
     // 1. В момент загрузки проги синхронизироваться с текущим рейтингом жанров
     // 2. В момент обновления списка фавов выполнить AssignGenresPriority
     // 3. Перед закрытием проги сериализовать текущий рейтинг жанров
-    static class RaitingDBMS
+    static class RatingDBMS
     {
         #region RaitingAnalyzer
         internal static class RaitingAnalyzer
@@ -81,17 +81,17 @@ namespace watch_assistant.Model.RaitingSystem
         public static void Synchronize()
         {
             FileStream chartFileStream;
-            if (!Directory.Exists(Settings.Default.GenreChartFilePath))
+            if (!Directory.Exists(Settings.Default.DefaultAppFolderPath))
             {
-                if (String.IsNullOrEmpty(Settings.Default.GenreChartFilePath))
+                if (String.IsNullOrEmpty(Settings.Default.DefaultAppFolderPath))
                 {
-                    Settings.Default.GenreChartFilePath =
-                        Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "2AInc\\Watch assistant");
+                    Settings.Default.DefaultAppFolderPath =
+                        Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "2AInc\\watch_assistant");
                     Settings.Default.Save();
                 }
-                Directory.CreateDirectory(Settings.Default.GenreChartFilePath);
+                Directory.CreateDirectory(Settings.Default.DefaultAppFolderPath);
             }
-            string file = Path.Combine(Settings.Default.GenreChartFilePath, Settings.Default.GenreChartFileName);
+            string file = Path.Combine(Settings.Default.DefaultAppFolderPath, Settings.Default.UserAppDataFileName);
             if (!File.Exists(file))
             {
                 chartFileStream = File.Create(file);
@@ -112,7 +112,7 @@ namespace watch_assistant.Model.RaitingSystem
         private static void SerializeRaitingSummary()
         {
             FileStream chartFileStream = File.Open(
-                Path.Combine(Settings.Default.GenreChartFilePath, Settings.Default.GenreChartFileName),
+                Path.Combine(Settings.Default.DefaultAppFolderPath, Settings.Default.UserAppDataFileName),
                 FileMode.Create);
             BinaryFormatter bf = new BinaryFormatter(null, new StreamingContext(StreamingContextStates.File));
             bf.Serialize(chartFileStream, _raitingSummary);
