@@ -62,7 +62,7 @@ namespace watch_assistant.ViewModel.DetailsWindow
         private List<DubRefsHolder> FillDubs()
         {
             List<DubRefsHolder> result = new List<DubRefsHolder>();
-            foreach (var item in (List<KeyValuePair<string, string>>)Details["HRefs"])
+            foreach (var item in (Dictionary<string, string>)Details["HRefs"])
             {
                 bool aded = false;
                 foreach (var dub in result)

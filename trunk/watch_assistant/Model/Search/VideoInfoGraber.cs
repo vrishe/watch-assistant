@@ -5,30 +5,6 @@ using System.Text.RegularExpressions;
 
 namespace watch_assistant.Model.Search
 {
-    //[Serializable]
-    //public struct KeyValuePair<K, V>
-    //{
-    //    private K _key;
-    //    private V _value;
-
-    //    public K Key 
-    //    { 
-    //        get { return _key; } 
-    //        set { _key = value; } 
-    //    }
-    //    public V Value 
-    //    {
-    //        get { return _value; }
-    //        set { _value = value; }
-    //    }
-
-    //    public KeyValuePair(K key, V value)
-    //    {
-    //        _key = key;
-    //        _value = value;
-    //    }
-    //}
-
     static class VideoInfoGraber
     {
         /// <summary>
@@ -37,7 +13,9 @@ namespace watch_assistant.Model.Search
         /// <param name="videoItem">A video to grab info about</param>
         public static void GetInfo(System.Data.DataRow videoItem)
         {
-            switch (GetServerName(((List<KeyValuePair<string, string>>)videoItem["HRefs"])[0].Key))
+            var tmp = ((Dictionary<string, string>)videoItem["HRefs"]).GetEnumerator();
+            tmp.MoveNext();
+            switch (GetServerName(tmp.Current.Key))
             {
                 case "animeonline":
                     GetInfoFromAOS(videoItem);
@@ -93,8 +71,10 @@ namespace watch_assistant.Model.Search
             if (!needYear && !needDesc)
                 return;
 
+            var enumerator = ((Dictionary<string, string>)videoItem["HRefs"]).GetEnumerator();
+            enumerator.MoveNext();
             string answerContent = GetInfoContent(
-                ((List<KeyValuePair<string, string>>)videoItem["HRefs"])[0].Key,
+                enumerator.Current.Key,
                 "<div class='new_'>\r\n\t<div class='head_'><a href=\"([^\"]*)\"");
 
             if (needYear)
@@ -134,8 +114,10 @@ namespace watch_assistant.Model.Search
             if (!needDesc)
                 return;
 
+            var enumerator = ((Dictionary<string, string>)videoItem["HRefs"]).GetEnumerator();
+            enumerator.MoveNext();
             string answerContent = GetInfoContent(
-                ((List<KeyValuePair<string, string>>)videoItem["HRefs"])[0].Key,
+                enumerator.Current.Key,
                 "<div id='dle-content'><h1>Онлайн: ([^<]*)</h1>");
 
             if (needDesc)
@@ -156,8 +138,10 @@ namespace watch_assistant.Model.Search
             if (!needGenre)
                 return;
 
+            var enumerator = ((Dictionary<string, string>)videoItem["HRefs"]).GetEnumerator();
+            enumerator.MoveNext();
             string answerContent = GetInfoContent(
-                ((List<KeyValuePair<string, string>>)videoItem["HRefs"])[0].Key,
+                enumerator.Current.Key,
                 "<div class=\"filminfo\"");
 
             if (needGenre)
@@ -175,8 +159,10 @@ namespace watch_assistant.Model.Search
             if (!needDesc)
                 return;
 
+            var enumerator = ((Dictionary<string, string>)videoItem["HRefs"]).GetEnumerator();
+            enumerator.MoveNext();
             string answerContent = GetInfoContent(
-                ((List<KeyValuePair<string, string>>)videoItem["HRefs"])[0].Key,
+                enumerator.Current.Key,
                 "<div class=\"story_title\">");
 
             if (needDesc)

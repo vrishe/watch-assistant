@@ -63,8 +63,8 @@ namespace watch_assistant.Model.Search.IInterviewers
 
                 DataRow videoItem = _interviewResult.NewRow();
                 //videoItem["HRef"] = new string[] { videoItemRef.Groups[1].ToString() };
-                List<KeyValuePair<string, string>> list = new List<KeyValuePair<string, string>>();
-                list.Add(new KeyValuePair<string, string>(videoItemRef.Groups[1].ToString(), "DUB"));
+                Dictionary<string, string> list = new Dictionary<string, string>();
+                list.Add(videoItemRef.Groups[1].ToString(), "DUB");
                 videoItem["HRefs"] = list;
                 Match tmp = Regex.Match(videoItemRef.Groups[2].ToString(), @"(.*)\((([0-9]{4})\))\Z");
                 videoItem["Name"] = tmp.Groups[1].ToString().Trim();
