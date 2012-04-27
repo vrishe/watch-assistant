@@ -87,11 +87,6 @@ namespace watch_assistant.ViewModel.DetailsWindow
 
         #region Constructors
 
-        static DetailsWindowViewModel()
-        {
-            CommandManager.RegisterClassCommandBinding(typeof(DetailsWindowViewModel), new CommandBinding(PlayCommand, RunPlayerWindow));
-        }
-
         public DetailsWindowViewModel(Window owner, DataRow details)
             : base(owner)
         {
@@ -100,6 +95,8 @@ namespace watch_assistant.ViewModel.DetailsWindow
                 watch_assistant.Model.Search.VideoInfoGraber.GetInfo(details);
                 Details = details;
                 Dubs = FillDubs();
+
+                _owner.CommandBindings.Add(new CommandBinding(PlayCommand, RunPlayerWindow));
 
                 _owner.Show();
             }
