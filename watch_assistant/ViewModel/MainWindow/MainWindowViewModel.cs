@@ -57,6 +57,7 @@ namespace watch_assistant.ViewModel.MainWindow
         public static readonly RoutedUICommand SearchCommand = new RoutedUICommand("Activates searching process", "Search", typeof(MainWindowViewModel));
         public static readonly RoutedUICommand DetailsShowCommand = new RoutedUICommand("Runs 'details' window", "Details show", typeof(MainWindowViewModel));
         public static readonly RoutedUICommand UserListAddItemCommand = new RoutedUICommand("Adds an item to one of user lists", "User list add item", typeof(MainWindowViewModel));
+        public static readonly RoutedUICommand UserListRemoveItemCommand = new RoutedUICommand("Removes an item to one of user lists", "User list remove item", typeof(MainWindowViewModel));
 
         #endregion (Commands)
 
@@ -75,7 +76,6 @@ namespace watch_assistant.ViewModel.MainWindow
         public static readonly DependencyProperty SearchResultTableProperty = SearchResultTablePropertyKey.DependencyProperty;
 
 
-
         public ObservableCollection<DataTable> UserListsData
         {
             get { return (ObservableCollection<DataTable>)GetValue(UserListsDataProperty); }
@@ -85,6 +85,17 @@ namespace watch_assistant.ViewModel.MainWindow
         public static readonly DependencyProperty UserListsDataProperty =
             DependencyProperty.Register("UserListsData", typeof(ObservableCollection<DataTable>), typeof(MainWindowViewModel), new UIPropertyMetadata(new ObservableCollection<DataTable>()));
 
+        public ObservableCollection<DataRowView> SearchManipulationSelection
+        {
+            get { return (ObservableCollection<DataRowView>)GetValue(SearchManipulationSelectionProperty); }
+            set { SetValue(SearchManipulationSelectionProperty, value); }
+        }
+
+        public static readonly DependencyProperty SearchManipulationSelectionProperty =
+            DependencyProperty.Register("SearchManipulationSelection", typeof(ObservableCollection<DataRowView>), typeof(MainWindowViewModel), new UIPropertyMetadata(new ObservableCollection<DataRowView>()));
+
+        // TEMPORARY
+
         public ObservableCollection<DataRowView> UserManipulationSelection
         {
             get { return (ObservableCollection<DataRowView>)GetValue(UserManipulationSelectionProperty); }
@@ -92,7 +103,9 @@ namespace watch_assistant.ViewModel.MainWindow
         }
 
         public static readonly DependencyProperty UserManipulationSelectionProperty =
-            DependencyProperty.Register("UserManipulationSelection", typeof(ObservableCollection<DataRowView>), typeof(MainWindowViewModel), new UIPropertyMetadata(new ObservableCollection<DataRowView>()));
+            DependencyProperty.Register("UserManipulationSelection", typeof(ObservableCollection<DataRowView>), typeof(MainWindowViewModel), new UIPropertyMetadata(new ObservableCollection<DataRowView>()));      
+
+        // TEMPORARY END
 
         #region Attached
 
@@ -213,17 +226,20 @@ namespace watch_assistant.ViewModel.MainWindow
         }
         private void CanExecuteUserListAddItemTask(object sender, CanExecuteRoutedEventArgs e)
         {
-            e.CanExecute = UserManipulationSelection.Count > 0;
+            e.CanExecute = SearchManipulationSelection.Count > 0;
         }
         private void RunUserListAddItemTask(object sender, ExecutedRoutedEventArgs e)
         {
             var table = e.Parameter as DataTable;
             if (table == null) throw new ArgumentException(
-                String.Format("UserListAddItemTask command failed: '{0}'", e.Parameter == null ? e.Parameter.ToString() : "null")
+                String.Format("UserListAddItemTask command failed: '{0}'", e.Parameter != null ? e.Parameter.ToString() : "null")
                 );
 
-            if (table.Rows.Count == 0) table.Merge(UserManipulationSelection[0].Row.Table.Clone(), true, MissingSchemaAction.Add);
-            foreach (DataRowView rowView in UserManipulationSelection)
+            DataRowView[] addedArray = new DataRowView[SearchManipulationSelection.Count];
+            SearchManipulationSelection.CopyTo(addedArray, 0);
+
+            if (table.Rows.Count == 0) table.Merge(addedArray[0].Row.Table.Clone(), true, MissingSchemaAction.Add);
+            foreach (DataRowView rowView in addedArray)
             {
                 if (IsItemNonExistent(table, rowView.Row))
                 {
@@ -232,9 +248,31 @@ namespace watch_assistant.ViewModel.MainWindow
                 }
                 else
                 {
-                    // Verify existent item's data
+                    // TODO: Verify existent item's data
                 }
             }
+            SearchManipulationSelection.Clear();
+        }
+
+        private void CanExecuteUserListRemoveItemTask(object sender, CanExecuteRoutedEventArgs e)
+        {
+            e.CanExecute = UserManipulationSelection.Count > 0;
+        }
+        private void RunUserListRemoveItemTask(object sender, ExecutedRoutedEventArgs e)
+        {
+            var table = e.Parameter as DataTable;
+            if (table == null) throw new ArgumentException(
+                String.Format("UserListAddItemTask command failed: '{0}'", e.Parameter != null ? e.Parameter.ToString() : "null")
+                );
+
+            DataRowView[] removalArray = new DataRowView[UserManipulationSelection.Count];
+            UserManipulationSelection.CopyTo(removalArray, 0);
+
+            foreach (DataRowView rowView in removalArray)
+            {
+                table.Rows.Remove(rowView.Row);
+            }
+            if (table.Rows.Count == 0) table.Reset();
         }
 
         #endregion (Command logic)
@@ -254,6 +292,7 @@ namespace watch_assistant.ViewModel.MainWindow
             _owner.CommandBindings.Add(new CommandBinding(SearchCommand, RunSearchTask, CanExecuteSearchTask));
             _owner.CommandBindings.Add(new CommandBinding(DetailsShowCommand, RunDetailsShowTask/*, CanExecuteDetailsShowTask*/));
             _owner.CommandBindings.Add(new CommandBinding(UserListAddItemCommand, RunUserListAddItemTask, CanExecuteUserListAddItemTask));
+            _owner.CommandBindings.Add(new CommandBinding(UserListRemoveItemCommand, RunUserListRemoveItemTask, CanExecuteUserListRemoveItemTask));
 
             // Temporary list definitions
             UserListsData.Add(new DataTable() { TableName = "Favorites" });

@@ -27,7 +27,7 @@
         <!-- Search window part -->
         <custom:WindowPage Margin="0,0,0,3.5">
             <custom:WindowPage.InputBindings>
-                <KeyBinding Command="{x:Static vmmw:MainWindowViewModel.SearchCommand}" CommandParameter="{Binding ElementName=tbSearch, Path=Text, Mode=OneWay}" Key="Enter" />
+                <KeyBinding Key="Enter" Command="{x:Static vmmw:MainWindowViewModel.SearchCommand}" CommandParameter="{Binding ElementName=tbSearch, Path=Text, Mode=OneWay}" />
             </custom:WindowPage.InputBindings>
 
             <custom:WindowPage.MidHeaderCell>
@@ -51,8 +51,8 @@
                     <Button x:Name="bSearch" Grid.Column="1" Margin="2,0,0,0" Content="Search" Command="{x:Static vmmw:MainWindowViewModel.SearchCommand}" CommandParameter="{Binding ElementName=tbSearch, Path=Text, Mode=OneWay}" />
                 </Grid>
 
-                <ListBox x:Name="searchView" Grid.Row="1" Margin="5,3,5,0" ItemsSource="{Binding Path=SearchResultTable, Mode=OneWay}" HorizontalContentAlignment="Stretch" SelectionMode="Extended"
-                         vmmw:MainWindowViewModel.AreListBoxBehaviorsAttached="True" vmh:ListBoxHelper.SelectedItemsMirrorList="{Binding UserManipulationSelection}" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                <ListBox x:Name="searchView" Grid.Row="1" Margin="5,3,5,0" ItemsSource="{Binding Path=SearchResultTable.DefaultView, Mode=OneWay}" HorizontalContentAlignment="Stretch" SelectionMode="Extended"
+                         vmmw:MainWindowViewModel.AreListBoxBehaviorsAttached="True" vmh:ListBoxHelper.SelectedItemsMirrorList="{Binding SearchManipulationSelection}" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
                     
                     <ListBox.Resources>
                         <vmmw:DataTableToMenuItemCollectionConverter x:Key="DataTableToMenuItemCollectionConverter" />
@@ -93,6 +93,10 @@
 
             <!-- Tab Buttons -->
             <TabControl x:Name="UserListTabs" IsSynchronizedWithCurrentItem="True" ItemsSource="{Binding Path=UserListsData, Mode=OneWay}">
+                <TabControl.InputBindings>
+                    <KeyBinding Key="Delete" Command="{x:Static vmmw:MainWindowViewModel.UserListRemoveItemCommand}" CommandParameter="{Binding ElementName=UserListTabs, Path=SelectedItem}" />
+                </TabControl.InputBindings>
+                
                 <TabControl.ItemTemplate>
                     <DataTemplate>
                         <TextBlock Text="{Binding Path=TableName}" />
@@ -100,9 +104,9 @@
                 </TabControl.ItemTemplate>
                 
                 <TabControl.ContentTemplate>
-                    <DataTemplate>
-                        <ListBox x:Name="listView" Margin="5,3,5,0" ItemsSource="{Binding}" HorizontalContentAlignment="Stretch" SelectionMode="Extended" 
-                                    vmmw:MainWindowViewModel.AreListBoxBehaviorsAttached="True" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                    <DataTemplate>                      
+                        <ListBox x:Name="listView" Margin="5,3,5,0" ItemsSource="{Binding DefaultView}" HorizontalContentAlignment="Stretch" SelectionMode="Extended" ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                                    vmmw:MainWindowViewModel.AreListBoxBehaviorsAttached="True" vmh:ListBoxHelper.SelectedItemsMirrorList="{Binding ElementName=UserListTabs, Path=DataContext.UserManipulationSelection}">
                             <ListBox.ItemTemplate>
                                 <DataTemplate>
                                     <ContentControl Style="{StaticResource BaseListItemStyle}">
