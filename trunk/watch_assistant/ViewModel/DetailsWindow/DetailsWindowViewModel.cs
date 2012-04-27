@@ -8,7 +8,7 @@ using System.Diagnostics;
 
 namespace watch_assistant.ViewModel.DetailsWindow
 {
-    class DubRefsHolder
+    public class DubRefsHolder
     {
         public string Dub { get; set; }
         public List<string> HRefs { get; set; }
@@ -23,7 +23,9 @@ namespace watch_assistant.ViewModel.DetailsWindow
     public class DetailsWindowViewModel : WindowViewModel
     {
         #region Commands
+
         public static readonly RoutedUICommand PlayCommand = new RoutedUICommand("Opens player window", "Play", typeof(DetailsWindowViewModel));
+
         #endregion (Commands)
 
         #region Properties

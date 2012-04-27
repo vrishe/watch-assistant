@@ -15,8 +15,7 @@ namespace watch_assistant.View.MainWindow
         {
             InitializeComponent();
 
-            new watch_assistant.ViewModel.MainWindow.MainWindowViewModel(
-                this, (ExternalUserRatingTableData)AppDomain.CurrentDomain.GetData("userRatingTableData"));
+            new watch_assistant.ViewModel.MainWindow.MainWindowViewModel(this);
         }
     }
 }
