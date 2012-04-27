@@ -19,16 +19,17 @@ namespace watch_assistant
         protected override void OnStartup(StartupEventArgs e)
         {
             // load here
-            Collection<DataTable> tableKeeper;
-            ExternalDataManager.LoadUserTableData(Path.Combine(Settings.Default.DefaultAppFolderPath, Settings.Default.UserAppDataFileName), out tableKeeper, null);
+            ExternalUserRatingTableData userListsData;
 
-            if (tableKeeper == null)
+            ExternalDataManager.LoadUserTableData(Path.Combine(Settings.Default.DefaultAppFolderPath, Settings.Default.UserAppDataFileName), out userListsData);
+
+            if (!userListsData.IsReady)
             {
                 // First-time run
-                tableKeeper = UserDefaultListsInitialize();
+                userListsData = UserDefaultListsInitialize();
             }
 
-            AppDomain.CurrentDomain.SetData("userListsData", new ObservableCollection<DataTable>(tableKeeper));
+            AppDomain.CurrentDomain.SetData("userRatingTableData", userListsData);
 
             base.OnStartup(e);
         }
@@ -36,8 +37,8 @@ namespace watch_assistant
         protected override void OnExit(ExitEventArgs e)
         {
             // save here
-            var tableKeeper = (Collection<DataTable>)AppDomain.CurrentDomain.GetData("userListsData");
-            ExternalDataManager.SaveUserTableData(Path.Combine(Settings.Default.DefaultAppFolderPath, Settings.Default.UserAppDataFileName), tableKeeper, null);
+            var tableKeeper = (ExternalUserRatingTableData)AppDomain.CurrentDomain.GetData("userRatingTableData");
+            ExternalDataManager.SaveUserTableData(Path.Combine(Settings.Default.DefaultAppFolderPath, Settings.Default.UserAppDataFileName), tableKeeper);
 
             base.OnExit(e);
         }
@@ -56,14 +57,14 @@ namespace watch_assistant
             }
         }
 
-        private Collection<DataTable> UserDefaultListsInitialize()
+        private ExternalUserRatingTableData UserDefaultListsInitialize()
         {
             var tableKeeper = new Collection<DataTable>();
 
             tableKeeper.Add(new DataTable() { TableName = "Favorites" });
             tableKeeper.Add(new DataTable() { TableName = "Interest" });
 
-            return tableKeeper;
+            return new ExternalUserRatingTableData(tableKeeper, new DataTable() { TableName = "{RatingTable}" });
         }
 
         #endregion (Methods)

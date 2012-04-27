@@ -9,6 +9,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
+using watch_assistant.Model.ExternalDataManager;
 
 namespace watch_assistant.ViewModel.MainWindow
 {
@@ -281,7 +282,7 @@ namespace watch_assistant.ViewModel.MainWindow
 
         #region Constructors
 
-        public MainWindowViewModel(Window owner, ObservableCollection<DataTable> userListsData)
+        public MainWindowViewModel(Window owner, ExternalUserRatingTableData userListsData)
             : base(owner)
         {
             _bgInterview.DoWork += SearchTask;
@@ -294,7 +295,7 @@ namespace watch_assistant.ViewModel.MainWindow
             _owner.CommandBindings.Add(new CommandBinding(UserListAddItemCommand, RunUserListAddItemTask, CanExecuteUserListAddItemTask));
             _owner.CommandBindings.Add(new CommandBinding(UserListRemoveItemCommand, RunUserListRemoveItemTask, CanExecuteUserListRemoveItemTask));
 
-            UserListsData = userListsData;
+            UserListsData = userListsData.UserListsData;
         }
 
         #endregion (Constructors)

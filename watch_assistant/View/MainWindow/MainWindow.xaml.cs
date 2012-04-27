@@ -2,6 +2,7 @@
 using System.Collections.ObjectModel;
 using System.Data;
 using CustomControls;
+using watch_assistant.Model.ExternalDataManager;
 
 namespace watch_assistant.View.MainWindow
 {
@@ -14,7 +15,8 @@ namespace watch_assistant.View.MainWindow
         {
             InitializeComponent();
 
-            new watch_assistant.ViewModel.MainWindow.MainWindowViewModel(this, (ObservableCollection<DataTable>)AppDomain.CurrentDomain.GetData("userListsData"));
+            new watch_assistant.ViewModel.MainWindow.MainWindowViewModel(
+                this, (ExternalUserRatingTableData)AppDomain.CurrentDomain.GetData("userRatingTableData"));
         }
     }
 }
