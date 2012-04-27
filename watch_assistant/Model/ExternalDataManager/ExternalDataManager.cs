@@ -39,6 +39,10 @@ namespace watch_assistant.Model.ExternalDataManager
 
                 BinaryFormatter bf = new BinaryFormatter(null, new StreamingContext(StreamingContextStates.File));
 
+                // ABUSIVE CODE
+                foreach (DataTable table in userListsData.UserListsData) table.RemotingFormat = SerializationFormat.Binary;
+                // ABUSIVE CODE END
+
                 bf.Serialize(fs, userListsData);
             }
             finally
