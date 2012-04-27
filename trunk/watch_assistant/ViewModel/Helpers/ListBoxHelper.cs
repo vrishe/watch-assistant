@@ -9,6 +9,7 @@ using System.Windows.Input;
 
 namespace watch_assistant.ViewModel.Helpers
 {
+    // TODO: Make single list selection controller upgrade
     public class ListBoxHelper : DependencyObject
     {
         private class SelectedItemsReflector : IDisposable
@@ -50,6 +51,7 @@ namespace watch_assistant.ViewModel.Helpers
                     {
                         _target.SelectedItems.Clear();
                     }
+
                     CommandManager.InvalidateRequerySuggested();
                 }
             }
@@ -58,14 +60,16 @@ namespace watch_assistant.ViewModel.Helpers
             {
                 if (_mirror != null)
                 {
-                    if (e.AddedItems != null)
-                    {
-                        foreach (var item in e.AddedItems) _mirror.Add(item);
-                    }
                     if (e.RemovedItems != null)
                     {
                         foreach (var item in e.RemovedItems) _mirror.Remove(item);
                     }
+
+                    if (e.AddedItems != null)
+                    {
+                        foreach (var item in e.AddedItems) _mirror.Add(item);
+                    }
+                    
                     CommandManager.InvalidateRequerySuggested();
                 }
             }
@@ -135,7 +139,7 @@ namespace watch_assistant.ViewModel.Helpers
         private static void SelectedItemsMirrorListValueChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
         {
             ListBox target = sender as ListBox;
- 
+
             UnsubscribeListBoxSynchronisation(target);
 
             target.Unloaded += ListBoxUnloaded;
