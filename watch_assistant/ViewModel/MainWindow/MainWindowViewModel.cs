@@ -49,6 +49,8 @@ namespace watch_assistant.ViewModel.MainWindow
     {
         #region Fields
 
+        private static readonly ExternalUserRatingTableData _userRatingTableData = (ExternalUserRatingTableData)AppDomain.CurrentDomain.GetData("userRatingTableData");
+
         private readonly Model.Dictionary.Thesaurus _thesaurus = new Model.Dictionary.Thesaurus();
         private readonly Model.Search.IInterviewers.InterviewAggregator _interviewer = new Model.Search.IInterviewers.InterviewAggregator();
         private BackgroundWorker _bgInterview = new BackgroundWorker();
@@ -84,7 +86,7 @@ namespace watch_assistant.ViewModel.MainWindow
         }
 
         public static readonly DependencyProperty UserListsDataProperty =
-            DependencyProperty.Register("UserListsData", typeof(ObservableCollection<DataTable>), typeof(MainWindowViewModel), new UIPropertyMetadata(new ObservableCollection<DataTable>()));
+            DependencyProperty.Register("UserListsData", typeof(ObservableCollection<DataTable>), typeof(MainWindowViewModel), new UIPropertyMetadata(_userRatingTableData.UserListsData));
 
         public ObservableCollection<DataRowView> SearchManipulationSelection
         {
@@ -282,7 +284,7 @@ namespace watch_assistant.ViewModel.MainWindow
 
         #region Constructors
 
-        public MainWindowViewModel(Window owner, ExternalUserRatingTableData userListsData)
+        public MainWindowViewModel(Window owner)
             : base(owner)
         {
             _bgInterview.DoWork += SearchTask;
@@ -294,8 +296,6 @@ namespace watch_assistant.ViewModel.MainWindow
             _owner.CommandBindings.Add(new CommandBinding(DetailsShowCommand, RunDetailsShowTask/*, CanExecuteDetailsShowTask*/));
             _owner.CommandBindings.Add(new CommandBinding(UserListAddItemCommand, RunUserListAddItemTask, CanExecuteUserListAddItemTask));
             _owner.CommandBindings.Add(new CommandBinding(UserListRemoveItemCommand, RunUserListRemoveItemTask, CanExecuteUserListRemoveItemTask));
-
-            UserListsData = userListsData.UserListsData;
         }
 
         #endregion (Constructors)
