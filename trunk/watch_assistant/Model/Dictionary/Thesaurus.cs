@@ -6,6 +6,7 @@ using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Text.RegularExpressions;
 using System.Text;
+using System.Collections.ObjectModel;
 
 namespace watch_assistant.Model.Dictionary
 {
@@ -18,6 +19,19 @@ namespace watch_assistant.Model.Dictionary
 
     public sealed class Thesaurus
     {
+        private class StringEqualityComparer : IEqualityComparer<string>
+        {
+            public bool Equals(string x, string y)
+            {
+                return String.Equals(x, y);
+            }
+
+            public int GetHashCode(string obj)
+            {
+                return obj != null ? obj.GetHashCode() : 0;
+            }
+        }
+
         #region Fields
         private static List<WeakReference> _instances = new List<WeakReference>();
 
@@ -184,54 +198,110 @@ namespace watch_assistant.Model.Dictionary
         /// <returns>The string array that contains all possible permutations within the given phrase inside of the Thesaurus context.</returns>
         public string[] GetPhrasePermutations(string phrase)
         {
-            string pattern = " !@#$%^&*()_+=-][{}';:\".,<>/?|\\~`";
-            HashSet<string> variations = new HashSet<string>();
-
+            List<string> variations = new List<string>();
             lock (this)
             {
-                Queue<KeyValuePair<string, List<string>>> processQueue = new Queue<KeyValuePair<string, List<string>>>();
-                processQueue.Enqueue(new KeyValuePair<string, List<string>>(phrase.ToLower(), new List<string>()));
+                string phraseShielded = Regex.Replace(phrase, @"({(\w+)})|(<!#(\w+)>)", String.Empty);
+                phraseShielded = Regex.Replace(phraseShielded, @"[\s\t\r\n]+", " ");
+
+                string shieldingSequence = "<!#{0}>";
+                string trimString = " !@#$%^&*()_+=-][{}';:\".,<>/?|\\~`";
+                char[] trimPattern = trimString.ToCharArray();
+
+                string latterTemplate = null;
+                StringEqualityComparer stringEqualityComparer = new StringEqualityComparer();
+
+                List<int> spanSet = new List<int>();
+
+                int position = phraseShielded.Length;
+                do {
+                    spanSet.Add(position);
+                    position = phraseShielded.LastIndexOf((char)0x20, position - 1);
+                } while (position != -1);
+                spanSet.Add(position);
+
+                int spanCount = spanSet.Count - 1;
+                bool[] binaryPattern = new bool[spanCount];
+
+                bool isAlive = true;
+                int leftIndex = 0; binaryPattern[leftIndex] = true;
                 do
                 {
-                    KeyValuePair<string, List<string>> blank = processQueue.Dequeue();
-                    List<string> rest = new List<string>(_dictionary.Keys.Except(blank.Value));
-                    string[] blankSplit = blank.Key.Split(pattern.ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
-
-                    //int splitLength = blankSplit.Length;
-                    //while (splitLength > 0)
-                    //{
-                        foreach (string key in rest)
+                    // use permutation state here
+                    List<int> groupedSpanSet = new List<int>(); groupedSpanSet.Add(spanSet[0]);
+                    for (int i = 0; i < spanCount; i++)
+                    {
+                        if (i == spanCount - 1 || binaryPattern[i] != binaryPattern[i + 1])
                         {
-                            StringBuilder template = new StringBuilder();
-                            for (int i = 0; i < blankSplit.Length; i++)
-                            {
-                                if (!blankSplit[i].Equals(key))
-                                {
-                                    template.Append(blankSplit[i]);
-                                }
-                                else
-                                {
-                                    template.Append("{0}");
-                                }
-                                if (i < blankSplit.Length - 1) template.Append(" ");
-                            }
+                            groupedSpanSet.Add(spanSet[i + 1]);
+                        }
+                    }
 
-                            if (blankSplit.Contains(key))
+                    string replacementTemplate = String.Copy(phraseShielded);
+                    List<List<string>> replacementSet = new List<List<string>>();
+
+                    int groupedSpanCount = groupedSpanSet.Count - 1;
+                    for (int i = 0; i < groupedSpanCount; i++)
+                    {
+                        string substituted = phraseShielded.Substring(groupedSpanSet[i + 1] + 1, groupedSpanSet[i] - groupedSpanSet[i + 1] - 1).Trim(trimPattern);
+
+                        if (substituted.Length > 0)
+                        {
+                            HashSet<string> synonyms;
+                            if (_dictionary.TryGetValue(substituted, out synonyms))
                             {
-                                IEnumerable<string> replacement = _dictionary[key].Except(blank.Value);
-                                foreach (string substitution in replacement)
-                                {
-                                    List<string> exclusion = new List<string>(blank.Value);
-                                    exclusion.Add(substitution);
-                                    string expression = String.Format(template.ToString(), substitution);
-                                    processQueue.Enqueue(new KeyValuePair<string, List<string>>(expression, exclusion));
-                                }
+                                replacementTemplate = Regex.Replace(replacementTemplate, String.Format(@"\b{0}\b", substituted), String.Format(shieldingSequence, replacementSet.Count));
+
+                                IList<string> replacement = new List<string>(synonyms);
+                                replacement.Add(substituted);
+                                replacementSet.Add((List<string>)replacement);
                             }
                         }
-                    //    splitLength--;
-                    //}
-                    variations.Add(blank.Key);
-                } while (processQueue.Count > 0);
+                    }
+
+                    if (replacementSet.Count > 0 && !String.Equals(latterTemplate, replacementTemplate))
+                    {
+                        Queue<string> replacedSet = new Queue<string>();
+
+                        replacedSet.Enqueue(replacementTemplate);
+                        for (int i = 0; i < replacementSet.Count; i++)
+                        {
+                            int replacementStepsCount = replacedSet.Count;
+                            for (int j = 0; j < replacementStepsCount; j++)
+                            {
+                                string currentTemplate = replacedSet.Dequeue().Replace(String.Format(shieldingSequence, i), "{0}");
+                                foreach (string substitution in replacementSet[i]) replacedSet.Enqueue(String.Format(currentTemplate, substitution));
+                            }
+                        }
+                        variations.AddRange(replacedSet.Except(variations, stringEqualityComparer));
+
+                        latterTemplate = replacementTemplate;
+                    }
+
+                    // permutation generator
+                    bool shiftLeft = true;
+                    for (int i = 0; i <= leftIndex; i++)
+                    {
+                        if (!binaryPattern[i])
+                        {
+                            shiftLeft = false;
+                            break;
+                        }
+                    }
+                    if (shiftLeft)
+                    {
+                        if (isAlive = leftIndex < spanCount - 1)
+                        {
+                            for (int i = 0; i <= leftIndex; i++) binaryPattern[i] = false;
+                            binaryPattern[leftIndex + 1] = true;
+                            leftIndex = 0;
+                        }
+                    }
+                    else
+                    {
+                        binaryPattern[leftIndex++] = true;
+                    }
+                } while (isAlive);
             }
             return variations.ToArray();
         }
