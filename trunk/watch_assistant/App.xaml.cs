@@ -6,6 +6,7 @@ using watch_assistant.Properties;
 using System.IO;
 using System;
 using System.Collections.Generic;
+using watch_assistant.Model.RatingSystem;
 
 namespace watch_assistant
 {
@@ -29,6 +30,13 @@ namespace watch_assistant
                 userListsData = UserDefaultListsInitialize();
             }
 
+            foreach (DataTable table in userListsData.UserListsData)
+            {
+                table.ColumnChanged += new DataColumnChangeEventHandler((sender, evt) =>
+                {
+                    if (evt.Column.ColumnName.Equals("Rating")) RatingDBMS.AssignGenresPriority(evt.Column.Table);
+                });
+            }
             AppDomain.CurrentDomain.SetData("userRatingTableData", userListsData);
 
             base.OnStartup(e);
@@ -64,7 +72,7 @@ namespace watch_assistant
             tableKeeper.Add(new DataTable() { TableName = "Favorites" });
             tableKeeper.Add(new DataTable() { TableName = "Interest" });
 
-            return new ExternalUserRatingTableData(tableKeeper, new DataTable() { TableName = "{RatingTable}" });
+            return new ExternalUserRatingTableData(tableKeeper, new Dictionary<string, double>());
         }
 
         #endregion (Methods)
