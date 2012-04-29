@@ -167,8 +167,8 @@ namespace dictionary_manager.ViewModel
                 {
                     try
                     {
-                        string separator = "\t\n,;";
-                        string[] definitionSplit = ActiveDefinition.Split(separator.ToArray(), StringSplitOptions.RemoveEmptyEntries);
+                        string separator = "\n\r,;";
+                        string[] definitionSplit = ActiveDefinition.Split(separator.ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
                         _thesaurus.SetDefinition(TextEntered, definitionSplit, (PermutationMethod)e.Parameter);
                         Keys = new List<string>(_thesaurus.Keys);
                         SelectedKey = TextEntered;
