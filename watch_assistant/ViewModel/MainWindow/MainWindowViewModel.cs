@@ -10,6 +10,7 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
 using watch_assistant.Model.ExternalDataManager;
+using watch_assistant.Model.RatingSystem;
 
 namespace watch_assistant.ViewModel.MainWindow
 {
@@ -51,7 +52,7 @@ namespace watch_assistant.ViewModel.MainWindow
 
         private static readonly ExternalUserRatingTableData _userRatingTableData = (ExternalUserRatingTableData)AppDomain.CurrentDomain.GetData("userRatingTableData");
 
-        private readonly Model.Dictionary.Thesaurus _thesaurus = new Model.Dictionary.Thesaurus();
+        private readonly Model.Dictionary.Thesaurus _thesaurus = new Model.Dictionary.Thesaurus("thesaurus.dic");
         private readonly Model.Search.IInterviewers.InterviewAggregator _interviewer = new Model.Search.IInterviewers.InterviewAggregator();
         private BackgroundWorker _bgInterview = new BackgroundWorker();
 
@@ -171,8 +172,7 @@ namespace watch_assistant.ViewModel.MainWindow
             {
                 var strings = _thesaurus.GetPhrasePermutations((string)e.Argument);
                 _interviewer.ConductInterview(strings);
-
-                //_interviewer.InterviewResult.DefaultView.Sort = "Raiting DESC";
+                RatingDBMS.AssignItemsPriority(_interviewer.InterviewResult);
             }
             catch (Exception ex)
             {
@@ -182,6 +182,7 @@ namespace watch_assistant.ViewModel.MainWindow
         private void SearchCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
             SearchResultTable = _interviewer.InterviewResult.DefaultView.Table.Copy();
+            SearchResultTable.DefaultView.Sort = "Rating DESC";
             CommandManager.InvalidateRequerySuggested();
         }
         private void CanExecuteSearchTask(object sender, CanExecuteRoutedEventArgs e)
@@ -296,8 +297,12 @@ namespace watch_assistant.ViewModel.MainWindow
             _owner.CommandBindings.Add(new CommandBinding(DetailsShowCommand, RunDetailsShowTask/*, CanExecuteDetailsShowTask*/));
             _owner.CommandBindings.Add(new CommandBinding(UserListAddItemCommand, RunUserListAddItemTask, CanExecuteUserListAddItemTask));
             _owner.CommandBindings.Add(new CommandBinding(UserListRemoveItemCommand, RunUserListRemoveItemTask, CanExecuteUserListRemoveItemTask));
+            
+            //// REMOVE THIS
+            //_thesaurus = new Model.Dictionary.Thesaurus("thesaurus.dic");
+            //// REMOVE THIS END
         }
-
+        
         #endregion (Constructors)
     }
 }

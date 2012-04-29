@@ -4,6 +4,8 @@ using System.IO;
 using System.Linq;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
+using System.Text.RegularExpressions;
+using System.Text;
 
 namespace watch_assistant.Model.Dictionary
 {
@@ -182,6 +184,7 @@ namespace watch_assistant.Model.Dictionary
         /// <returns>The string array that contains all possible permutations within the given phrase inside of the Thesaurus context.</returns>
         public string[] GetPhrasePermutations(string phrase)
         {
+            string pattern = " !@#$%^&*()_+=-][{}';:\".,<>/?|\\~`";
             HashSet<string> variations = new HashSet<string>();
 
             lock (this)
@@ -192,20 +195,41 @@ namespace watch_assistant.Model.Dictionary
                 {
                     KeyValuePair<string, List<string>> blank = processQueue.Dequeue();
                     List<string> rest = new List<string>(_dictionary.Keys.Except(blank.Value));
-                    foreach (string key in rest)
-                    {
-                        if (blank.Key.Contains(key))
+                    string[] blankSplit = blank.Key.Split(pattern.ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
+
+                    //int splitLength = blankSplit.Length;
+                    //while (splitLength > 0)
+                    //{
+                        foreach (string key in rest)
                         {
-                            IEnumerable<string> replacement = _dictionary[key].Except(blank.Value);
-                            foreach (string substitution in replacement)
+                            StringBuilder template = new StringBuilder();
+                            for (int i = 0; i < blankSplit.Length; i++)
                             {
-                                List<string> exclusion = new List<string>(blank.Value);
-                                exclusion.Add(substitution);
-                                string expression = blank.Key.Replace(key, substitution);
-                                processQueue.Enqueue(new KeyValuePair<string, List<string>>(expression, exclusion));
+                                if (!blankSplit[i].Equals(key))
+                                {
+                                    template.Append(blankSplit[i]);
+                                }
+                                else
+                                {
+                                    template.Append("{0}");
+                                }
+                                if (i < blankSplit.Length - 1) template.Append(" ");
+                            }
+
+                            if (blankSplit.Contains(key))
+                            {
+                                IEnumerable<string> replacement = _dictionary[key].Except(blank.Value);
+                                foreach (string substitution in replacement)
+                                {
+                                    List<string> exclusion = new List<string>(blank.Value);
+                                    exclusion.Add(substitution);
+                                    string expression = String.Format(template.ToString(), substitution);
+                                    processQueue.Enqueue(new KeyValuePair<string, List<string>>(expression, exclusion));
+                                }
                             }
                         }
-                    }
+                    //    splitLength--;
+                    //}
                     variations.Add(blank.Key);
                 } while (processQueue.Count > 0);
             }

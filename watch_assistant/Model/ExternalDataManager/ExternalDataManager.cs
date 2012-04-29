@@ -14,17 +14,17 @@ namespace watch_assistant.Model.ExternalDataManager
     public struct ExternalUserRatingTableData
     {
         private ObservableCollection<DataTable> _userListsData;
-        private DataTable _userRatingPrecomputedData;
+        private Dictionary<string, double> _userRatingPrecomputedData;
 
         public ObservableCollection<DataTable> UserListsData { get { return _userListsData; } }
-        public DataTable UserRatingPrecomputedData { get { return _userRatingPrecomputedData; } }
+        public Dictionary<string, double> UserRatingPrecomputedData { get { return _userRatingPrecomputedData; } }
 
         public bool IsReady { get { return _userListsData != null && _userRatingPrecomputedData != null; } }
 
-        public ExternalUserRatingTableData(IEnumerable<DataTable> listsTableSet, DataTable ratingTable)
+        public ExternalUserRatingTableData(IEnumerable<DataTable> listsTableSet, Dictionary<string, double> ratingSummary)
         {
             _userListsData = new ObservableCollection<DataTable>(listsTableSet);
-            _userRatingPrecomputedData = ratingTable;
+            _userRatingPrecomputedData = ratingSummary;
         }
     }
 

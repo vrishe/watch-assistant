@@ -81,9 +81,9 @@
 
         <!-- User lists window part -->
         <custom:WindowPage Margin="0,0,0,3.5" Grid.Column="2">
-            <custom:WindowPage.LeftHeaderCell>
+            <!--<custom:WindowPage.LeftHeaderCell>
                 <Label Margin="5.5,0,0,0">Menu</Label>
-            </custom:WindowPage.LeftHeaderCell>
+            </custom:WindowPage.LeftHeaderCell>-->
             <custom:WindowPage.MidHeaderCell>
                 <TextBlock Text="Watch Assistant" TextTrimming="CharacterEllipsis" Foreground="{DynamicResource WindowLabelTextColor}" VerticalAlignment="Center" HorizontalAlignment="Center" />
             </custom:WindowPage.MidHeaderCell>
