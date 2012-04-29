@@ -224,7 +224,7 @@ namespace watch_assistant.Model.Dictionary
                 bool[] binaryPattern = new bool[spanCount];
 
                 bool isAlive = true;
-                int leftIndex = 0; binaryPattern[leftIndex] = true;
+                int leftIndex = 0; // first = true
                 do
                 {
                     // use permutation state here
@@ -279,27 +279,15 @@ namespace watch_assistant.Model.Dictionary
                     }
 
                     // permutation generator
-                    bool shiftLeft = true;
-                    for (int i = 0; i <= leftIndex; i++)
+                    for (int i = 0, max = binaryPattern.Length - 1; i < binaryPattern.Length; i++)
                     {
                         if (!binaryPattern[i])
                         {
-                            shiftLeft = false;
+                            for (int j = 0; j < i; j++) binaryPattern[j] = false;
+                            binaryPattern[i] = true;
                             break;
                         }
-                    }
-                    if (shiftLeft)
-                    {
-                        if (isAlive = leftIndex < spanCount - 1)
-                        {
-                            for (int i = 0; i <= leftIndex; i++) binaryPattern[i] = false;
-                            binaryPattern[leftIndex + 1] = true;
-                            leftIndex = 0;
-                        }
-                    }
-                    else
-                    {
-                        binaryPattern[leftIndex++] = true;
+                        isAlive = i != max;
                     }
                 } while (isAlive);
             }
