@@ -2,7 +2,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Data;
 using System.Windows;
@@ -11,6 +10,7 @@ using System.Windows.Data;
 using System.Windows.Input;
 using watch_assistant.Model.ExternalDataManager;
 using watch_assistant.Model.RatingSystem;
+using watch_assistant.Properties;
 
 namespace watch_assistant.ViewModel.MainWindow
 {
@@ -50,9 +50,9 @@ namespace watch_assistant.ViewModel.MainWindow
     {
         #region Fields
 
-        private static readonly ExternalUserRatingTableData _userRatingTableData = (ExternalUserRatingTableData)AppDomain.CurrentDomain.GetData("userRatingTableData");
+        private static readonly ExternalUserRatingTableData _userRatingTableData = ExternalDataManager.GetUserTableData();
 
-        private readonly Model.Dictionary.Thesaurus _thesaurus = new Model.Dictionary.Thesaurus("thesaurus.dic");
+        private readonly Model.Dictionary.Thesaurus _thesaurus = new Model.Dictionary.Thesaurus(Settings.Default.DefaultDictionaryPath);
         private readonly Model.Search.IInterviewers.InterviewAggregator _interviewer = new Model.Search.IInterviewers.InterviewAggregator();
         private BackgroundWorker _bgInterview = new BackgroundWorker();
 

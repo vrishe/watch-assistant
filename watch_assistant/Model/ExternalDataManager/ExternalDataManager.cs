@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Data;
+using System.Diagnostics;
 using System.IO;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
-using watch_assistant.Properties;
-using System.Collections.ObjectModel;
-using System.Diagnostics;
 
 namespace watch_assistant.Model.ExternalDataManager
 {
@@ -30,19 +29,17 @@ namespace watch_assistant.Model.ExternalDataManager
 
     static class ExternalDataManager
     {
-        public static void SaveUserTableData(string filePath, ExternalUserRatingTableData userListsData)
+        public static void SaveUserTableData(string filePath)
         {
             FileStream fs = null;
             try
             {
                 fs = new FileStream(filePath, FileMode.Create);
-
                 BinaryFormatter bf = new BinaryFormatter(null, new StreamingContext(StreamingContextStates.File));
-
+                ExternalUserRatingTableData userListsData = GetUserTableData();
                 // ABUSIVE CODE
                 foreach (DataTable table in userListsData.UserListsData) table.RemotingFormat = SerializationFormat.Binary;
                 // ABUSIVE CODE END
-
                 bf.Serialize(fs, userListsData);
             }
             finally
@@ -51,31 +48,36 @@ namespace watch_assistant.Model.ExternalDataManager
             }
         }
 
-        public static void LoadUserTableData(string filePath, out ExternalUserRatingTableData userListsData)
+        public static bool LoadUserTableData(string filePath)
         {
+            bool result = true;
             var userListsDataDeserializationResult = new ExternalUserRatingTableData();
 
             FileStream fs = null;
             try
             {
                 fs = new FileStream(filePath, FileMode.Open);
-
                 BinaryFormatter bf = new BinaryFormatter(null, new StreamingContext(StreamingContextStates.File));
-
                 userListsDataDeserializationResult = (ExternalUserRatingTableData)bf.Deserialize(fs);
+
+                OverrideUserTableData(userListsDataDeserializationResult);
             }
-            catch (IOException) 
-            {
-                #if DEBUG
-                Debug.WriteLine("No user data file detected. First-time run takes place.");
-                #endif
-            }
+            catch (Exception) { }
             finally
             {
                 if (fs != null) fs.Close();
-
-                userListsData = userListsDataDeserializationResult;
             }
+            return result && userListsDataDeserializationResult.IsReady;
+        }
+
+        public static void OverrideUserTableData(ExternalUserRatingTableData userListsData)
+        {
+            AppDomain.CurrentDomain.SetData("userListsTableData", userListsData);
+        }
+
+        public static ExternalUserRatingTableData GetUserTableData()
+        {
+            return (ExternalUserRatingTableData)AppDomain.CurrentDomain.GetData("userListsTableData");
         }
     }
 }

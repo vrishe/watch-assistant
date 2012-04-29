@@ -1,10 +1,9 @@
-﻿using System.Data;
+﻿using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Diagnostics;
 using System.Windows;
 using System.Windows.Input;
-using System;
-using System.Collections.Generic;
-using System.Windows.Controls;
-using System.Diagnostics;
 
 namespace watch_assistant.ViewModel.DetailsWindow
 {

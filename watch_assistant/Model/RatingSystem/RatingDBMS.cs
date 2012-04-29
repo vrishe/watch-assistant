@@ -51,7 +51,7 @@ namespace watch_assistant.Model.RatingSystem
         public static void AssignItemsPriority(DataTable table)
         {
             table.Columns.Add("Rating", typeof(Double));
-            Dictionary<string, double> _RatingSummary = ((ExternalUserRatingTableData)AppDomain.CurrentDomain.GetData("userRatingTableData")).UserRatingPrecomputedData;
+            Dictionary<string, double> _RatingSummary = ExternalDataManager.ExternalDataManager.GetUserTableData().UserRatingPrecomputedData;
             if (_RatingSummary.Count == 0)
                 return;
             foreach (DataRow tableRow in table.Rows)

@@ -25,7 +25,7 @@ namespace watch_assistant.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        [global::System.Configuration.DefaultSettingValueAttribute("2AInc\\\\watch_assistant")]
         public string DefaultAppFolderPath {
             get {
                 return ((string)(this["DefaultAppFolderPath"]));
@@ -44,6 +44,18 @@ namespace watch_assistant.Properties {
             }
             set {
                 this["UserAppDataFileName"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("thesaurus.dic")]
+        public string DefaultDictionaryPath {
+            get {
+                return ((string)(this["DefaultDictionaryPath"]));
+            }
+            set {
+                this["DefaultDictionaryPath"] = value;
             }
         }
     }

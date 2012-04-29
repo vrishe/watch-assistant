@@ -303,7 +303,7 @@ namespace watch_assistant.Model.Dictionary
                     }
                 } while (isAlive);
             }
-            return variations.ToArray();
+            return variations.Count > 0 ? variations.ToArray() : new string[] { phrase };
         }
         /// <summary>
         /// Provides a file serialization for Thesaurus dictionary.
@@ -343,7 +343,11 @@ namespace watch_assistant.Model.Dictionary
         public Thesaurus(string filePath)
             : this()
         {
-            Deserialize(filePath);
+            try
+            {
+                Deserialize(filePath);
+            }
+            catch (IOException) { }
         }
 
         #endregion (Constructors)
