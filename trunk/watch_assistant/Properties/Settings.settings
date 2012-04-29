@@ -3,10 +3,13 @@
   <Profiles />
   <Settings>
     <Setting Name="DefaultAppFolderPath" Type="System.String" Scope="User">
-      <Value Profile="(Default)" />
+      <Value Profile="(Default)">2AInc\\watch_assistant</Value>
     </Setting>
     <Setting Name="UserAppDataFileName" Type="System.String" Scope="User">
       <Value Profile="(Default)">userdb.appdata</Value>
+    </Setting>
+    <Setting Name="DefaultDictionaryPath" Type="System.String" Scope="User">
+      <Value Profile="(Default)">thesaurus.dic</Value>
     </Setting>
   </Settings>
 </SettingsFile>

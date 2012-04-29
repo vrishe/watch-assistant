@@ -19,17 +19,14 @@ namespace watch_assistant
 
         protected override void OnStartup(StartupEventArgs e)
         {
-            // load here
-            ExternalUserRatingTableData userListsData;
-
-            ExternalDataManager.LoadUserTableData(Path.Combine(Settings.Default.DefaultAppFolderPath, Settings.Default.UserAppDataFileName), out userListsData);
-
-            if (!userListsData.IsReady)
+            if (!ExternalDataManager.LoadUserTableData(Path.Combine(Settings.Default.DefaultAppFolderPath, Settings.Default.UserAppDataFileName)))
             {
-                // First-time run
-                userListsData = UserDefaultListsInitialize();
+                string appDir = Settings.Default.DefaultAppFolderPath.Remove(Settings.Default.DefaultAppFolderPath.LastIndexOf('\\'));
+                if (Directory.Exists(appDir)) Directory.Delete(appDir, true);
+                ExternalDataManager.OverrideUserTableData(UserDefaultListsInitialize());
             }
 
+            ExternalUserRatingTableData userListsData = ExternalDataManager.GetUserTableData();
             foreach (DataTable table in userListsData.UserListsData)
             {
                 table.ColumnChanged += new DataColumnChangeEventHandler((sender, evt) =>
@@ -37,32 +34,16 @@ namespace watch_assistant
                     if (evt.Column.ColumnName.Equals("Rating")) RatingDBMS.AssignGenresPriority(evt.Column.Table);
                 });
             }
-            AppDomain.CurrentDomain.SetData("userRatingTableData", userListsData);
 
             base.OnStartup(e);
         }
 
         protected override void OnExit(ExitEventArgs e)
         {
-            // save here
-            var tableKeeper = (ExternalUserRatingTableData)AppDomain.CurrentDomain.GetData("userRatingTableData");
-            ExternalDataManager.SaveUserTableData(Path.Combine(Settings.Default.DefaultAppFolderPath, Settings.Default.UserAppDataFileName), tableKeeper);
+            if (!Directory.Exists(Settings.Default.DefaultAppFolderPath)) Directory.CreateDirectory(Settings.Default.DefaultAppFolderPath);
+            ExternalDataManager.SaveUserTableData(Path.Combine(Settings.Default.DefaultAppFolderPath, Settings.Default.UserAppDataFileName));
 
             base.OnExit(e);
-        }
-
-        private static void OverrideApplicationDataEnvironmentPath(string appFolderRelativePath)
-        {
-            if (!Directory.Exists(Settings.Default.DefaultAppFolderPath))
-            {
-                if (String.IsNullOrEmpty(Settings.Default.DefaultAppFolderPath))
-                {
-                    Settings.Default.DefaultAppFolderPath =
-                        Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), appFolderRelativePath);
-                    Settings.Default.Save();
-                }
-                Directory.CreateDirectory(Settings.Default.DefaultAppFolderPath);
-            }
         }
 
         private ExternalUserRatingTableData UserDefaultListsInitialize()
@@ -70,7 +51,7 @@ namespace watch_assistant
             var tableKeeper = new Collection<DataTable>();
 
             tableKeeper.Add(new DataTable() { TableName = "Favorites" });
-            tableKeeper.Add(new DataTable() { TableName = "Interest" });
+            tableKeeper.Add(new DataTable() { TableName = "Interest" });             
 
             return new ExternalUserRatingTableData(tableKeeper, new Dictionary<string, double>());
         }
@@ -81,7 +62,12 @@ namespace watch_assistant
 
         static App()
         {
-            OverrideApplicationDataEnvironmentPath(@"2AInc\watch_assistant");
+            if (String.IsNullOrEmpty(Settings.Default.DefaultAppFolderPath))
+            {
+                Settings.Default.DefaultAppFolderPath =
+                    Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), @"2AInc\watch_assistant");
+                Settings.Default.Save();
+            }
         }
 
         #endregion (Constructors)
