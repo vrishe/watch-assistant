@@ -23,7 +23,7 @@ namespace watch_assistant.Model.RatingSystem
         /// </summary>
         public static void AssignGenresPriority(DataTable chart)
         {
-            Dictionary<string, double> _RatingSummary = ((ExternalUserRatingTableData)AppDomain.CurrentDomain.GetData("userRatingTableData")).UserRatingPrecomputedData;
+            Dictionary<string, double> _RatingSummary = ExternalDataManager.ExternalDataManager.GetUserTableData().UserRatingPrecomputedData;
             _RatingSummary.Clear();
             foreach (DataRow chartRow in chart.Rows)
                 if ((Double)chartRow["Rating"] > 0)
