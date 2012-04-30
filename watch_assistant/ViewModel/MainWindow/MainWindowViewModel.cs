@@ -247,7 +247,12 @@ namespace watch_assistant.ViewModel.MainWindow
             DataRowView[] addedArray = new DataRowView[SearchManipulationSelection.Count];
             SearchManipulationSelection.CopyTo(addedArray, 0);
 
-            if (table.Rows.Count == 0) table.Merge(addedArray[0].Row.Table.Clone(), true, MissingSchemaAction.Add);
+            if (table.Rows.Count == 0)
+            {
+                table.Merge(addedArray[0].Row.Table.Clone(), true, MissingSchemaAction.Add);
+                //table.Columns.Remove("Poster");
+                //table.Columns.Add("Poster", typeof(System.Windows.Media.Imaging.BitmapImage));
+            }
             foreach (DataRowView rowView in addedArray)
             {
                 if (IsItemNonExistent(table, rowView.Row))

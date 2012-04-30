@@ -79,5 +79,10 @@ namespace watch_assistant.Model.ExternalDataManager
         {
             return (ExternalUserRatingTableData)AppDomain.CurrentDomain.GetData("userListsTableData");
         }
+
+        public static void CreateImageFolder(string path)
+        {
+            if (!Directory.Exists(path)) Directory.CreateDirectory(path);
+        }
     }
 }

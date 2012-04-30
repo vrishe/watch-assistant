@@ -2,6 +2,11 @@
 using System.Collections.Generic;
 using System.Net;
 using System.Text.RegularExpressions;
+using System.Data;
+using System.Windows.Controls;
+using System.IO;
+using watch_assistant.Properties;
+using System.Windows.Media.Imaging;
 
 namespace watch_assistant.Model.Search
 {
@@ -11,7 +16,7 @@ namespace watch_assistant.Model.Search
         /// Gets all missing data about video
         /// </summary>
         /// <param name="videoItem">A video to grab info about</param>
-        public static void GetInfo(System.Data.DataRow videoItem)
+        public static void GetInfo(DataRow videoItem)
         {
             var tmp = ((Dictionary<string, string>)videoItem["HRefs"]).GetEnumerator();
             tmp.MoveNext();
@@ -30,6 +35,26 @@ namespace watch_assistant.Model.Search
                     GetInfoFromFilmin(videoItem);
                     break;
             }
+
+            //DataTable result = videoItem.Table.Clone();
+            //result.Rows.Clear();
+            //result.ImportRow(videoItem);
+            //result.Columns.Remove("Poster");
+            //result.Columns.Add("Poster", typeof(BitmapImage));
+            if (videoItem["Poster"] != DBNull.Value)
+            {
+                string imgUri = videoItem["Poster"].ToString();
+                string imgFile = Path.Combine(Settings.Default.DefaultAppFolderPath,
+                                            "img", imgUri.Substring(imgUri.LastIndexOf('/') + 1));
+
+                WebClient wc = new WebClient();
+                wc.DownloadFile(imgUri, imgFile);
+                //BitmapImage img = new BitmapImage(new Uri(imgFile));
+                //result.Rows[0]["Poster"] = img;
+                videoItem["Poster"] = imgFile;
+            }
+
+            //return result.Rows[0];
         }
 
         /// <summary>
@@ -64,7 +89,7 @@ namespace watch_assistant.Model.Search
         /// Gets all missing data about video form animeonline.su
         /// </summary>
         /// <param name="videoItem">A video to grab info about</param>
-        private static void GetInfoFromAOS(System.Data.DataRow videoItem)
+        private static void GetInfoFromAOS(DataRow videoItem)
         {
             bool needYear = String.IsNullOrEmpty(videoItem["Year"].ToString()),
                  needDesc = String.IsNullOrEmpty(videoItem["Description"].ToString());
@@ -108,7 +133,7 @@ namespace watch_assistant.Model.Search
         /// Gets all missing data about video from animesee.com
         /// </summary>
         /// <param name="videoItem">A video to grab info about</param>
-        private static void GetInfoFromASee(System.Data.DataRow videoItem)
+        private static void GetInfoFromASee(DataRow videoItem)
         {
             bool needDesc = String.IsNullOrEmpty(videoItem["Description"].ToString());
             if (!needDesc)
@@ -132,7 +157,7 @@ namespace watch_assistant.Model.Search
         /// Gets all missing data about video from tvbest.com.ua
         /// </summary>
         /// <param name="videoItem">A video to grab info about</param>
-        private static void GetInfoFromFilmin(System.Data.DataRow videoItem)
+        private static void GetInfoFromFilmin(DataRow videoItem)
         {
             bool needGenre = String.IsNullOrEmpty(videoItem["Description"].ToString());
             if (!needGenre)
@@ -153,7 +178,7 @@ namespace watch_assistant.Model.Search
         /// Gets all missing data about video from filmin.ru
         /// </summary>
         /// <param name="videoItem">A video to grab info about</param>
-        private static void GetInfoFromTVBest(System.Data.DataRow videoItem)
+        private static void GetInfoFromTVBest(DataRow videoItem)
         {
             bool needDesc = String.IsNullOrEmpty(videoItem["Description"].ToString());
             if (!needDesc)

@@ -23,6 +23,8 @@ namespace watch_assistant
             {
                 string appDir = Settings.Default.DefaultAppFolderPath.Remove(Settings.Default.DefaultAppFolderPath.LastIndexOf('\\'));
                 if (Directory.Exists(appDir)) Directory.Delete(appDir, true);
+                string path = Path.Combine(Settings.Default.DefaultAppFolderPath, "img");
+                ExternalDataManager.CreateImageFolder(path);
                 ExternalDataManager.OverrideUserTableData(UserDefaultListsInitialize());
             }
 
