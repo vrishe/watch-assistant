@@ -9,10 +9,6 @@ using watch_assistant.Model.ExternalDataManager;
 
 namespace watch_assistant.Model.RatingSystem
 {
-    // TODO: Распределить выполнение жанрового анализатора в программе (см. подробнее)
-    // 1. В момент загрузки проги синхронизироваться с текущим рейтингом жанров
-    // 2. В момент обновления списка фавов выполнить AssignGenresPriority
-    // 3. Перед закрытием проги сериализовать текущий рейтинг жанров
     static class RatingDBMS
     {
         #region RatingAnalyzer
@@ -67,7 +63,7 @@ namespace watch_assistant.Model.RatingSystem
                 if (_RatingSummary.ContainsKey(genre.Trim()))
                 {
                     double value = (tableRow["Rating"] == DBNull.Value ? 0 : (double)tableRow["Rating"]);
-                    tableRow["Rating"] = Math.Max(value, _RatingSummary[genre.Trim()]);
+                    tableRow["Rating"] = value + _RatingSummary[genre.Trim()];
                 }
         }
         #endregion (Input table items manipulation)
