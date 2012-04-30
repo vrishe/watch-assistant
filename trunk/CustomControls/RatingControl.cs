@@ -309,19 +309,45 @@ namespace CustomControls
                 );
 
         // PersonalRatingPreview
-        public double PersonalRatingPreview
+        public double PersonalRatingValuePreview
         {
-            get { return (double)GetValue(PersonalRatingPreviewProperty); }
-            set { SetValue(PersonalRatingPreviewProperty, value); }
+            get { return (double)GetValue(PersonalRatingValuePreviewProperty); }
+            private set { SetValue(PersonalRatingValuePreviewPropertyKey, value); }
         }
 
-        public static readonly DependencyProperty PersonalRatingPreviewProperty =
-            DependencyProperty.Register("PersonalRatingPreview", typeof(double), typeof(RatingControl), 
-            new UIPropertyMetadata(PersonalRatingProperty.DefaultMetadata.DefaultValue));      
+        public static readonly DependencyPropertyKey PersonalRatingValuePreviewPropertyKey =
+            DependencyProperty.RegisterReadOnly("PersonalRatingValuePreview", typeof(double), typeof(RatingControl), 
+            new UIPropertyMetadata(PersonalRatingProperty.DefaultMetadata.DefaultValue));
+
+        public static readonly DependencyProperty PersonalRatingValuePreviewProperty = PersonalRatingValuePreviewPropertyKey.DependencyProperty;
 
         public double RatingRangeDelta { get { return RatingRangeMax - RatingRangeMin; } }
 
         #endregion (Properties)
+
+        #region Events
+
+        public static readonly RoutedEvent PersonalRatingChanged = EventManager.RegisterRoutedEvent("PersonalRatingChanged", RoutingStrategy.Bubble, typeof(RoutedEventHandler), typeof(RatingControl));
+        public static readonly RoutedEvent CommonRatingChanged = EventManager.RegisterRoutedEvent("CommonRatingChanged", RoutingStrategy.Bubble, typeof(RoutedEventHandler), typeof(RatingControl));
+        //public static RoutedEvent PreviewPersonalRatingChanged;
+
+        #region Handlers
+
+        public event RoutedEventHandler PersonalRatingChangedEventHandler
+        {
+            add { AddHandler(PersonalRatingChanged, value); }
+            remove { RemoveHandler(PersonalRatingChanged, value); }
+        }
+
+        public event RoutedEventHandler CommonRatingChangedEventHandler
+        {
+            add { AddHandler(CommonRatingChanged, value); }
+            remove { RemoveHandler(CommonRatingChanged, value); }
+        }
+
+        #endregion (Handlers)
+
+        #endregion (Events)
 
         #region Methods
 
@@ -351,6 +377,15 @@ namespace CustomControls
         {
             var rating = (RatingControl)sender;
             rating.UpdateItems(RatingItemUpdate.SetRate, null);
+
+            RoutedEvent risen = PersonalRatingChanged;               
+            if (e.Property == CommonRatingProperty)
+            {
+                risen = CommonRatingChanged;
+            }
+            // else if () { }
+ 
+            rating.RaiseEvent(new RoutedEventArgs(risen));
         }
 
         #endregion (Property event handlers)
@@ -426,7 +461,7 @@ namespace CustomControls
 
                                 case RatingItemUpdate.PreviewRate:
                                     item.PreviewState = PreviewState.PreviewHighlight;
-                                    PersonalRatingPreview = Math.Round(order * itemValue, 2);
+                                    PersonalRatingValuePreview = Math.Round(order * itemValue, 2);
                                     break;
 
                                 case RatingItemUpdate.SelectRate:                                 
