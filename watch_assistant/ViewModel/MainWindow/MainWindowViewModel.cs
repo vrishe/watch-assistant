@@ -162,12 +162,16 @@ namespace watch_assistant.ViewModel.MainWindow
             if (list != null) list.SelectedItem = null;
         }
 
-        private void UpdateUserRatingsEventHandler(object sender, RoutedEventArgs e)
+        #endregion (UI behaviors)
+
+        #region Event handlers
+
+        private void DataTableColumnChangedEventHandler(object sender, DataColumnChangeEventArgs e)
         {
-            // TODO: updater code here
+            MessageBox.Show("Changed!");
         }
 
-        #endregion (UI behaviors)
+        #endregion (Event handlers)
 
         #region Command logic
 
@@ -295,14 +299,11 @@ namespace watch_assistant.ViewModel.MainWindow
 
         #region Constructors
 
-        //static MainWindowViewModel()
-        //{
-
-        //}
-
         public MainWindowViewModel(Window owner)
             : base(owner)
         {
+            // _owner.AddHandler(CustomControls.RatingControl.PersonalRatingChanged, new RoutedEventHandler(UpdateUserRatingsEventHandler)); 
+
             _bgInterview.DoWork += SearchTask;
             _bgInterview.RunWorkerCompleted += SearchCompleted;
             // _bgInterview.ProgressChanged += new ProgressChangedEventHandler(backgroundWorker1_ProgressChanged);
@@ -313,8 +314,13 @@ namespace watch_assistant.ViewModel.MainWindow
             _owner.CommandBindings.Add(new CommandBinding(UserListAddItemCommand, RunUserListAddItemTask, CanExecuteUserListAddItemTask));
             _owner.CommandBindings.Add(new CommandBinding(UserListRemoveItemCommand, RunUserListRemoveItemTask, CanExecuteUserListRemoveItemTask));
 
-            _owner.AddHandler(CustomControls.RatingControl.PersonalRatingChanged, new RoutedEventHandler(UpdateUserRatingsEventHandler)); 
-            
+            if (_userRatingTableData.IsReady)
+            {
+                foreach (DataTable table in _userRatingTableData.UserListsData)
+                {
+                    table.ColumnChanged += DataTableColumnChangedEventHandler;
+                }
+            }
             //// REMOVE THIS
             //_thesaurus = new Model.Dictionary.Thesaurus("thesaurus.dic");
             //// REMOVE THIS END
