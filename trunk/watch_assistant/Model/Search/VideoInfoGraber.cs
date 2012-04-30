@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
+using System.IO;
 using System.Net;
 using System.Text.RegularExpressions;
-using System.Data;
-using System.Windows.Controls;
-using System.IO;
 using watch_assistant.Properties;
-using System.Windows.Media.Imaging;
 
 namespace watch_assistant.Model.Search
 {
@@ -35,13 +33,14 @@ namespace watch_assistant.Model.Search
                     GetInfoFromFilmin(videoItem);
                     break;
             }
+        }
 
-            //DataTable result = videoItem.Table.Clone();
-            //result.Rows.Clear();
-            //result.ImportRow(videoItem);
-            //result.Columns.Remove("Poster");
-            //result.Columns.Add("Poster", typeof(BitmapImage));
-            if (videoItem["Poster"] != DBNull.Value)
+        /// <summary>
+        /// Cache image from Url in videoItem and replace that http Url on local-based
+        /// </summary>
+        public static void CacheImage(DataRow videoItem)
+        {
+            if (videoItem["Poster"] != DBNull.Value && Uri.IsWellFormedUriString(videoItem["Poster"].ToString(), UriKind.Absolute))
             {
                 string imgUri = videoItem["Poster"].ToString();
                 string imgFile = Path.Combine(Settings.Default.DefaultAppFolderPath,
@@ -53,8 +52,6 @@ namespace watch_assistant.Model.Search
                 //result.Rows[0]["Poster"] = img;
                 videoItem["Poster"] = imgFile;
             }
-
-            //return result.Rows[0];
         }
 
         /// <summary>
