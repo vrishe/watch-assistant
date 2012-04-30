@@ -1,12 +1,12 @@
-﻿using System.Collections.ObjectModel;
+﻿using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Data;
+using System.IO;
 using System.Windows;
 using watch_assistant.Model.ExternalDataManager;
-using watch_assistant.Properties;
-using System.IO;
-using System;
-using System.Collections.Generic;
 using watch_assistant.Model.RatingSystem;
+using watch_assistant.Properties;
 
 namespace watch_assistant
 {

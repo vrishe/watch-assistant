@@ -242,18 +242,17 @@ namespace watch_assistant.ViewModel.MainWindow
             DataRowView[] addedArray = new DataRowView[SearchManipulationSelection.Count];
             SearchManipulationSelection.CopyTo(addedArray, 0);
 
-            if (table.Rows.Count == 0)
-            {
-                table.Merge(addedArray[0].Row.Table.Clone(), true, MissingSchemaAction.Add);
-                //table.Columns.Remove("Poster");
-                //table.Columns.Add("Poster", typeof(System.Windows.Media.Imaging.BitmapImage));
-            }
+            if (table.Rows.Count == 0) table.Merge(addedArray[0].Row.Table.Clone(), true, MissingSchemaAction.Add);
             foreach (DataRowView rowView in addedArray)
             {
                 if (IsItemNonExistent(table, rowView.Row))
                 {
                     watch_assistant.Model.Search.VideoInfoGraber.GetInfo(rowView.Row);
+                    watch_assistant.Model.Search.VideoInfoGraber.CacheImage(rowView.Row);
+                    double rating = (double)rowView.Row["Rating"];
+                    rowView.Row["Rating"] = 0;
                     table.ImportRow(rowView.Row);
+                    rowView.Row["Rating"] = rating;
                 }
                 else
                 {
