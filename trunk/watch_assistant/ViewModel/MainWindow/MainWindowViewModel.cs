@@ -164,15 +164,6 @@ namespace watch_assistant.ViewModel.MainWindow
 
         #endregion (UI behaviors)
 
-        #region Event handlers
-
-        private void DataTableColumnChangedEventHandler(object sender, DataColumnChangeEventArgs e)
-        {
-            MessageBox.Show("Changed!");
-        }
-
-        #endregion (Event handlers)
-
         #region Command logic
 
         private void SearchTask(object sender, DoWorkEventArgs e)
@@ -314,13 +305,6 @@ namespace watch_assistant.ViewModel.MainWindow
             _owner.CommandBindings.Add(new CommandBinding(UserListAddItemCommand, RunUserListAddItemTask, CanExecuteUserListAddItemTask));
             _owner.CommandBindings.Add(new CommandBinding(UserListRemoveItemCommand, RunUserListRemoveItemTask, CanExecuteUserListRemoveItemTask));
 
-            if (_userRatingTableData.IsReady)
-            {
-                foreach (DataTable table in _userRatingTableData.UserListsData)
-                {
-                    table.ColumnChanged += DataTableColumnChangedEventHandler;
-                }
-            }
             //// REMOVE THIS
             //_thesaurus = new Model.Dictionary.Thesaurus("thesaurus.dic");
             //// REMOVE THIS END
