@@ -45,16 +45,16 @@
                     <StackPanel.Resources>
                         <cvt:ReferenceToDomainStringConverter x:Key="ReferenceToDomainStringConverter" />
                     </StackPanel.Resources>
-                    <ComboBox x:Name="cbDub" Margin="0,1,0,0" IsSynchronizedWithCurrentItem="True" ItemsSource="{Binding Path=Dubs}">
+                    <ComboBox x:Name="cbDub" Margin="0,1,0,0" IsSynchronizedWithCurrentItem="True" ItemsSource="{Binding Path=DubsAssociation}">
                         <ComboBox.ItemTemplate>
-                            <DataTemplate DataType="{x:Type dwvm:DubRefsHolder}">
+                            <DataTemplate DataType="{x:Type dwvm:DubRefsAssociation}">
                                 <TextBlock Text="{Binding Path=Dub}"/>
                             </DataTemplate>
                         </ComboBox.ItemTemplate>
                     </ComboBox>
                     <ComboBox x:Name="cbRef" Margin="0,1,0,0" IsSynchronizedWithCurrentItem="True" ItemsSource="{Binding ElementName=cbDub, Path=SelectedItem.HRefs}">
                         <ComboBox.ItemTemplate>
-                            <DataTemplate DataType="{x:Type dwvm:DubRefsHolder}">
+                            <DataTemplate DataType="{x:Type dwvm:DubRefsAssociation}">
                                 <TextBlock Text="{Binding Converter={StaticResource ReferenceToDomainStringConverter}}" />
                             </DataTemplate>
                         </ComboBox.ItemTemplate>

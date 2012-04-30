@@ -7,12 +7,12 @@ using System.Windows.Input;
 
 namespace watch_assistant.ViewModel.DetailsWindow
 {
-    public class DubRefsHolder
+    public class DubRefsAssociation
     {
         public string Dub { get; set; }
         public List<string> HRefs { get; set; }
 
-        public DubRefsHolder(string dub, List<string> hrefs)
+        public DubRefsAssociation(string dub, List<string> hrefs)
         {
             Dub = dub;
             HRefs = hrefs;
@@ -40,14 +40,14 @@ namespace watch_assistant.ViewModel.DetailsWindow
             DependencyProperty.Register("Details", typeof(DataRow), typeof(DetailsWindowViewModel), new UIPropertyMetadata(null));
 
         // Combo boxes container reference
-        public List<DubRefsHolder> Dubs
+        public List<DubRefsAssociation> DubsAssociation
         {
-            get { return (List<DubRefsHolder>)GetValue(DubsProperty); }
-            set { SetValue(DubsProperty, value); }
+            get { return (List<DubRefsAssociation>)GetValue(DubsAssociationProperty); }
+            set { SetValue(DubsAssociationProperty, value); }
         }
 
-        public static readonly DependencyProperty DubsProperty =
-            DependencyProperty.Register("Dubs", typeof(List<DubRefsHolder>), typeof(DetailsWindowViewModel), new UIPropertyMetadata(null));
+        public static readonly DependencyProperty DubsAssociationProperty =
+            DependencyProperty.Register("DubsAssociation", typeof(List<DubRefsAssociation>), typeof(DetailsWindowViewModel), new UIPropertyMetadata(null));
 
         #endregion (Properties)
 
@@ -58,9 +58,9 @@ namespace watch_assistant.ViewModel.DetailsWindow
             Process.Start(new ProcessStartInfo((string)e.Parameter));
         }
 
-        private List<DubRefsHolder> FillDubs()
+        private List<DubRefsAssociation> DubsAssociatedListInitialize()
         {
-            List<DubRefsHolder> result = new List<DubRefsHolder>();
+            List<DubRefsAssociation> result = new List<DubRefsAssociation>();
             foreach (var item in (Dictionary<string, string>)Details["HRefs"])
             {
                 bool aded = false;
@@ -76,7 +76,7 @@ namespace watch_assistant.ViewModel.DetailsWindow
                 {
                     List<string> tmp = new List<string>();
                     tmp.Add(item.Key);
-                    result.Add(new DubRefsHolder(item.Value, tmp));
+                    result.Add(new DubRefsAssociation(item.Value, tmp));
                 }
             }
             return result;
@@ -86,6 +86,11 @@ namespace watch_assistant.ViewModel.DetailsWindow
 
         #region Constructors
 
+        static DetailsWindowViewModel()
+        {
+            CommandManager.RegisterClassCommandBinding(typeof(Window), new CommandBinding(PlayCommand, RunPlayerWindow));
+        }
+
         public DetailsWindowViewModel(Window owner, DataRow details)
             : base(owner)
         {
@@ -93,9 +98,7 @@ namespace watch_assistant.ViewModel.DetailsWindow
             {
                 watch_assistant.Model.Search.VideoInfoGraber.GetInfo(details);
                 Details = details;
-                Dubs = FillDubs();
-
-                _owner.CommandBindings.Add(new CommandBinding(PlayCommand, RunPlayerWindow));
+                DubsAssociation = DubsAssociatedListInitialize();
 
                 _owner.Show();
             }
