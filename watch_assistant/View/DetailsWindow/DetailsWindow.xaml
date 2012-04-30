@@ -39,7 +39,7 @@
                 </Grid.RowDefinitions>
 
                 <Border Background="{DynamicResource ControlBackgroundBrush}" VerticalAlignment="Top" CornerRadius="3" Grid.Row="0">
-                    <Image x:Name="Poster" Source="{Binding Path=Details[Poster]}" Stretch="Uniform" Margin="3"/>
+                    <Image x:Name="Poster" Cursor="..\..\Resources\Magnifier.cur" Source="{Binding Path=Details[Poster]}" Stretch="Uniform" Margin="3" />
                 </Border>
                 <StackPanel Orientation="Vertical" VerticalAlignment="Bottom" Grid.Row="1">
                     <StackPanel.Resources>
