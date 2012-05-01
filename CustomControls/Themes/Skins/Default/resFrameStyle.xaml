@@ -28,7 +28,7 @@
                                 </Grid.ColumnDefinitions>
 
                                 <Border x:Name="PART_Background" CornerRadius="{Binding ElementName=WindowFrame, Path=CornerRadius}" Background="{DynamicResource WindowBackgroundBrush}" Grid.Row="1" Grid.Column="1">
-                                    <Grid>
+                                    <Grid>                                        
                                         <Border x:Name="PART_TitleBar" Height="30" VerticalAlignment="Top" HorizontalAlignment="Stretch" CornerRadius="{Binding ElementName=WindowFrame, Path=CornerRadius}" Background="Transparent" />
                                         <AdornerDecorator>
                                             <ContentPresenter />

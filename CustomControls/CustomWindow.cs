@@ -6,6 +6,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Threading;
+using System.Collections;
 
 namespace CustomControls
 {
@@ -147,7 +148,7 @@ namespace CustomControls
 
         protected override void OnStateChanged(EventArgs e)
         {
-            UpdateFrameStyle(LayoutName);
+            if (WindowState != WindowState.Minimized) UpdateFrameStyle(LayoutName);
             base.OnStateChanged(e);
         }
 
@@ -187,16 +188,11 @@ namespace CustomControls
         private void UpdateFrameAppearance(string strResourceFile)
         {
             var loadedDictionary = Application.LoadComponent(new Uri(strResourceFile, UriKind.Relative)) as ResourceDictionary;
-            try
-            {
-                if (_activeLayoutDictionary != null) Resources.MergedDictionaries.Remove(_activeLayoutDictionary);
-            }
-            catch (Exception) { }
-            finally
-            {
-                _activeLayoutDictionary = loadedDictionary;
-                Resources.MergedDictionaries.Add(_activeLayoutDictionary);
-            }
+
+            if (_activeLayoutDictionary != null) Resources.MergedDictionaries.Remove(_activeLayoutDictionary);
+            Resources.MergedDictionaries.Add(_activeLayoutDictionary);
+
+            _activeLayoutDictionary = loadedDictionary;
         }
         private void UpdateFrameBehaviors()
         {

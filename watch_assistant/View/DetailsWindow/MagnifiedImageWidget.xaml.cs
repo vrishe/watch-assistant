@@ -20,6 +20,7 @@ namespace watch_assistant.View.DetailsWindow
         {
             _bmp = new BitmapImage(new Uri(uriString));
 
+            // TODO: refine image size acquision code
             Width = MaxWidth = _bmp.Width;
             Height = MaxHeight = _bmp.Height;
 
