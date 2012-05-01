@@ -6,6 +6,7 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Collections.ObjectModel;
 
 namespace watch_assistant.ViewModel.Helpers
 {
@@ -16,6 +17,7 @@ namespace watch_assistant.ViewModel.Helpers
         {
             #region Fields
 
+            private SelectionMode _defaultMode;
             private ListBox _target;
             private IList _mirror;
 
@@ -83,14 +85,16 @@ namespace watch_assistant.ViewModel.Helpers
                 if ((_target = target) == null) throw new ArgumentNullException("'target' cannot be null");
                 if ((_mirror = mirror) == null) throw new ArgumentNullException("'mirror' cannot be null");
 
+                var observable = _mirror as INotifyCollectionChanged;
+                if (observable == null) throw new ArgumentException(String.Format("'mirror' has to be an instance of {0}, but {1}", typeof(INotifyCollectionChanged), _mirror.GetType()));
+
                 _target.SelectionChanged -= SelectionChangedEventHandler;
+
                 _target.SelectedItems.Clear();
                 foreach (var item in _mirror) _target.SelectedItems.Add(item);
 
-                _target.SelectionChanged += SelectionChangedEventHandler;
-
-                var observable = mirror as INotifyCollectionChanged;
-                if (observable != null) observable.CollectionChanged += CollectionChangedEventHandler;
+                _target.SelectionChanged += SelectionChangedEventHandler;                  
+                observable.CollectionChanged += CollectionChangedEventHandler;
             }
 
             #endregion (Constructors)
@@ -99,10 +103,8 @@ namespace watch_assistant.ViewModel.Helpers
 
             public void Dispose()
             {
+                (_mirror as INotifyCollectionChanged).CollectionChanged -= CollectionChangedEventHandler;
                 _target.SelectionChanged -= SelectionChangedEventHandler;
-
-                var observable = _mirror as INotifyCollectionChanged;
-                if (observable != null) observable.CollectionChanged -= CollectionChangedEventHandler;
             }
 
             #endregion
@@ -128,7 +130,7 @@ namespace watch_assistant.ViewModel.Helpers
 
         public static readonly DependencyProperty SelectedItemsMirrorListProperty =
             DependencyProperty.RegisterAttached("SelectedItemsMirrorList", typeof(IList), typeof(ListBoxHelper), 
-            new FrameworkPropertyMetadata(new List<object>(), FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, SelectedItemsMirrorListValueChanged));
+            new FrameworkPropertyMetadata(new ObservableCollection<object>(), FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, SelectedItemsMirrorListValueChanged));
 
         #endregion (Properties)
 
@@ -143,7 +145,7 @@ namespace watch_assistant.ViewModel.Helpers
             UnsubscribeListBoxSynchronisation(target);
 
             target.Unloaded += ListBoxUnloaded;
-            _reflectors.Add(new SelectedItemsReflector(target, e.NewValue as IList));
+            _reflectors.Add(new SelectedItemsReflector(target, (IList)e.NewValue));
         }
 
         private static void ListBoxUnloaded(object sender, RoutedEventArgs e)
