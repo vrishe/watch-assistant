@@ -74,7 +74,6 @@ namespace watch_assistant.ViewModel.MainWindow
             get { return (DataTable)GetValue(SearchResultTableProperty); }
             private set { SetValue(SearchResultTablePropertyKey, value); }
         }
-
         private static readonly DependencyPropertyKey SearchResultTablePropertyKey =
             DependencyProperty.RegisterReadOnly("SearchResultTable", typeof(DataTable), typeof(MainWindowViewModel), new UIPropertyMetadata(new DataTable() { TableName = "<Empty>" }));
         public static readonly DependencyProperty SearchResultTableProperty = SearchResultTablePropertyKey.DependencyProperty;
@@ -83,18 +82,17 @@ namespace watch_assistant.ViewModel.MainWindow
         public ObservableCollection<DataTable> UserListsData
         {
             get { return (ObservableCollection<DataTable>)GetValue(UserListsDataProperty); }
-            set { SetValue(UserListsDataProperty, value); }
+            private set { SetValue(UserListsDataPropertyKey, value); }
         }
-
-        public static readonly DependencyProperty UserListsDataProperty =
-            DependencyProperty.Register("UserListsData", typeof(ObservableCollection<DataTable>), typeof(MainWindowViewModel), new UIPropertyMetadata(_userRatingTableData.UserListsData));
+        public static readonly DependencyPropertyKey UserListsDataPropertyKey =
+            DependencyProperty.RegisterReadOnly("UserListsData", typeof(ObservableCollection<DataTable>), typeof(MainWindowViewModel), new UIPropertyMetadata(_userRatingTableData.UserListsData));
+        public static readonly DependencyProperty UserListsDataProperty = UserListsDataPropertyKey.DependencyProperty;
 
         public ObservableCollection<DataRowView> SearchManipulationSelection
         {
             get { return (ObservableCollection<DataRowView>)GetValue(SearchManipulationSelectionProperty); }
             set { SetValue(SearchManipulationSelectionProperty, value); }
         }
-
         public static readonly DependencyProperty SearchManipulationSelectionProperty =
             DependencyProperty.Register("SearchManipulationSelection", typeof(ObservableCollection<DataRowView>), typeof(MainWindowViewModel), new UIPropertyMetadata(new ObservableCollection<DataRowView>()));
 
@@ -105,7 +103,6 @@ namespace watch_assistant.ViewModel.MainWindow
             get { return (ObservableCollection<DataRowView>)GetValue(UserManipulationSelectionProperty); }
             set { SetValue(UserManipulationSelectionProperty, value); }
         }
-
         public static readonly DependencyProperty UserManipulationSelectionProperty =
             DependencyProperty.Register("UserManipulationSelection", typeof(ObservableCollection<DataRowView>), typeof(MainWindowViewModel), new UIPropertyMetadata(new ObservableCollection<DataRowView>()));      
 

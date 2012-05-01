@@ -7,14 +7,6 @@
         <ResourceDictionary Source="resColors.xaml" />
     </ResourceDictionary.MergedDictionaries>
 
-    <Style x:Key="WindowFrameBorder" TargetType="{x:Type Border}" BasedOn="{x:Null}">
-        <Setter Property="CornerRadius" Value="{Binding Source={x:Static SystemParameters.BorderWidth}}"/>
-        <Setter Property="Background" Value="{StaticResource WindowFrameBrush}" />
-        <Setter Property="BorderBrush" Value="Transparent" />
-        <Setter Property="HorizontalAlignment" Value="Stretch" />
-        <Setter Property="VerticalAlignment" Value="Stretch" />
-    </Style>
-
     <Style x:Key="ControlButtonStyle" TargetType="{x:Type local:CustomButton}"
            BasedOn="{StaticResource {ComponentResourceKey {x:Type local:CustomButton}, Diffuse}}">
         <Setter Property="VerticalContentAlignment" Value="Center" />
@@ -56,27 +48,6 @@
         </Setter>
     </Style>
    
-    <Style x:Key="UserBarPlateStyle" TargetType="{x:Type ContentControl}">
-        <Setter Property="Template">
-            <Setter.Value>
-                <ControlTemplate TargetType="{x:Type ContentControl}">
-                    <StackPanel Orientation="Horizontal" 
-                        FlowDirection="LeftToRight"
-                        MaxHeight="40"
-                        MaxWidth="120">
-                        <StackPanel Orientation="Vertical" Margin="0,0,2,0">
-                            <Label x:Name="Nickname" HorizontalAlignment="Left">A2 Inc.</Label>
-                            <TextBlock x:Name="DetailsOpenLink" HorizontalAlignment="Left">Details</TextBlock>
-                        </StackPanel>
-                        <Border Background="{StaticResource ImageBackgroundColor}" CornerRadius="{Binding Source={x:Static SystemParameters.BorderWidth}}">
-                            <Image x:Name="Avatar" Margin="1,1,1,1"/>
-                        </Border>
-                    </StackPanel>
-                </ControlTemplate>
-            </Setter.Value>
-        </Setter>
-    </Style>
-
     <Style x:Key="RatingItemStyle" TargetType="{x:Type local:RatingItem}">
         <Setter Property="Template">
             <Setter.Value>
@@ -139,6 +110,5 @@
         <Setter Property="SelectionDirection" Value="LastToFirst" />
         <Setter Property="ItemContainerStyle" Value="{StaticResource RatingItemStyle}" />
     </Style>
-    
 
 </ResourceDictionary>

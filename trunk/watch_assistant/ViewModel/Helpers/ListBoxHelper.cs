@@ -17,7 +17,6 @@ namespace watch_assistant.ViewModel.Helpers
         {
             #region Fields
 
-            private SelectionMode _defaultMode;
             private ListBox _target;
             private IList _mirror;
 

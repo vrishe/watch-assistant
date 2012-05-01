@@ -39,9 +39,9 @@
                 </Grid.RowDefinitions>
 
                 <Border Background="{DynamicResource ControlBackgroundBrush}" VerticalAlignment="Top" CornerRadius="3" Grid.Row="0">
-                    <Image x:Name="Poster" Cursor="..\..\Resources\Magnifier.cur" Source="{Binding Path=Details[Poster]}" Stretch="Uniform" Margin="3">
+                    <Image x:Name="Poster" Cursor="..\..\Resources\Magnifier.cur" Source="{Binding Path=PosterBitmap}" Stretch="Uniform" Margin="3">
                         <Image.InputBindings>
-                            <MouseBinding MouseAction="LeftClick" Command="{x:Static dwvm:DetailsWindowViewModel.MagnifyCommand}" CommandParameter="{Binding Path=Details[Poster]}" />
+                            <MouseBinding MouseAction="LeftClick" Command="{x:Static dwvm:DetailsWindowViewModel.MagnifyCommand}" CommandParameter="{Binding Path=PosterBitmap}" />
                         </Image.InputBindings>
                     </Image>
                 </Border>

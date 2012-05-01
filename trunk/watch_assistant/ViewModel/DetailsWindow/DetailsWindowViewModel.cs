@@ -6,6 +6,7 @@ using System.Windows;
 using System.Windows.Input;
 using System.Windows.Controls;
 using watch_assistant.View.DetailsWindow;
+using System.Windows.Media.Imaging;
 
 namespace watch_assistant.ViewModel.DetailsWindow
 {
@@ -32,39 +33,45 @@ namespace watch_assistant.ViewModel.DetailsWindow
 
         #region Properties
 
-        // Details container reference
         public DataRow Details
         {
             get { return (DataRow)GetValue(DetailsProperty); }
-            set { SetValue(DetailsProperty, value); }
+            private set { SetValue(DetailsPropertyKey, value); }
         }
+        private static readonly DependencyPropertyKey DetailsPropertyKey = 
+            DependencyProperty.RegisterReadOnly("Details", typeof(DataRow), typeof(DetailsWindowViewModel), new UIPropertyMetadata(null, DetailsPropertyValueChanged));
+        public static readonly DependencyProperty DetailsProperty = DetailsPropertyKey.DependencyProperty;
 
-        public static readonly DependencyProperty DetailsProperty =
-            DependencyProperty.Register("Details", typeof(DataRow), typeof(DetailsWindowViewModel), new UIPropertyMetadata(null));
-
-        // Combo boxes container reference
         public List<DubRefsAssociation> DubsAssociation
         {
             get { return (List<DubRefsAssociation>)GetValue(DubsAssociationProperty); }
-            set { SetValue(DubsAssociationProperty, value); }
+            private set { SetValue(DubsAssociationPropertyKey, value); }
         }
+        private static readonly DependencyPropertyKey DubsAssociationPropertyKey =
+            DependencyProperty.RegisterReadOnly("DubsAssociation", typeof(List<DubRefsAssociation>), typeof(DetailsWindowViewModel), new UIPropertyMetadata(null));
+        public static readonly DependencyProperty DubsAssociationProperty = DubsAssociationPropertyKey.DependencyProperty;
 
-        public static readonly DependencyProperty DubsAssociationProperty =
-            DependencyProperty.Register("DubsAssociation", typeof(List<DubRefsAssociation>), typeof(DetailsWindowViewModel), new UIPropertyMetadata(null));
+        public BitmapImage PosterBitmap
+        {
+            get { return (BitmapImage)GetValue(PosterBitmapProperty); }
+            private set { SetValue(PosterBitmapPropertyKey, value); }
+        }
+        private static readonly DependencyPropertyKey PosterBitmapPropertyKey =
+            DependencyProperty.RegisterReadOnly("PosterBitmap", typeof(BitmapImage), typeof(DetailsWindowViewModel), new UIPropertyMetadata(null));
+        public static readonly DependencyProperty PosterBitmapProperty = PosterBitmapPropertyKey.DependencyProperty;
 
         #endregion (Properties)
 
         #region Methods
 
-        private static void RunPlayerWindow(object sender, ExecutedRoutedEventArgs e)
-        {
-            Process.Start(new ProcessStartInfo((string)e.Parameter));
-        }
+        #region Property event handlers
 
-        private List<DubRefsAssociation> DubsAssociatedListInitialize()
+        private static void DetailsPropertyValueChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
+            var target = sender as DetailsWindowViewModel;
+
             List<DubRefsAssociation> result = new List<DubRefsAssociation>();
-            foreach (var item in (Dictionary<string, string>)Details["HRefs"])
+            foreach (var item in (Dictionary<string, string>)target.Details["HRefs"])
             {
                 bool aded = false;
                 foreach (var dub in result)
@@ -82,7 +89,16 @@ namespace watch_assistant.ViewModel.DetailsWindow
                     result.Add(new DubRefsAssociation(item.Value, tmp));
                 }
             }
-            return result;
+
+            target.DubsAssociation = result;
+            target.PosterBitmap = new BitmapImage(new Uri(target.Details["Poster"] as string));
+        }
+
+        #endregion (Property event handlers)
+
+        private static void RunPlayerWindow(object sender, ExecutedRoutedEventArgs e)
+        {
+            Process.Start(new ProcessStartInfo((string)e.Parameter));
         }
 
         private static void WindowClosedEventHandler(object sender, EventArgs e)
@@ -104,7 +120,7 @@ namespace watch_assistant.ViewModel.DetailsWindow
             CommandManager.RegisterClassCommandBinding(typeof(Window), new CommandBinding(PlayCommand, RunPlayerWindow));
             CommandManager.RegisterClassCommandBinding(typeof(Window), new CommandBinding(MagnifyCommand, (s, e) => 
             {
-                MagnifiedImageWidget imageWidget = new MagnifiedImageWidget(e.Parameter as string) { Owner = s as Window, ShowActivated = true };
+                MagnifiedImageWidget imageWidget = new MagnifiedImageWidget(e.Parameter as BitmapImage) { Owner = s as Window, ShowActivated = true };
                 imageWidget.Closed += WindowClosedEventHandler;
 
                 imageWidget.Show();
@@ -118,7 +134,6 @@ namespace watch_assistant.ViewModel.DetailsWindow
             {
                 watch_assistant.Model.Search.VideoInfoGraber.GetInfo(details);
                 Details = details;
-                DubsAssociation = DubsAssociatedListInitialize();
 
                 _owner.Closed += WindowClosedEventHandler;
                 _owner.Show();

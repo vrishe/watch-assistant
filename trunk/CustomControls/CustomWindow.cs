@@ -190,7 +190,7 @@ namespace CustomControls
             var loadedDictionary = Application.LoadComponent(new Uri(strResourceFile, UriKind.Relative)) as ResourceDictionary;
 
             if (_activeLayoutDictionary != null) Resources.MergedDictionaries.Remove(_activeLayoutDictionary);
-            Resources.MergedDictionaries.Add(_activeLayoutDictionary);
+            Resources.MergedDictionaries.Add(loadedDictionary);
 
             _activeLayoutDictionary = loadedDictionary;
         }
