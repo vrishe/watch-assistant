@@ -21,6 +21,7 @@ namespace watch_assistant.View.DetailsWindow
         {
             _bmp = bmp;
             
+            // TODO: Refine magnify logic by using transformation and position-to-zoom as well. 
             Width = MaxWidth = _bmp.Width;
             Height = MaxHeight = _bmp.Height;
 
