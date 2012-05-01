@@ -3,18 +3,11 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="clr-namespace:CustomControls" >
 
-    <!--
-    Because we're DYNAMICALLY switching layouts in this demo, we don't need to explicityly
-    reference ResourceDictionaries containing the layout styles.  An ACTUAL application
-    with a SINGLE layout should use StaticResources, and need a MergedDictionaries section
-    -->
-
-
     <Style TargetType="{x:Type local:CustomWindow}">
 
-        <!-- Remove default frame appearance -->
         <Setter Property="MinWidth" Value="115" />
         <Setter Property="MinHeight" Value="80" />
+        <!-- Remove default frame appearance -->
         <Setter Property="WindowStyle" Value="None"/>
         <Setter Property="AllowsTransparency" Value="True"/>
 
@@ -22,18 +15,16 @@
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type local:CustomWindow}" >
 
-                    <ContentControl x:Name="PART_CustomFrame" Style="{DynamicResource FrameLayout}" >
-
-                        <AdornerDecorator>
-                            <ContentPresenter x:Name="ClientArea" />
+                    <Grid>
+                        <ContentControl x:Name="PART_CustomFrame" Style="{DynamicResource FrameLayout}" />
+                        <AdornerDecorator Margin="{DynamicResource ClientAreaMargin}">
+                            <ContentPresenter />
                         </AdornerDecorator>
-
-                    </ContentControl>
+                    </Grid>
 
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
     </Style>
-
 
 </ResourceDictionary>

@@ -3,6 +3,7 @@ using System.Windows.Controls;
 using System;
 using System.Windows.Media.Imaging;
 using CustomControls;
+using System.Threading;
 
 namespace watch_assistant.View.DetailsWindow
 {
@@ -16,11 +17,10 @@ namespace watch_assistant.View.DetailsWindow
 
         public BitmapImage Bitmap { get { return _bmp; } }
 
-        public MagnifiedImageWidget(string uriString)
+        public MagnifiedImageWidget(BitmapImage bmp)
         {
-            _bmp = new BitmapImage(new Uri(uriString));
-
-            // TODO: refine image size acquision code
+            _bmp = bmp;
+            
             Width = MaxWidth = _bmp.Width;
             Height = MaxHeight = _bmp.Height;
 

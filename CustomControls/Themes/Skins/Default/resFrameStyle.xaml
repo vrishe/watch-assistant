@@ -4,14 +4,30 @@
 
     <ResourceDictionary.MergedDictionaries>
         <ResourceDictionary Source="resFrameElements.xaml" />
-        <ResourceDictionary Source="resStandardControlStyles.xaml" />
-        <ResourceDictionary Source="../resSharedStyles.xaml" />
+        <!--<ResourceDictionary Source="resStandardControlStyles.xaml" />
+        <ResourceDictionary Source="../resSharedStyles.xaml" />-->
     </ResourceDictionary.MergedDictionaries>
+
+    <Thickness x:Key="ClientAreaMargin" 
+               Left="{x:Static SystemParameters.BorderWidth}"
+               Top="{x:Static SystemParameters.BorderWidth}"
+               Right="{x:Static SystemParameters.BorderWidth}"
+               Bottom="{x:Static SystemParameters.BorderWidth}"
+               />
+
+    <Style x:Key="WindowFrameBorder" TargetType="{x:Type Border}" BasedOn="{x:Null}">
+        <Setter Property="CornerRadius" Value="{Binding Source={x:Static SystemParameters.BorderWidth}}"/>
+        <Setter Property="Background" Value="{StaticResource WindowFrameBrush}" />
+        <Setter Property="BorderBrush" Value="Transparent" />
+        <Setter Property="HorizontalAlignment" Value="Stretch" />
+        <Setter Property="VerticalAlignment" Value="Stretch" />
+    </Style>
 
     <Style TargetType="{x:Type ContentControl}" x:Key="FrameLayout" >
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type ContentControl}">
+                    
                     <Grid x:Name="WindowRoot">
                         <Border x:Name="WindowFrame" Style="{DynamicResource WindowFrameBorder}">
                             <Grid>
@@ -27,13 +43,8 @@
                                     <ColumnDefinition Width="{Binding Source={x:Static SystemParameters.BorderWidth}}"/>
                                 </Grid.ColumnDefinitions>
 
-                                <Border x:Name="PART_Background" CornerRadius="{Binding ElementName=WindowFrame, Path=CornerRadius}" Background="{DynamicResource WindowBackgroundBrush}" Grid.Row="1" Grid.Column="1">
-                                    <Grid>                                        
-                                        <Border x:Name="PART_TitleBar" Height="30" VerticalAlignment="Top" HorizontalAlignment="Stretch" CornerRadius="{Binding ElementName=WindowFrame, Path=CornerRadius}" Background="Transparent" />
-                                        <AdornerDecorator>
-                                            <ContentPresenter />
-                                        </AdornerDecorator>
-                                    </Grid>                                  
+                                <Border x:Name="PART_Background" CornerRadius="{Binding ElementName=WindowFrame, Path=CornerRadius}" Background="{DynamicResource WindowBackgroundBrush}" Grid.Row="1" Grid.Column="1">                                     
+                                    <Border x:Name="PART_TitleBar" Height="30" VerticalAlignment="Top" HorizontalAlignment="Stretch" CornerRadius="{Binding ElementName=WindowFrame, Path=CornerRadius}" Background="Transparent" />                               
                                 </Border>
 
                                 <Rectangle x:Name="PART_ResizeBorderLeft" Fill="Transparent" Cursor="SizeWE" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Grid.Row="1"/>
@@ -44,7 +55,6 @@
                                 <Rectangle x:Name="PART_ResizeBorderBottomRight" Fill="Transparent" Cursor="SizeNWSE" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Grid.Row="2" Grid.Column="2" />
                                 <Rectangle x:Name="PART_ResizeBorderBottom" Fill="Transparent" Cursor="SizeNS" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Grid.Row="2" Grid.Column="1" />
                                 <Rectangle x:Name="PART_ResizeBorderBottomLeft" Fill="Transparent" Cursor="SizeNESW" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Grid.Row="2" />
-
                             </Grid>
                         </Border>
                     </Grid>

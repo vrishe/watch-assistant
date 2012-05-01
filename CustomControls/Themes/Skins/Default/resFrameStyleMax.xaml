@@ -4,24 +4,19 @@
 
     <ResourceDictionary.MergedDictionaries>
         <ResourceDictionary Source="resFrameElements.xaml" />
-        <ResourceDictionary Source="resStandardControlStyles.xaml" />
-        <ResourceDictionary Source="../resSharedStyles.xaml" />
+        <!--<ResourceDictionary Source="resStandardControlStyles.xaml" />
+        <ResourceDictionary Source="../resSharedStyles.xaml" />-->
     </ResourceDictionary.MergedDictionaries>
 
     <GridLengthConverter x:Key="GridLengthConverter"/>
     <Style TargetType="{x:Type ContentControl}" x:Key="FrameLayout" >
-
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type ContentControl}">
+                    
                     <Grid x:Name="WindowRoot">
                         <Border x:Name="PART_Background" Background="{DynamicResource WindowBackgroundBrush}">
-                            <Grid>
-                                <Border x:Name="PART_TitleBar" Height="30" VerticalAlignment="Top" HorizontalAlignment="Stretch" Background="Transparent" />
-                                <AdornerDecorator>
-                                    <ContentPresenter />
-                                </AdornerDecorator>
-                            </Grid>
+                            <Border x:Name="PART_TitleBar" Height="30" VerticalAlignment="Top" HorizontalAlignment="Stretch" Background="Transparent" />
                         </Border>
                     </Grid>
 

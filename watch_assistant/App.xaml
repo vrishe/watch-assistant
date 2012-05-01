@@ -6,14 +6,24 @@
              StartupUri="View\MainWindow\MainWindow.xaml">
     
     <Application.Resources>
-        <sys:String x:Key="FavoritesUserList">Favorites</sys:String>
-        <sys:String x:Key="InterestUserList">Interest</sys:String>
+
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/CustomControls;component/Themes/Skins/Default/resStandardControlStyles.xaml" />
+                
+                <ResourceDictionary>
+                    <sys:String x:Key="FavoritesUserList">Favorites</sys:String>
+                    <sys:String x:Key="InterestUserList">Interest</sys:String>
+
+                    <sys:String x:Key="GenreLabelPrefix">Genre:</sys:String>
+                    <sys:String x:Key="YearLabelPrefix">Year:</sys:String>
+                    <sys:String x:Key="DescriptionLabelPrefix">Description:</sys:String>
+
+                    <sys:String x:Key="ContextMenuAddToHeader">Add to:</sys:String>
+                </ResourceDictionary>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
         
-        <sys:String x:Key="GenreLabelPrefix">Genre:</sys:String>
-        <sys:String x:Key="YearLabelPrefix">Year:</sys:String>
-        <sys:String x:Key="DescriptionLabelPrefix">Description:</sys:String>
-        
-        <sys:String x:Key="ContextMenuAddToHeader">Add to:</sys:String>
     </Application.Resources>
     
 </Application>
