@@ -4,6 +4,8 @@ using System.Data;
 using System.Diagnostics;
 using System.Windows;
 using System.Windows.Input;
+using System.Windows.Controls;
+using watch_assistant.View.DetailsWindow;
 
 namespace watch_assistant.ViewModel.DetailsWindow
 {
@@ -24,6 +26,7 @@ namespace watch_assistant.ViewModel.DetailsWindow
         #region Commands
 
         public static readonly RoutedUICommand PlayCommand = new RoutedUICommand("Opens player window", "Play", typeof(DetailsWindowViewModel));
+        public static readonly RoutedUICommand MagnifyCommand = new RoutedUICommand("Magnifies something", "Magnify", typeof(DetailsWindowViewModel));
 
         #endregion (Commands)
 
@@ -82,6 +85,16 @@ namespace watch_assistant.ViewModel.DetailsWindow
             return result;
         }
 
+        private static void WindowClosedEventHandler(object sender, EventArgs e)
+        {
+            var window = sender as Window;
+            if (window != null)
+            {
+                window.Owner.Activate();
+                window.Owner.Focus();
+            }
+        }
+
         #endregion (Methods)
 
         #region Constructors
@@ -89,6 +102,13 @@ namespace watch_assistant.ViewModel.DetailsWindow
         static DetailsWindowViewModel()
         {
             CommandManager.RegisterClassCommandBinding(typeof(Window), new CommandBinding(PlayCommand, RunPlayerWindow));
+            CommandManager.RegisterClassCommandBinding(typeof(Window), new CommandBinding(MagnifyCommand, (s, e) => 
+            {
+                MagnifiedImageWidget imageWidget = new MagnifiedImageWidget(e.Parameter as string) { Owner = s as Window, ShowActivated = true };
+                imageWidget.Closed += WindowClosedEventHandler;
+
+                imageWidget.Show();
+            }));
         }
 
         public DetailsWindowViewModel(Window owner, DataRow details)
@@ -100,6 +120,7 @@ namespace watch_assistant.ViewModel.DetailsWindow
                 Details = details;
                 DubsAssociation = DubsAssociatedListInitialize();
 
+                _owner.Closed += WindowClosedEventHandler;
                 _owner.Show();
             }
             catch (Exception ex)
