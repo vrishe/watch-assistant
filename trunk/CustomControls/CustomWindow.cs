@@ -67,12 +67,36 @@ namespace CustomControls
                 )
             );
 
+        private bool CanResize
+        {
+            get
+            {
+                return ResizeMode == ResizeMode.CanResize || ResizeMode == ResizeMode.CanResizeWithGrip;
+            }
+        }
+
         #endregion (Properties)
 
         #region Methods
 
         #region Commands
 
+        private static void OnFrameCommandCanExcecute(object sender, CanExecuteRoutedEventArgs e)
+        {
+            var commander = sender as CustomWindow;
+            if (e.Command == SystemCommands.MinimizeWindowCommand)
+            {
+                e.CanExecute = commander.CanResize || commander.ResizeMode == ResizeMode.CanMinimize;
+            }
+            else if (e.Command == SystemCommands.ToggleMaximizeWindowCommand)
+            {
+                e.CanExecute = commander.CanResize;
+            }
+            else if (e.Command == SystemCommands.CloseWindowCommand)
+            {
+                e.CanExecute = true;
+            }            
+        }
         private static void OnFrameCommand(object sender, ExecutedRoutedEventArgs e)
         {
             Window commander = sender as Window;
@@ -163,9 +187,16 @@ namespace CustomControls
         private void UpdateFrameAppearance(string strResourceFile)
         {
             var loadedDictionary = Application.LoadComponent(new Uri(strResourceFile, UriKind.Relative)) as ResourceDictionary;
-            if (_activeLayoutDictionary != null) Resources.MergedDictionaries.Remove(_activeLayoutDictionary);
-            _activeLayoutDictionary = loadedDictionary;
-            Resources.MergedDictionaries.Add(_activeLayoutDictionary);
+            try
+            {
+                if (_activeLayoutDictionary != null) Resources.MergedDictionaries.Remove(_activeLayoutDictionary);
+            }
+            catch (Exception) { }
+            finally
+            {
+                _activeLayoutDictionary = loadedDictionary;
+                Resources.MergedDictionaries.Add(_activeLayoutDictionary);
+            }
         }
         private void UpdateFrameBehaviors()
         {
@@ -354,7 +385,7 @@ namespace CustomControls
 
         private void sizingBorderMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-            if (WindowState == WindowState.Normal)
+            if (WindowState == WindowState.Normal && CanResize)
             {
                 FrameworkElement borderSegment = (FrameworkElement)sender;
 
@@ -536,7 +567,7 @@ namespace CustomControls
         {
             if (e.ClickCount > 1)
             {
-                WindowState = WindowState == WindowState.Normal ? WindowState.Maximized : WindowState.Normal;
+                if (CanResize) WindowState = WindowState == WindowState.Normal ? WindowState.Maximized : WindowState.Normal;
             }
             else
             {
@@ -613,9 +644,9 @@ namespace CustomControls
 
             EventManager.RegisterClassHandler(typeof(CustomWindow), CustomWindow.LoadedEvent, new RoutedEventHandler(OnLoadedWinApiInteropInitialization));
 
-            CommandManager.RegisterClassCommandBinding(typeof(CustomWindow), new CommandBinding(SystemCommands.MinimizeWindowCommand, OnFrameCommand));
-            CommandManager.RegisterClassCommandBinding(typeof(CustomWindow), new CommandBinding(SystemCommands.ToggleMaximizeWindowCommand, OnFrameCommand));
-            CommandManager.RegisterClassCommandBinding(typeof(CustomWindow), new CommandBinding(SystemCommands.CloseWindowCommand, OnFrameCommand));
+            CommandManager.RegisterClassCommandBinding(typeof(CustomWindow), new CommandBinding(SystemCommands.MinimizeWindowCommand, OnFrameCommand, OnFrameCommandCanExcecute));
+            CommandManager.RegisterClassCommandBinding(typeof(CustomWindow), new CommandBinding(SystemCommands.ToggleMaximizeWindowCommand, OnFrameCommand, OnFrameCommandCanExcecute));
+            CommandManager.RegisterClassCommandBinding(typeof(CustomWindow), new CommandBinding(SystemCommands.CloseWindowCommand, OnFrameCommand, OnFrameCommandCanExcecute));
         }
 
         #endregion (Constructors)

@@ -224,7 +224,6 @@ namespace watch_assistant.Model.Dictionary
                 bool[] binaryPattern = new bool[spanCount];
 
                 bool isAlive = true;
-                int leftIndex = 0; // first = true
                 do
                 {
                     // use permutation state here

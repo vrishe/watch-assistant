@@ -18,7 +18,7 @@
                         <Border x:Name="PART_Background" Background="{DynamicResource WindowBackgroundBrush}">
                             <Grid>
                                 <Border x:Name="PART_TitleBar" Height="30" VerticalAlignment="Top" HorizontalAlignment="Stretch" Background="Transparent" />
-                                <AdornerDecorator Grid.Row="1">
+                                <AdornerDecorator>
                                     <ContentPresenter />
                                 </AdornerDecorator>
                             </Grid>
