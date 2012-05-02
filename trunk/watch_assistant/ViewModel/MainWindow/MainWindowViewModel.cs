@@ -239,7 +239,6 @@ namespace watch_assistant.ViewModel.MainWindow
             DataRowView[] addedArray = new DataRowView[SearchManipulationSelection.Count];
             SearchManipulationSelection.CopyTo(addedArray, 0);
 
-            if (table.Rows.Count == 0) table.Merge(addedArray[0].Row.Table.Clone(), true, MissingSchemaAction.Add);
             foreach (DataRowView rowView in addedArray)
             {
                 if (IsItemNonExistent(table, rowView.Row))
@@ -271,8 +270,9 @@ namespace watch_assistant.ViewModel.MainWindow
             foreach (DataRowView rowView in removalArray)
             {
                 DataRow row = rowView.Row;
+
+                // TODO: Remove row's data cache here.
                 row.Table.Rows.Remove(row);
-                if (row.Table.Rows.Count == 0) row.Table.Reset();
             }
         }
 
