@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Windows.Data;
+using System.Windows.Media.Imaging;
 
 namespace watch_assistant.ViewModel.Converters
 {
@@ -39,4 +40,27 @@ namespace watch_assistant.ViewModel.Converters
 
         #endregion
     }
+
+    class ImagePathConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            // value contains the full path to the image
+            string path = (string)value;
+
+            // load the image, specify CacheOption so the file is not locked
+            BitmapImage image = new BitmapImage();
+            image.BeginInit();
+            image.CacheOption = BitmapCacheOption.OnLoad;
+            image.UriSource = new Uri(path);
+            image.EndInit();
+
+            return image;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            throw new NotImplementedException();
+        }
+    }  
 }
