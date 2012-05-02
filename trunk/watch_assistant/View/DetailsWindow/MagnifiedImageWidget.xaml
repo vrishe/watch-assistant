@@ -9,7 +9,8 @@
                      DataContext="{Binding RelativeSource={RelativeSource Self}}"
                      
                      Width="{Binding Path=Bitmap.Width}"
-                     Height="{Binding Path=Bitmap.Height}">
+                     Height="{Binding Path=Bitmap.Height}"
+                     Cursor="SizeAll">
 
     <custom:CustomWindow.Template>
         <ControlTemplate TargetType="{x:Type custom:CustomWindow}">
@@ -37,7 +38,7 @@
                     <ControlTemplate>
                         <Border x:Name="PART_TitleBar" Background="{DynamicResource WindowBackgroundBrush}" Padding="2">
                             <Border BorderBrush="{DynamicResource ControlBorderBrush}" Padding="3" BorderThickness="1">
-                                <Image x:Name="ImageView" Stretch="UniformToFill" Source="{Binding Path=Bitmap}"/>
+                                <Image x:Name="ImageView" Stretch="UniformToFill" Source="{Binding Path=Bitmap}" ToolTip="{StaticResource MagnifierToolTip}"/>
                             </Border>
                         </Border>
                     </ControlTemplate>
