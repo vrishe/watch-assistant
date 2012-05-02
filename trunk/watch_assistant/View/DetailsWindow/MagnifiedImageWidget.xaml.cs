@@ -1,10 +1,8 @@
-﻿using System.Windows;
-using System.Windows.Controls;
-using System;
+﻿using System;
+using System.Windows;
+using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using CustomControls;
-using System.Threading;
-using System.Windows.Media;
 
 namespace watch_assistant.View.DetailsWindow
 {
@@ -17,7 +15,7 @@ namespace watch_assistant.View.DetailsWindow
         private double _maxScale;
         private double _minScale;
 
-        private Point _mousePosition;
+        private Point? _mousePosition;
 
         private BitmapImage _bmp;
 
@@ -28,6 +26,7 @@ namespace watch_assistant.View.DetailsWindow
             VisualBitmapScalingMode = BitmapScalingMode.Fant;
 
             _bmp = bmp;
+            _mousePosition = null;
 
             _scale = 1.0;
             _maxScale = MaxWidth / _bmp.Width; if (Double.IsInfinity(_maxScale)) _maxScale = 1.0;
@@ -42,23 +41,18 @@ namespace watch_assistant.View.DetailsWindow
 
             _scale = Math.Max(Math.Min(_scale + zoom, _maxScale), _minScale);
 
-            if (_scale != _minScale && _scale != _maxScale)
+            var lastScaleState = VisualTransform as ScaleTransform;
+            if (lastScaleState == null || _scale != lastScaleState.ScaleX)
             {
-                VisualTransform = new ScaleTransform(_scale, _scale, _mousePosition.X, _mousePosition.Y);
+                if (_mousePosition == null) _mousePosition = e.GetPosition(this); 
+                VisualTransform = new ScaleTransform(_scale, _scale, _mousePosition.Value.X, _mousePosition.Value.Y);
             }
-            else
-            {
-                _mousePosition = e.GetPosition(this);
-            }
+
+            if (_scale <= _minScale || _scale >= _maxScale) _mousePosition = null;
 
             base.OnMouseWheel(e);
         }
 
-        protected override void OnDeactivated(EventArgs e)
-        {
-            base.OnDeactivated(e);
-            Close();
-        }
         protected override void OnMouseRightButtonUp(System.Windows.Input.MouseButtonEventArgs e)
         {
             base.OnMouseUp(e);

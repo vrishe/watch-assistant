@@ -1,11 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Runtime.InteropServices;
-using System.Threading;
 using System.Windows;
-using System.Windows.Input;
-using System.Windows.Shapes;
-using watch_assistant.View;
 
 namespace watch_assistant.ViewModel
 {

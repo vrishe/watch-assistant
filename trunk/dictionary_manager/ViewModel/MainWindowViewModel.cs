@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Windows;
+using System.Windows.Data;
 using System.Windows.Input;
 using Microsoft.Win32;
 using watch_assistant.Model.Dictionary;
-using System.Windows.Data;
 
 namespace dictionary_manager.ViewModel
 {

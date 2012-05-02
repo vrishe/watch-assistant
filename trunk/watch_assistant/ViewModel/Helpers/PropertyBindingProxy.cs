@@ -1,7 +1,7 @@
-﻿using System.Windows;
+﻿using System;
+using System.Windows;
 using System.Windows.Data;
 using System.Windows.Threading;
-using System;
 
 namespace watch_assistant.ViewModel.Helpers
 {

@@ -1,5 +1,4 @@
-﻿using System.Windows;
-using CustomControls;
+﻿using CustomControls;
 
 namespace watch_assistant.View.DetailsWindow
 {
