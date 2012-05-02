@@ -49,7 +49,11 @@ namespace watch_assistant.Model.RatingSystem
             table.Columns.Add("Rating", typeof(Double));
             Dictionary<string, double> _RatingSummary = ExternalDataManager.ExternalDataManager.GetUserTableData().UserRatingPrecomputedData;
             if (_RatingSummary.Count == 0)
+            {
+                foreach (DataRow tableRow in table.Rows)
+                    tableRow["Rating"] = 0;
                 return;
+            }
             foreach (DataRow tableRow in table.Rows)
                 AssignItemPriority(tableRow, _RatingSummary);
         }
