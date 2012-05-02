@@ -3,6 +3,7 @@ using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using CustomControls;
+using System.Timers;
 
 namespace watch_assistant.View.DetailsWindow
 {
@@ -11,15 +12,27 @@ namespace watch_assistant.View.DetailsWindow
     /// </summary>
     public partial class MagnifiedImageWidget : CustomWindow
     {
+        #region Fields
+
+        private BitmapImage _bmp;
+
         private double _scale;
         private double _maxScale;
         private double _minScale;
 
         private Point? _mousePosition;
 
-        private BitmapImage _bmp;
+        private bool _assertClickClose;
+
+        #endregion (Fields)
+
+        #region Properties
 
         public BitmapImage Bitmap { get { return _bmp; } }
+
+        #endregion (Properties)
+
+        #region Methods
 
         public MagnifiedImageWidget(BitmapImage bmp)
         {
@@ -53,10 +66,12 @@ namespace watch_assistant.View.DetailsWindow
             base.OnMouseWheel(e);
         }
 
-        protected override void OnMouseRightButtonUp(System.Windows.Input.MouseButtonEventArgs e)
+        protected override void OnMouseRightButtonDown(System.Windows.Input.MouseButtonEventArgs e)
         {
-            base.OnMouseUp(e);
+            base.OnMouseRightButtonDown(e);
             Close();
         }
+
+        #endregion (Methods)
     }
 }
