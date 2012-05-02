@@ -4,9 +4,8 @@ using System.Data;
 using System.Diagnostics;
 using System.Windows;
 using System.Windows.Input;
-using System.Windows.Controls;
-using watch_assistant.View.DetailsWindow;
 using System.Windows.Media.Imaging;
+using watch_assistant.View.DetailsWindow;
 
 namespace watch_assistant.ViewModel.DetailsWindow
 {
