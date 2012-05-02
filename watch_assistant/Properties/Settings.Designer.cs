@@ -25,7 +25,7 @@ namespace watch_assistant.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("2AInc\\\\watch_assistant")]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
         public string DefaultAppFolderPath {
             get {
                 return ((string)(this["DefaultAppFolderPath"]));
