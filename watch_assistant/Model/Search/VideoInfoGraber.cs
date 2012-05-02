@@ -47,9 +47,14 @@ namespace watch_assistant.Model.Search
                                             "img", imgUri.Substring(imgUri.LastIndexOf('/') + 1));
 
                 WebClient wc = new WebClient();
-                wc.DownloadFile(imgUri, imgFile);
-                //BitmapImage img = new BitmapImage(new Uri(imgFile));
-                //result.Rows[0]["Poster"] = img;
+                try
+                {
+                    wc.DownloadFile(imgUri, imgFile);
+                }
+                catch
+                {
+                    imgFile = imgUri;
+                }
                 videoItem["Poster"] = imgFile;
             }
         }
