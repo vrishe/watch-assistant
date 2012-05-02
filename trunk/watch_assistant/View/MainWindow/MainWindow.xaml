@@ -52,7 +52,7 @@
                 </Grid>
 
                 <ListBox x:Name="searchView" Grid.Row="1" Margin="5,3,5,0" ItemsSource="{Binding Path=SearchResultTable.DefaultView}" HorizontalContentAlignment="Stretch" SelectionMode="Extended" 
-                         ScrollViewer.HorizontalScrollBarVisibility="Disabled" vmmw:MainWindowViewModel.AreListBoxBehaviorsAttached="True" vmh:ListBoxHelper.SelectedItemsMirrorList="{Binding SearchManipulationSelection, Mode=OneTime}">
+                         ScrollViewer.HorizontalScrollBarVisibility="Disabled" vmmw:MainWindowViewModel.AreListBoxBehaviorsAttached="True" vmh:ListBoxHelper.SelectedItemsMirrorList="{Binding SearchManipulationSelection}">
                     
                     <ListBox.Resources>
                         <vmmw:DataTableToMenuItemCollectionConverter x:Key="DataTableToMenuItemCollectionConverter" />
@@ -72,6 +72,7 @@
                             <ContentControl Style="{StaticResource BaseListItemStyle}" />
                         </DataTemplate>
                     </ListBox.ItemTemplate>
+                    
                 </ListBox>
             </Grid>
         </custom:WindowPage>
@@ -127,9 +128,11 @@
                                     </ContentControl>
                                 </DataTemplate>
                             </ListBox.ItemTemplate>
+                            
                         </ListBox>
                     </DataTemplate>
                 </TabControl.ContentTemplate>
+                
             </TabControl>
             
         </custom:WindowPage>
