@@ -271,6 +271,8 @@ namespace watch_assistant.Model.Search.IInterviewers
             //_interviewResult.Columns.Add("RussianSub", typeof(Boolean));
             //_interviewResult.Columns.Add("Text", typeof(String[]));
             _interviewResult.Columns.Add("HRefs", typeof(Dictionary<string, string>));
+
+            _interviewResult.PrimaryKey = new DataColumn[] { _interviewResult.Columns[_interviewResult.Columns.IndexOf("Name")] };
         }
 
         #endregion (Methods)

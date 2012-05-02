@@ -60,6 +60,14 @@ namespace watch_assistant.Model.Search
         }
 
         /// <summary>
+        /// Delete local poster cache
+        /// </summary>
+        public static void UncacheImage(DataRow videoItem)
+        {
+            File.Delete(videoItem["Poster"].ToString());
+        }
+
+        /// <summary>
         /// Gets a server name from the Uri
         /// </summary>
         public static string GetServerName(string uri)

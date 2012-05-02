@@ -2,7 +2,8 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     
                     xmlns:custom="clr-namespace:CustomControls;assembly=CustomControls"
-                    xmlns:vmmw="clr-namespace:watch_assistant.ViewModel.MainWindow">
+                    xmlns:vmmw="clr-namespace:watch_assistant.ViewModel.MainWindow"
+                    xmlns:cvt="clr-namespace:watch_assistant.ViewModel.Converters">
 
     <Style x:Key="BaseListItemStyle" TargetType="{x:Type ContentControl}">
         <Setter Property="Template">
@@ -21,7 +22,10 @@
 
                         <ContentPresenter Grid.Column="0" x:Name="AdditionalPresenter" HorizontalAlignment="Center" VerticalAlignment="Stretch" />
                         <Border Grid.Column="1" Background="{DynamicResource ControlBackgroundBrush}" CornerRadius="{DynamicResource DefaultCornerRadius}" >
-                            <Image x:Name="Poster" Margin="1" Source="{Binding Path=Poster, Mode=OneWay}" />
+                            <Border.Resources>
+                                <cvt:ImagePathConverter x:Key="ImagePathConverter" />
+                            </Border.Resources>
+                            <Image x:Name="Poster" Margin="1" Source="{Binding Path=Poster, Mode=OneWay, Converter={StaticResource ImagePathConverter}}" />
                         </Border>
                         <StackPanel Grid.Column="2" Orientation="Vertical" >
                             <TextBlock Margin="3,2,0,0" TextTrimming="CharacterEllipsis" Foreground="{DynamicResource WindowLabelTextColor}"
