@@ -1,13 +1,15 @@
 ﻿<custom:CustomWindow x:Class="watch_assistant.View.DetailsWindow.MagnifiedImageWidget"
-        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        
-        xmlns:custom="clr-namespace:CustomControls;assembly=CustomControls"
+                     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                     xmlns:custom="clr-namespace:CustomControls;assembly=CustomControls"
                      
-        ResizeMode="NoResize"
-        SnapsToDevicePixels="True"
+                     ResizeMode="NoResize"
+                     SnapsToDevicePixels="True"
                      
-        DataContext="{Binding RelativeSource={RelativeSource Self}}">
+                     DataContext="{Binding RelativeSource={RelativeSource Self}}"
+                     
+                     Width="{Binding Path=Bitmap.Width}"
+                     Height="{Binding Path=Bitmap.Height}">
 
     <custom:CustomWindow.Template>
         <ControlTemplate TargetType="{x:Type custom:CustomWindow}">
@@ -32,10 +34,10 @@
 
             <ContentControl x:Name="PART_CustomFrame" Opacity="0.35">              
                 <ContentControl.Template>
-                    <ControlTemplate>                        
+                    <ControlTemplate>
                         <Border x:Name="PART_TitleBar" Background="{DynamicResource WindowBackgroundBrush}" Padding="2">
                             <Border BorderBrush="{DynamicResource ControlBorderBrush}" Padding="3" BorderThickness="1">
-                                <Image x:Name="ImageView" Stretch="UniformToFill"  Source="{Binding Path=Bitmap}"/>
+                                <Image x:Name="ImageView" Stretch="UniformToFill" Source="{Binding Path=Bitmap}"/>
                             </Border>
                         </Border>
                     </ControlTemplate>

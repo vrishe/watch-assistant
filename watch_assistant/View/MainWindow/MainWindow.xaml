@@ -107,6 +107,13 @@
                     <DataTemplate>
                         <ListBox x:Name="listView" ItemsSource="{Binding DefaultView}" HorizontalContentAlignment="Stretch" SelectionMode="Extended" ScrollViewer.HorizontalScrollBarVisibility="Disabled" 
                                  vmmw:MainWindowViewModel.AreListBoxBehaviorsAttached="True" vmh:ListBoxHelper.SelectedItemsMirrorList="{Binding ElementName=UserListTabs, Path=DataContext.UserManipulationSelection}">
+
+                            <ListBox.ContextMenu>
+                                <ContextMenu>
+                                    <MenuItem Header="Remove" Command="{x:Static vmmw:MainWindowViewModel.UserListRemoveItemCommand}" CommandParameter="{Binding}" />
+                                </ContextMenu>
+                            </ListBox.ContextMenu>
+
                             <ListBox.ItemTemplate>
                                 <DataTemplate>
                                     <ContentControl Style="{StaticResource BaseListItemStyle}">

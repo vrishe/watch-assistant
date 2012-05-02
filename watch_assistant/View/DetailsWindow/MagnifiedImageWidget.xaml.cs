@@ -4,6 +4,7 @@ using System;
 using System.Windows.Media.Imaging;
 using CustomControls;
 using System.Threading;
+using System.Windows.Media;
 
 namespace watch_assistant.View.DetailsWindow
 {
@@ -12,31 +13,43 @@ namespace watch_assistant.View.DetailsWindow
     /// </summary>
     public partial class MagnifiedImageWidget : CustomWindow
     {
-        private double _ratio;
+        private double _scale;
+        private double _maxScale;
+        private double _minScale;
+
+        private Point _mousePosition;
+
         private BitmapImage _bmp;
 
         public BitmapImage Bitmap { get { return _bmp; } }
 
         public MagnifiedImageWidget(BitmapImage bmp)
         {
-            _bmp = bmp;
-            
-            // TODO: Refine magnify logic by using transformation and position-to-zoom as well. 
-            Width = MaxWidth = _bmp.Width;
-            Height = MaxHeight = _bmp.Height;
+            VisualBitmapScalingMode = BitmapScalingMode.Fant;
 
-            _ratio = Height / Width;
+            _bmp = bmp;
+
+            _scale = 1.0;
+            _maxScale = MaxWidth / _bmp.Width; if (Double.IsInfinity(_maxScale)) _maxScale = 1.0;
+            _minScale = MinWidth / _bmp.Width; if (_minScale == .0) _minScale = .3;
 
             InitializeComponent();
         }
 
         protected override void OnMouseWheel(System.Windows.Input.MouseWheelEventArgs e)
         {
-            double zoom = 1.0 + Math.Sign(e.Delta) * 0.03;
+            double zoom = Math.Sign(e.Delta) * 0.03;
 
-            double height = Math.Min(Height * zoom, MaxHeight);
-            Width = Math.Max(height / _ratio, MinWidth);
-            Height = Width * _ratio;
+            _scale = Math.Max(Math.Min(_scale + zoom, _maxScale), _minScale);
+
+            if (_scale != _minScale && _scale != _maxScale)
+            {
+                VisualTransform = new ScaleTransform(_scale, _scale, _mousePosition.X, _mousePosition.Y);
+            }
+            else
+            {
+                _mousePosition = e.GetPosition(this);
+            }
 
             base.OnMouseWheel(e);
         }
@@ -44,13 +57,11 @@ namespace watch_assistant.View.DetailsWindow
         protected override void OnDeactivated(EventArgs e)
         {
             base.OnDeactivated(e);
-
             Close();
         }
-        protected override void OnMouseRightButtonDown(System.Windows.Input.MouseButtonEventArgs e)
+        protected override void OnMouseRightButtonUp(System.Windows.Input.MouseButtonEventArgs e)
         {
-            base.OnMouseDown(e);
-
+            base.OnMouseUp(e);
             Close();
         }
     }
