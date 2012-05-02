@@ -3,7 +3,7 @@
   <Profiles />
   <Settings>
     <Setting Name="DefaultAppFolderPath" Type="System.String" Scope="User">
-      <Value Profile="(Default)">2AInc\\watch_assistant</Value>
+      <Value Profile="(Default)" />
     </Setting>
     <Setting Name="UserAppDataFileName" Type="System.String" Scope="User">
       <Value Profile="(Default)">userdb.appdata</Value>
