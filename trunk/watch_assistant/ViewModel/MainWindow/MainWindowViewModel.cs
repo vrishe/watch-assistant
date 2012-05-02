@@ -265,19 +265,15 @@ namespace watch_assistant.ViewModel.MainWindow
         }
         private void RunUserListRemoveItemTask(object sender, ExecutedRoutedEventArgs e)
         {
-            var table = e.Parameter as DataTable;
-            if (table == null) throw new ArgumentException(
-                String.Format("UserListAddItemTask command failed: '{0}'", e.Parameter != null ? e.Parameter.ToString() : "null")
-                );
-
             DataRowView[] removalArray = new DataRowView[UserManipulationSelection.Count];
             UserManipulationSelection.CopyTo(removalArray, 0);
 
             foreach (DataRowView rowView in removalArray)
             {
-                table.Rows.Remove(rowView.Row);
+                DataRow row = rowView.Row;
+                row.Table.Rows.Remove(row);
+                if (row.Table.Rows.Count == 0) row.Table.Reset();
             }
-            if (table.Rows.Count == 0) table.Reset();
         }
 
         #endregion (Command logic)

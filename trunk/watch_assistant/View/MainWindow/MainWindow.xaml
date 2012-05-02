@@ -95,7 +95,7 @@
             <!-- Tab Buttons -->
             <TabControl x:Name="UserListTabs" Margin="5,0,5,0" IsSynchronizedWithCurrentItem="True" ItemsSource="{Binding Path=UserListsData, Mode=OneWay}">
                 <TabControl.InputBindings>
-                    <KeyBinding Key="Delete" Command="{x:Static vmmw:MainWindowViewModel.UserListRemoveItemCommand}" CommandParameter="{Binding ElementName=UserListTabs, Path=SelectedItem}" />
+                    <KeyBinding Key="Delete" Command="{x:Static vmmw:MainWindowViewModel.UserListRemoveItemCommand}" />
                 </TabControl.InputBindings>
                 
                 <TabControl.ItemTemplate>
@@ -111,7 +111,7 @@
 
                             <ListBox.ContextMenu>
                                 <ContextMenu>
-                                    <MenuItem Header="Remove" Command="{x:Static vmmw:MainWindowViewModel.UserListRemoveItemCommand}" CommandParameter="{Binding}" />
+                                    <MenuItem Header="Remove" Command="{x:Static vmmw:MainWindowViewModel.UserListRemoveItemCommand}" />
                                 </ContextMenu>
                             </ListBox.ContextMenu>
 
