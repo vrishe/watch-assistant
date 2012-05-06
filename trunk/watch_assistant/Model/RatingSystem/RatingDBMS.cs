@@ -1,11 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
-using System.IO;
-using System.Runtime.Serialization;
-using System.Runtime.Serialization.Formatters.Binary;
-using watch_assistant.Properties;
-using watch_assistant.Model.ExternalDataManager;
 
 namespace watch_assistant.Model.RatingSystem
 {

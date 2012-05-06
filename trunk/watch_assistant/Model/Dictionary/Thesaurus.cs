@@ -5,8 +5,6 @@ using System.Linq;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Text.RegularExpressions;
-using System.Text;
-using System.Collections.ObjectModel;
 
 namespace watch_assistant.Model.Dictionary
 {
