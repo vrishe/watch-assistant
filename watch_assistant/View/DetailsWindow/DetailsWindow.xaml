@@ -7,7 +7,9 @@
         xmlns:cvt="clr-namespace:watch_assistant.ViewModel.Converters"
                      
         MinWidth="400" MinHeight="285"
-        Width="525" Height="320">
+        Width="525" Height="320"
+                     
+        Icon="/Resources/App.ico">
 
     <custom:WindowPage>
         <custom:WindowPage.Resources>
