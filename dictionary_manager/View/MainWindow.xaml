@@ -60,7 +60,7 @@
                     TabIndex="3" />
         </Grid>
         
-        <TextBox Name="meaningBox" Grid.Row="2" Margin="3,0,3,2" VerticalAlignment="Stretch" HorizontalAlignment="Stretch"
+        <TextBox Name="meaningBox" Grid.Row="2" Margin="3,0,3,2" TextWrapping="Wrap" VerticalAlignment="Stretch" HorizontalAlignment="Stretch"
                  Text="{Binding Path=ActiveDefinition, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" TabIndex="1">
             <TextBox.Style>
                 <Style TargetType="{x:Type TextBox}">
