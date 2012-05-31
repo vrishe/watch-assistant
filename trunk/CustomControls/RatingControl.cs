@@ -7,7 +7,6 @@ using System.Windows.Input;
 
 namespace CustomControls
 {
-
     // TODO: RatingControl improvements pending...
     public class DoublesToRectConverter : IMultiValueConverter
     {
@@ -162,13 +161,13 @@ namespace CustomControls
         private static object CoerceFractionValue(DependencyObject sender, object baseValue)
         {
             if (baseValue == DependencyProperty.UnsetValue) return (double)FractionProperty.DefaultMetadata.DefaultValue;
-            return Math.Max(Math.Min((double)baseValue, (double)FractionProperty.DefaultMetadata.DefaultValue), 0.0);
+            return Math.Max(Math.Min((double)baseValue, (double)FractionProperty.DefaultMetadata.DefaultValue), .0);
         }
 
         private static object CoercePreviewStateValue(DependencyObject sender, object baseValue)
         {
             PreviewState previewState = (PreviewState)baseValue;
-            if ((previewState == PreviewState.PreviewCommonRating || previewState == PreviewState.PreviewPersonalRating) && !((sender as RatingItem).Fraction > .0)) return PreviewState.PreviewUnrated;
+            if ((previewState == PreviewState.PreviewCommonRating || previewState == PreviewState.PreviewPersonalRating) && (sender as RatingItem).Fraction == .0) return PreviewState.PreviewUnrated;
             return baseValue;
         }
 
@@ -181,29 +180,9 @@ namespace CustomControls
             e.Handled = true;
 
             var rating = ItemsControl.ItemsControlFromItemContainer(this) as RatingControl;
-            if (rating != null) rating.HighlightItems(this);
+            if (rating != null) rating.HighlightTailItem = this;
 
             base.OnMouseEnter(e);
-        }
-
-        protected override void OnMouseLeftButtonDown(MouseButtonEventArgs e)
-        {
-            e.Handled = true;
-
-            var rating = ItemsControl.ItemsControlFromItemContainer(this) as RatingControl;
-            if (rating != null) rating.SelectItems(this);
-
-            base.OnMouseLeftButtonDown(e);
-        }
-
-        protected override void OnMouseRightButtonDown(MouseButtonEventArgs e)
-        {
-            e.Handled = true;
-
-            var rating = ItemsControl.ItemsControlFromItemContainer(this) as RatingControl;
-            if (rating != null) rating.DeselectItems();
-
-            base.OnMouseRightButtonDown(e);
         }
 
         #endregion (UI behaviors)
@@ -234,6 +213,18 @@ namespace CustomControls
         }
 
         #region Properties
+
+        // Highlight tail
+        public RatingItem HighlightTailItem
+        {
+            get { return (RatingItem)GetValue(HighlightTailItemProperty); }
+            set { SetValue(HighlightTailItemProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for HighlightTailItem.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty HighlightTailItemProperty =
+            DependencyProperty.Register("HighlightTailItem", typeof(RatingItem), typeof(RatingControl),
+            new UIPropertyMetadata(null, HighlightTailItemValueChanged, CoerceHighlightTailItemValue));
 
         // Orientation
         public Orientation Orientation
@@ -353,6 +344,14 @@ namespace CustomControls
 
         #region Property event handlers
 
+        private static object CoerceHighlightTailItemValue(DependencyObject sender, object baseValue)
+        {
+            var rating = (RatingControl)sender;
+            var ratingItem = (RatingItem)baseValue;
+            if (rating.Items.Contains(ratingItem)) return baseValue;
+            return HighlightTailItemProperty.DefaultMetadata.DefaultValue;
+        }
+
         private static object CoerceRatingRangeMaxValue(DependencyObject sender, object baseValue)
         {
             var rating = (RatingControl)sender;
@@ -373,19 +372,26 @@ namespace CustomControls
             return Math.Max(Math.Min((double)baseValue, rating.RatingRangeMax), rating.RatingRangeMin);
         }
 
+        private static void HighlightTailItemValueChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
+        {
+            var rating = (RatingControl)sender;
+
+            rating.UpdateItems(RatingItemUpdate.PreviewRate, e.NewValue as RatingItem);
+        }
+
         private static void RatingAttributesValueChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
         {
             var rating = (RatingControl)sender;
-            rating.UpdateItems(RatingItemUpdate.SetRate, null);
 
-            RoutedEvent risen = PersonalRatingChanged;               
-            if (e.Property == CommonRatingProperty)
+            // else ...
+            RoutedEvent risen = CommonRatingChanged;               
+            if (e.Property == PersonalRatingProperty)
             {
-                risen = CommonRatingChanged;
-            }
-            // else if () { }
- 
+                risen = PersonalRatingChanged;
+                rating.UpdateItems(RatingItemUpdate.SetRate, null);
+            } 
             rating.RaiseEvent(new RoutedEventArgs(risen));
+
         }
 
         #endregion (Property event handlers)
@@ -402,77 +408,132 @@ namespace CustomControls
             UpdateItems(RatingItemUpdate.SelectRate, ratingItem);
         }
 
-        internal void DeselectItems()
-        {
-            PersonalRating = (double)PersonalRatingProperty.DefaultMetadata.DefaultValue;
-        }
-
         #endregion (Rating interface)
 
         #region UI behaviors
 
-        protected override void OnMouseLeave(MouseEventArgs e)
+        private void OnMouseAction(MouseEventArgs e)
         {
             e.Handled = true;
-            UpdateItems(RatingItemUpdate.SetRate, null);
+
+            if (e.RoutedEvent == UIElement.MouseLeaveEvent)
+            {
+                HighlightTailItem = null;
+                UpdateItems(RatingItemUpdate.SetRate, HighlightTailItem);
+            }
+            else if (e.RoutedEvent == UIElement.MouseLeftButtonUpEvent) 
+            {
+                UpdateItems(RatingItemUpdate.SelectRate, HighlightTailItem);
+            }
+            else if (e.RoutedEvent == UIElement.MouseRightButtonUpEvent) 
+            {
+                PersonalRating = (double)PersonalRatingProperty.DefaultMetadata.DefaultValue;
+            }
+        }
+
+        #region Local overloads
+
+        protected override void OnMouseLeave(MouseEventArgs e)
+        {
+            OnMouseAction(e);
             base.OnMouseLeave(e);
         }
+
+        protected override void OnMouseRightButtonDown(MouseButtonEventArgs e)
+        {
+            OnMouseAction(e);
+            base.OnMouseRightButtonDown(e);
+        }
+
+        protected override void OnMouseRightButtonUp(MouseButtonEventArgs e)
+        {
+            OnMouseAction(e);
+            base.OnMouseRightButtonUp(e);
+        }
+
+        protected override void OnMouseLeftButtonDown(MouseButtonEventArgs e)
+        {
+            OnMouseAction(e);
+            base.OnMouseLeftButtonDown(e);
+        }
+
+        protected override void OnMouseLeftButtonUp(MouseButtonEventArgs e)
+        {
+            OnMouseAction(e);
+            base.OnMouseLeftButtonUp(e);
+        }
+
+        #endregion (Local overloads)
 
         #endregion (UI behabiors)
 
         private void UpdateItems(RatingItemUpdate action, RatingItem keyItem)
         {
-            lock (this)
+            if (ItemContainerGenerator.Status == System.Windows.Controls.Primitives.GeneratorStatus.ContainersGenerated)
             {
-                if (ItemContainerGenerator.Status == System.Windows.Controls.Primitives.GeneratorStatus.ContainersGenerated)
+                switch (action)
                 {
-                    bool commonRating = PersonalRating == (double)PersonalRatingProperty.DefaultMetadata.DefaultValue;
-
-                    var gaugeValue = commonRating ? CommonRating : PersonalRating;
-                    var itemValue = RatingRangeDelta / Items.Count;
-                    var currentValue = RatingRangeMin;
-
-                    var index = 0; var indexMax = Items.Count;
-                    var increment = 1;
-                    if (SelectionDirection == CustomControls.SelectionDirection.LastToFirst)
-                    {
-                        var temp = index; index = indexMax - 1; indexMax = temp - 1;
-                        increment = -1;
-                    }
-                    for (int order = 1; indexMax.CompareTo(index) == increment; index += increment, order++)
-                    {
-                        var item = ItemContainerGenerator.ContainerFromIndex(index) as RatingItem;
-                        if (item != null)
+                    case RatingItemUpdate.SetRate:
+                        keyItem = null;
+                        break;
+                    case RatingItemUpdate.PreviewRate:
+                        if (keyItem == null)
                         {
-                            item.Fraction = (double)RatingItem.FractionProperty.DefaultMetadata.DefaultValue;
-                            item.PreviewState = PreviewState.PreviewUnrated;
-                            switch (action)
-                            {
-                                case RatingItemUpdate.SetRate:
-                                    var itemFraction = (double)RatingItem.FractionProperty.DefaultMetadata.DefaultValue;
-                                    if (order * itemValue > gaugeValue)
-                                    {
-                                        var delta = gaugeValue - ((order - 1) * itemValue);
-                                        itemFraction = delta > 0 ? delta / itemValue : 0.0;
-                                    }
-                                    item.Fraction = itemFraction;
-                                    item.PreviewState = commonRating ? PreviewState.PreviewCommonRating : PreviewState.PreviewPersonalRating;
-                                    break;
+                            PersonalRatingValuePreview = (double)PersonalRatingValuePreviewProperty.DefaultMetadata.DefaultValue;
+                            return;
+                        }
+                        break;
+                    case RatingItemUpdate.SelectRate:
+                        if (keyItem == null) { action = RatingItemUpdate.SetRate; }
+                        break;
+                }
 
-                                case RatingItemUpdate.PreviewRate:
-                                    item.PreviewState = PreviewState.PreviewHighlight;
-                                    PersonalRatingValuePreview = Math.Round(order * itemValue, 2);
-                                    break;
+                bool commonRating = PersonalRating == (double)PersonalRatingProperty.DefaultMetadata.DefaultValue;
 
-                                case RatingItemUpdate.SelectRate:                                 
-                                    currentValue += itemValue;
-                                    break;
-                            }
-                            if (item == keyItem)
-                            {
-                                if (action == RatingItemUpdate.SelectRate) PersonalRating = currentValue;
-                                action = RatingItemUpdate.SkipRate;
-                            }
+                var gaugeValue = commonRating ? CommonRating : PersonalRating;
+                var itemValue = RatingRangeDelta / Items.Count;
+                var currentValue = RatingRangeMin;
+
+                var index = 0; var indexMax = Items.Count;
+                var increment = 1;
+                if (SelectionDirection == CustomControls.SelectionDirection.LastToFirst)
+                {
+                    var temp = index; index = indexMax - 1; indexMax = temp - 1;
+                    increment = -1;
+                }
+                for (int order = 1; indexMax.CompareTo(index) == increment; index += increment, order++)
+                {
+                    var item = ItemContainerGenerator.ContainerFromIndex(index) as RatingItem;
+                    if (item != null)
+                    {
+                        item.Fraction = (double)RatingItem.FractionProperty.DefaultMetadata.DefaultValue;
+                        item.PreviewState = PreviewState.PreviewUnrated;
+                        switch (action)
+                        {
+                            case RatingItemUpdate.SetRate:
+                                var itemFraction = (double)RatingItem.FractionProperty.DefaultMetadata.DefaultValue;
+                                if (order * itemValue > gaugeValue)
+                                {
+                                    var delta = gaugeValue - ((order - 1) * itemValue);
+                                    itemFraction = delta > 0 ? delta / itemValue : .0;
+                                }
+                                item.Fraction = itemFraction;
+                                item.PreviewState = commonRating ? PreviewState.PreviewCommonRating : PreviewState.PreviewPersonalRating;
+                                break;
+
+                            case RatingItemUpdate.PreviewRate:
+                                PersonalRatingValuePreview = Math.Round(order * itemValue, 2);
+                                item.PreviewState = PreviewState.PreviewHighlight;
+                                break;
+
+                            case RatingItemUpdate.SelectRate:                                 
+                                currentValue += itemValue;
+                                break;
+                        }
+                        if (item == keyItem)
+                        {
+                            if (action == RatingItemUpdate.SelectRate) PersonalRating = currentValue;
+                            action = RatingItemUpdate.SkipRate;
                         }
                     }
                 }
