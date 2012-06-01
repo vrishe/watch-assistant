@@ -40,6 +40,7 @@ namespace watch_assistant.Model.Search
         /// </summary>
         public static void CacheImage(DataRow videoItem)
         {
+            // TODO: (Allier) передавать путь к файлу для кэширования
             if (videoItem["Poster"] != DBNull.Value && Uri.IsWellFormedUriString(videoItem["Poster"].ToString(), UriKind.Absolute))
             {
                 string imgUri = videoItem["Poster"].ToString();
@@ -110,7 +111,7 @@ namespace watch_assistant.Model.Search
             enumerator.MoveNext();
             string answerContent = GetInfoContent(
                 enumerator.Current.Key,
-                "<div class='new_'>\r\n\t<div class='head_'><a href=\"([^\"]*)\"");
+                "<div class='new_'>\n\t<div class='head_'><a href=\"([^\"]*)\"");
 
             if (needYear)
             {
