@@ -19,7 +19,7 @@ namespace watch_assistant.Model.Search.IInterviewers
         {
             do
             {
-                string videoItemBeginingString = "<div class='new_'>\r\n\t<div class='head_'><a href=\"([^\"]*)\"";
+                string videoItemBeginingString = "<div class='new_'>\n\t<div class='head_'><a href=\"([^\"]*)\"";
                 Match videoItemRef = Regex.Match(answerContent, videoItemBeginingString);
                 if (!videoItemRef.Success) break;
                 answerContent = answerContent.Substring(videoItemRef.Index + videoItemRef.Length);
@@ -28,22 +28,18 @@ namespace watch_assistant.Model.Search.IInterviewers
                 videoItem["Name"] = Regex.Match(answerContent, @"<b>(.*)</b>").Groups[1].ToString();
                 if (!((String)videoItem["Name"]).ToLower().Contains(query.ToLower())) continue;
                 // If category is not Video then go to the next search result
-                Match category = Regex.Match(answerContent, @"\sКатегория:\s[^A-ZА-Я]*([^<]*)<");
-                if (!category.Groups[1].ToString().Contains("Аниме")) continue;
-                //videoItem["HRef"] = new string[] {videoItemRef.Groups[1].ToString()};
-             //   videoItem["RussianAudio"] = (((String)videoItem["Name"]).Contains("(RUS)") ? true : false);
+                Match category = Regex.Match(answerContent, @"\sКатегория:\s[^A-ZА-Я]*([^\|]*)\|");
+                if (!category.Groups[1].ToString().Contains("Сериалы")) continue;
                 Dictionary<string, string> list = new Dictionary<string, string>();
                 int spare = ((String)videoItem["Name"]).LastIndexOf("(SUB)");
                 if (spare >= 0)
                 {
-                    //videoItem["Text"] = new string[] { "SUB" };
                     list.Add(videoItemRef.Groups[1].ToString(), "SUB");
                     videoItem["Name"] = ((String)videoItem["Name"]).Remove(spare, 5);
                 }
                 else
                 {
                     spare = ((String)videoItem["Name"]).LastIndexOf("(RUS)");
-                    //videoItem["Text"] = new string[] { "DUB" };
                     list.Add(videoItemRef.Groups[1].ToString(), "DUB");
                     if (spare >= 0)
                         videoItem["Name"] = ((String)videoItem["Name"]).Remove(spare, 5).Trim();
@@ -96,7 +92,6 @@ namespace watch_assistant.Model.Search.IInterviewers
         {
             Byte[] byteArr;
             if (page > 1)
-                //do=search&subaction=search&search_start=2&full_search=0&result_from=1&result_from=1&story=Bakuman
                 byteArr = Encoding.GetEncoding(1251).GetBytes(
                     "do=search&subaction=search&search_start=" + 
                     page.ToString() + 

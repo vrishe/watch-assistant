@@ -63,6 +63,10 @@ namespace watch_assistant.Model.Search.IInterviewers
 
         #region Methods
 
+        /// <summary>
+        /// Aggregates results from each Interviewer 
+        /// to InterviewResults table
+        /// </summary>
         private void AggregateResults()
         {
             this.ClearInterviewResults();
@@ -89,10 +93,6 @@ namespace watch_assistant.Model.Search.IInterviewers
 
                     foreach (var otherInterview in _interviewers)
                     {
-                        //if (interview.Key.InterviewResult.TableName ==
-                        //    otherInterview.Key.InterviewResult.TableName)
-                        //    continue;
-
                         if (!rowsVisited.ContainsKey(otherInterview.Key.InterviewResult.TableName))
                             rowsVisited.Add(
                                 otherInterview.Key.InterviewResult.TableName,
@@ -107,11 +107,6 @@ namespace watch_assistant.Model.Search.IInterviewers
                                        [otherInterview.Key.InterviewResult.Rows.IndexOf(otherRow)])
                                 continue;
 
-                            // Fastest cheks to find out if rows are different
-                            /*if (row["RussianAudio"].ToString() != otherRow["RussianAudio"].ToString())
-                                continue;
-                            if (row["RussianSub"].ToString() != otherRow["RussianSub"].ToString())
-                                continue;*/
                             if (!String.IsNullOrEmpty(row["Year"].ToString()) &&
                                 !String.IsNullOrEmpty(otherRow["Year"].ToString()))
                                 if (row["Year"].ToString() != otherRow["Year"].ToString())
@@ -154,16 +149,6 @@ namespace watch_assistant.Model.Search.IInterviewers
                                 row["Name"] = new string((otherRow["Name"].ToString().ToCharArray()));
                             if (row["Year"].ToString().Length < otherRow["Year"].ToString().Length)
                                 row["Year"] = new string((otherRow["Year"].ToString().ToCharArray()));
-                            //string[] href = new string[((String[])row["HRef"]).Length + 1];
-                            //for (int i = 0; i < href.Length - 1; i++)
-                            //    href[i] = new string(((string[])row["HRef"])[i].ToCharArray());
-                            //href[href.Length - 1] = new string(((string[])otherRow["HRef"])[0].ToCharArray());
-                            //row["HRef"] = href;
-                            //string[] text = new string[((String[])row["Text"]).Length + 1];
-                            //for (int i = 0; i < text.Length - 1; i++)
-                            //    text[i] = new string(((string[])row["Text"])[i].ToCharArray());
-                            //text[text.Length - 1] = new string(((string[])otherRow["Text"])[0].ToCharArray());
-                            //row["Text"] = text;
                             foreach (var item in (Dictionary<string, string>)otherRow["HRefs"])
                                 ((Dictionary<string, string>)row["Hrefs"]).Add(item.Key, item.Value);
 
@@ -181,6 +166,9 @@ namespace watch_assistant.Model.Search.IInterviewers
             }                
         }
 
+        /// <summary>
+        /// Gets a string array of film names
+        /// </summary>
         private static string[] GetNames(string fullName)
         {
             for (int removeStart = fullName.IndexOf('['); removeStart >= 0; removeStart = fullName.IndexOf('['))
@@ -200,6 +188,9 @@ namespace watch_assistant.Model.Search.IInterviewers
             return (new string[] { nameEng.Trim(' ', '/', '.', ',').ToLower(), nameRus.Value.ToString().Trim(' ', '/', '.', ',').ToLower() });
         }
 
+        /// <summary>
+        /// Prepare Interviewers to work
+        /// </summary>
         private void FormInterviewers()
         {
             _interviewers.Add(new KeyValuePair<InterviewerBase, Thread>
@@ -256,20 +247,18 @@ namespace watch_assistant.Model.Search.IInterviewers
                 })));
         }
 
+        /// <summary>
+        /// Create new InterviewResult DataTable and assign it's schema
+        /// </summary>
         private void FormNewResultTable()
         {
             _interviewResult = new DataTable("Agregated results");
 
             _interviewResult.Columns.Add("Name", typeof(String));
-            //_interviewResult.Columns.Add("HRef", typeof(String[]));
             _interviewResult.Columns.Add("Poster", typeof(String));
             _interviewResult.Columns.Add("Genre", typeof(String));
             _interviewResult.Columns.Add("Year", typeof(Int32));
             _interviewResult.Columns.Add("Description", typeof(String));
-            //_interviewResult.Columns.Add("VideoQuality", typeof(String));
-            //_interviewResult.Columns.Add("RussianAudio", typeof(Boolean));
-            //_interviewResult.Columns.Add("RussianSub", typeof(Boolean));
-            //_interviewResult.Columns.Add("Text", typeof(String[]));
             _interviewResult.Columns.Add("HRefs", typeof(Dictionary<string, string>));
 
             _interviewResult.PrimaryKey = new DataColumn[] { _interviewResult.Columns[_interviewResult.Columns.IndexOf("Name")] };
