@@ -63,7 +63,7 @@
                     <Viewbox StretchDirection="Both" Stretch="UniformToFill">
                         <Grid>
                             <Path x:Name="FigureBackground" Data="{StaticResource RatingStar}" StrokeThickness="1" StrokeLineJoin="Round" Stroke="{StaticResource RatingItemStrokeUnrated}" Fill="{StaticResource RatingItemFillUnrated}" />
-                            <Path x:Name="FigureForeground" Data="{StaticResource RatingStar}" StrokeThickness="1" StrokeLineJoin="Round" Stroke="Transparent" Fill="{StaticResource RatingItemFillCommonRated}" Visibility="Collapsed" >
+                            <Path x:Name="FigureForeground" Data="{StaticResource RatingStar}" StrokeThickness="1" StrokeLineJoin="Round" Stroke="Transparent" Visibility="Collapsed" >
                                 <Path.Clip>
                                     <RectangleGeometry>
                                         <RectangleGeometry.Rect>
@@ -88,10 +88,12 @@
                         </Trigger>
                         <Trigger Property="PreviewState" Value="PreviewPersonalRating">
                             <Setter TargetName="FigureBackground" Property="Stroke" Value="{StaticResource RatingItemStrokePersonalRated}" />
-                            <Setter TargetName="FigureBackground" Property="Fill" Value="{StaticResource RatingItemFillPersonalRated}" />
+                            <Setter TargetName="FigureForeground" Property="Fill" Value="{StaticResource RatingItemFillPersonalRated}" />
+                            <Setter TargetName="FigureForeground" Property="Visibility" Value="Visible" />
                         </Trigger>
                         <Trigger Property="PreviewState" Value="PreviewCommonRating">
                             <Setter TargetName="FigureBackground" Property="Stroke" Value="{StaticResource RatingItemStrokeCommonRated}" />
+                            <Setter TargetName="FigureForeground" Property="Fill" Value="{StaticResource RatingItemFillCommonlRated}" />
                             <Setter TargetName="FigureForeground" Property="Visibility" Value="Visible" />
                         </Trigger>
                     </ControlTemplate.Triggers>

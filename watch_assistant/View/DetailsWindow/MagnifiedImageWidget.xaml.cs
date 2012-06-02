@@ -22,8 +22,6 @@ namespace watch_assistant.View.DetailsWindow
 
         private Point? _mousePosition;
 
-        private bool _assertClickClose;
-
         #endregion (Fields)
 
         #region Properties
