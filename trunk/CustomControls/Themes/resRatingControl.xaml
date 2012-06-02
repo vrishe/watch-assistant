@@ -16,7 +16,7 @@
                     <Viewbox StretchDirection="Both" Stretch="UniformToFill">
                         <Grid>
                             <Path x:Name="FigureBackground" Data="{StaticResource RatingStar}" StrokeThickness="1" StrokeLineJoin="Round" Stroke="#989898" Fill="LightGray" />
-                            <Path x:Name="FigureForeground" Data="{StaticResource RatingStar}" StrokeThickness="1" StrokeLineJoin="Round" Stroke="Goldenrod" Fill="Red" Visibility="Collapsed" > <!-- Cornsilk -->
+                            <Path x:Name="FigureForeground" Data="{StaticResource RatingStar}" StrokeThickness="1" StrokeLineJoin="Round" Stroke="Transparent" Visibility="Collapsed" >
                                 <Path.Clip>
                                     <RectangleGeometry>
                                         <RectangleGeometry.Rect>
@@ -40,10 +40,13 @@
                             <Setter TargetName="FigureBackground" Property="Fill" Value="Yellow" />                            
                         </Trigger>
                         <Trigger Property="PreviewState" Value="PreviewPersonalRating">
+                            <Setter TargetName="FigureBackground" Property="Stroke" Value="Goldenrod" />
                             <Setter TargetName="FigureForeground" Property="Fill" Value="Gold" />
                             <Setter TargetName="FigureForeground" Property="Visibility" Value="Visible" />
                         </Trigger>
                         <Trigger Property="PreviewState" Value="PreviewCommonRating">
+                            <Setter TargetName="FigureBackground" Property="Stroke" Value="Goldenrod" />
+                            <Setter TargetName="FigureForeground" Property="Fill" Value="Cornsilk" />
                             <Setter TargetName="FigureForeground" Property="Visibility" Value="Visible" />
                         </Trigger>
                     </ControlTemplate.Triggers>

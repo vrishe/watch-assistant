@@ -500,8 +500,6 @@ namespace CustomControls
                     var item = ItemContainerGenerator.ContainerFromIndex(index) as RatingItem;
                     if (item != null)
                     {
-                        //item.Fraction = (double)RatingItem.FractionProperty.DefaultMetadata.DefaultValue;
-                        //item.PreviewState = PreviewState.PreviewUnrated;
                         switch (action)
                         {
                             case RatingItemUpdate.SetRate:
@@ -514,7 +512,7 @@ namespace CustomControls
                                 }
                                 item.Fraction = itemFraction;
                                 item.PreviewState = commonRating ? PreviewState.PreviewCommonRating : PreviewState.PreviewPersonalRating;
-                                break;
+                                continue;
 
                             case RatingItemUpdate.PreviewRate:
                                 PersonalRatingValuePreview = Math.Round(order * itemValue, 2);

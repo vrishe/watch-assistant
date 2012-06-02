@@ -120,7 +120,7 @@
                             <ListBox.ItemTemplate>
                                 <DataTemplate>
                                     <ContentControl Style="{StaticResource BaseListItemStyle}">
-                                        <custom:RatingControl Style="{DynamicResource RatingControlStyle}" RatingItemsCount="5" PersonalRating="2.5" CommonRating="2.5"/>
+                                        <custom:RatingControl Style="{DynamicResource RatingControlStyle}" RatingItemsCount="5" PersonalRating="2.5"/>
                                     </ContentControl>
                                 </DataTemplate>
                             </ListBox.ItemTemplate>
