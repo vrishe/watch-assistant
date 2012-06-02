@@ -4,6 +4,9 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
+using System.ComponentModel;
+using System.Windows.Markup;
+using System.Collections.ObjectModel;
 
 namespace CustomControls
 {
@@ -144,14 +147,6 @@ namespace CustomControls
             DependencyProperty.Register("PreviewState", typeof(PreviewState), typeof(RatingItem), 
             new FrameworkPropertyMetadata(PreviewState.PreviewUnrated, FrameworkPropertyMetadataOptions.AffectsRender, null, CoercePreviewStateValue));
 
-        //public RatingItemData Data
-        //{
-        //    get { return (RatingItemData)GetValue(DataProperty); }
-        //    set { SetValue(DataProperty, value); }
-        //}
-        //public static readonly DependencyProperty DataProperty =
-        //    DependencyProperty.Register("Data", typeof(RatingItemData), typeof(RatingItem), new UIPropertyMetadata(new RatingItemData()));
-
         #endregion (Properties)
 
         #region Methods
@@ -198,9 +193,11 @@ namespace CustomControls
             );
         }
 
-    #endregion (Constructuctors)
+        #endregion (Constructuctors)
     }
 
+    [ContentProperty]
+    [DefaultProperty("RatingItemsCount")]
     [StyleTypedProperty(Property = "ItemContainerStyle", StyleTargetType = typeof(RatingItem))]
     public class RatingControl : ItemsControl
     {
@@ -212,19 +209,7 @@ namespace CustomControls
             SkipRate
         }
 
-        #region Properties
-
-        // Highlight tail
-        public RatingItem HighlightTailItem
-        {
-            get { return (RatingItem)GetValue(HighlightTailItemProperty); }
-            set { SetValue(HighlightTailItemProperty, value); }
-        }
-
-        // Using a DependencyProperty as the backing store for HighlightTailItem.  This enables animation, styling, binding, etc...
-        public static readonly DependencyProperty HighlightTailItemProperty =
-            DependencyProperty.Register("HighlightTailItem", typeof(RatingItem), typeof(RatingControl),
-            new UIPropertyMetadata(null, HighlightTailItemValueChanged, CoerceHighlightTailItemValue));
+        #region Properties 
 
         // Orientation
         public Orientation Orientation
@@ -246,7 +231,6 @@ namespace CustomControls
         public static readonly DependencyProperty SelectionDirectionProperty =
             DependencyProperty.Register("SelectionDirection", typeof(SelectionDirection), typeof(RatingControl), 
             new UIPropertyMetadata(SelectionDirection.FirstToLast));
-
 
         // RatingRangeMax
         public double RatingRangeMax
@@ -312,6 +296,34 @@ namespace CustomControls
 
         public static readonly DependencyProperty PersonalRatingValuePreviewProperty = PersonalRatingValuePreviewPropertyKey.DependencyProperty;
 
+        // Highlight tail
+        [Bindable(false)]
+        [Browsable(false), EditorBrowsable(EditorBrowsableState.Never)]
+        public RatingItem HighlightTailItem
+        {
+            get { return (RatingItem)GetValue(HighlightTailItemProperty); }
+            set { SetValue(HighlightTailItemProperty, value); }
+        }
+
+        [Browsable(false), EditorBrowsable(EditorBrowsableState.Never)]
+        public static readonly DependencyProperty HighlightTailItemProperty =
+            DependencyProperty.Register("HighlightTailItem", typeof(RatingItem), typeof(RatingControl),
+            new UIPropertyMetadata(null, HighlightTailItemValueChanged, CoerceHighlightTailItemValue));
+
+        // RatingItemsCount
+        [DesignOnly(true)]
+        public int RatingItemsCount
+        {
+            get { return Items.Count; }
+            set
+            {
+                if (value < 1) throw new ArgumentOutOfRangeException(String.Format(@"{0}: Invalid number of rating items was specified to create. Is: {1}, must not be less than 1", Name, value));
+                
+                Items.Clear();
+                while (value-- > 0) Items.Add(new RatingItem());
+            }
+        }
+
         public double RatingRangeDelta { get { return RatingRangeMax - RatingRangeMin; } }
 
         #endregion (Properties)
@@ -320,7 +332,6 @@ namespace CustomControls
 
         public static readonly RoutedEvent PersonalRatingChanged = EventManager.RegisterRoutedEvent("PersonalRatingChanged", RoutingStrategy.Bubble, typeof(RoutedEventHandler), typeof(RatingControl));
         public static readonly RoutedEvent CommonRatingChanged = EventManager.RegisterRoutedEvent("CommonRatingChanged", RoutingStrategy.Bubble, typeof(RoutedEventHandler), typeof(RatingControl));
-        //public static RoutedEvent PreviewPersonalRatingChanged;
 
         #region Handlers
 
@@ -372,6 +383,18 @@ namespace CustomControls
             return Math.Max(Math.Min((double)baseValue, rating.RatingRangeMax), rating.RatingRangeMin);
         }
 
+        private static void RatingAttributesValueChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
+        {
+            var rating = (RatingControl)sender;
+
+            // else ...
+            RoutedEvent risen = e.Property == PersonalRatingProperty ? PersonalRatingChanged : CommonRatingChanged;               
+
+            rating.UpdateItems(RatingItemUpdate.SetRate, null);
+            rating.RaiseEvent(new RoutedEventArgs(risen));
+
+        }
+
         private static void HighlightTailItemValueChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
         {
             var rating = (RatingControl)sender;
@@ -379,36 +402,7 @@ namespace CustomControls
             rating.UpdateItems(RatingItemUpdate.PreviewRate, e.NewValue as RatingItem);
         }
 
-        private static void RatingAttributesValueChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
-        {
-            var rating = (RatingControl)sender;
-
-            // else ...
-            RoutedEvent risen = CommonRatingChanged;               
-            if (e.Property == PersonalRatingProperty)
-            {
-                risen = PersonalRatingChanged;
-                rating.UpdateItems(RatingItemUpdate.SetRate, null);
-            } 
-            rating.RaiseEvent(new RoutedEventArgs(risen));
-
-        }
-
         #endregion (Property event handlers)
-
-        #region Rating interface
-
-        internal void HighlightItems(RatingItem ratingItem)
-        {
-            UpdateItems(RatingItemUpdate.PreviewRate, ratingItem);
-        }
-
-        internal void SelectItems(RatingItem ratingItem)
-        {
-            UpdateItems(RatingItemUpdate.SelectRate, ratingItem);
-        }
-
-        #endregion (Rating interface)
 
         #region UI behaviors
 
@@ -506,8 +500,8 @@ namespace CustomControls
                     var item = ItemContainerGenerator.ContainerFromIndex(index) as RatingItem;
                     if (item != null)
                     {
-                        item.Fraction = (double)RatingItem.FractionProperty.DefaultMetadata.DefaultValue;
-                        item.PreviewState = PreviewState.PreviewUnrated;
+                        //item.Fraction = (double)RatingItem.FractionProperty.DefaultMetadata.DefaultValue;
+                        //item.PreviewState = PreviewState.PreviewUnrated;
                         switch (action)
                         {
                             case RatingItemUpdate.SetRate:
@@ -516,6 +510,7 @@ namespace CustomControls
                                 {
                                     var delta = gaugeValue - ((order - 1) * itemValue);
                                     itemFraction = delta > 0 ? delta / itemValue : .0;
+                                    if (itemFraction == .0) { action = RatingItemUpdate.SkipRate; }
                                 }
                                 item.Fraction = itemFraction;
                                 item.PreviewState = commonRating ? PreviewState.PreviewCommonRating : PreviewState.PreviewPersonalRating;
@@ -528,6 +523,10 @@ namespace CustomControls
 
                             case RatingItemUpdate.SelectRate:                                 
                                 currentValue += itemValue;
+                                break;
+
+                            case RatingItemUpdate.SkipRate:
+                                item.PreviewState = PreviewState.PreviewUnrated;
                                 break;
                         }
                         if (item == keyItem)
