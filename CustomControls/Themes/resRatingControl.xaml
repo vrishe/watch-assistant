@@ -16,7 +16,7 @@
                     <Viewbox StretchDirection="Both" Stretch="UniformToFill">
                         <Grid>
                             <Path x:Name="FigureBackground" Data="{StaticResource RatingStar}" StrokeThickness="1" StrokeLineJoin="Round" Stroke="#989898" Fill="LightGray" />
-                            <Path x:Name="FigureForeground" Data="{StaticResource RatingStar}" StrokeThickness="1" StrokeLineJoin="Round" Stroke="Goldenrod" Fill="Cornsilk" Visibility="Collapsed" >
+                            <Path x:Name="FigureForeground" Data="{StaticResource RatingStar}" StrokeThickness="1" StrokeLineJoin="Round" Stroke="Goldenrod" Fill="Red" Visibility="Collapsed" > <!-- Cornsilk -->
                                 <Path.Clip>
                                     <RectangleGeometry>
                                         <RectangleGeometry.Rect>
@@ -26,7 +26,7 @@
                                             </MultiBinding>
                                         </RectangleGeometry.Rect>
                                         <RectangleGeometry.Transform>
-                                            <ScaleTransform ScaleX="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=Fraction}" ScaleY="1" />
+                                            <ScaleTransform ScaleX="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=Fraction}" ScaleY="1.0" />
                                         </RectangleGeometry.Transform>
                                     </RectangleGeometry>
                                 </Path.Clip>
@@ -40,8 +40,8 @@
                             <Setter TargetName="FigureBackground" Property="Fill" Value="Yellow" />                            
                         </Trigger>
                         <Trigger Property="PreviewState" Value="PreviewPersonalRating">
-                            <Setter TargetName="FigureBackground" Property="Stroke" Value="Goldenrod" />
-                            <Setter TargetName="FigureBackground" Property="Fill" Value="Gold" />
+                            <Setter TargetName="FigureForeground" Property="Fill" Value="Gold" />
+                            <Setter TargetName="FigureForeground" Property="Visibility" Value="Visible" />
                         </Trigger>
                         <Trigger Property="PreviewState" Value="PreviewCommonRating">
                             <Setter TargetName="FigureForeground" Property="Visibility" Value="Visible" />
