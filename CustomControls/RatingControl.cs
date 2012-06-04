@@ -7,6 +7,8 @@ using System.Windows.Input;
 using System.ComponentModel;
 using System.Windows.Markup;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
+using System.Collections;
 
 namespace CustomControls
 {
@@ -36,108 +38,31 @@ namespace CustomControls
         FirstToLast,
         LastToFirst
     }
-    internal enum PreviewState
+    
+    enum PreviewState
     {
-        PreviewHighlight,
-        PreviewUnrated,
-        PreviewPersonalRating,
-        PreviewCommonRating,
+        Unrated,
+        Highlighted,
+        PersonalRated,
+        CommonRated
     }
 
-    //public class RatingItemData : DependencyObject
-    //{
-    //    #region Properties
-
-    //    public Brush UnratedFillColor
-    //    {
-    //        get { return (Brush)GetValue(UnratedFillColorProperty); }
-    //        set { SetValue(UnratedFillColorProperty, value); }
-    //    }
-    //    public static readonly DependencyProperty UnratedFillColorProperty =
-    //        DependencyProperty.Register("UnratedFillColor", typeof(Brush), typeof(RatingItemData), new UIPropertyMetadata(new SolidColorBrush(Colors.Gray)));
-
-    //    public Brush UnratedStrokeColor
-    //    {
-    //        get { return (Brush)GetValue(UnratedStrokeColorProperty); }
-    //        set { SetValue(UnratedStrokeColorProperty, value); }
-    //    }
-    //    public static readonly DependencyProperty UnratedStrokeColorProperty =
-    //        DependencyProperty.Register("UnratedStrokeColor", typeof(Brush), typeof(RatingItemData), new UIPropertyMetadata(new SolidColorBrush(Colors.LightGray)));
-
-    //    public Brush CommonRatedFillColor
-    //    {
-    //        get { return (Brush)GetValue(CommonRatedFillColorProperty); }
-    //        set { SetValue(CommonRatedFillColorProperty, value); }
-    //    }
-    //    public static readonly DependencyProperty CommonRatedFillColorProperty =
-    //        DependencyProperty.Register("CommonRatedFillColor", typeof(Brush), typeof(RatingItemData), new UIPropertyMetadata(new SolidColorBrush(Colors.Goldenrod)));
-
-    //    public Brush CommonRatedStrokeColor
-    //    {
-    //        get { return (Brush)GetValue(CommonRatedStrokeColorProperty); }
-    //        set { SetValue(CommonRatedStrokeColorProperty, value); }
-    //    }
-    //    public static readonly DependencyProperty CommonRatedStrokeColorProperty =
-    //        DependencyProperty.Register("CommonRatedStrokeColor", typeof(Brush), typeof(RatingItemData), new UIPropertyMetadata(new SolidColorBrush(Colors.Goldenrod) { Opacity = .5 }));
-
-    //    public Brush PersonalRatedFillColor
-    //    {
-    //        get { return (Brush)GetValue(PersonalRatedFillColorProperty); }
-    //        set { SetValue(PersonalRatedFillColorProperty, value); }
-    //    }
-    //    public static readonly DependencyProperty PersonalRatedFillColorProperty =
-    //        DependencyProperty.Register("PersonalRatedFillColor", typeof(Brush), typeof(RatingItemData), new UIPropertyMetadata(new SolidColorBrush(Colors.Gold)));
-
-    //    public Brush PersonalRatedStrokeColor
-    //    {
-    //        get { return (Brush)GetValue(PersonalRatedStrokeColorProperty); }
-    //        set { SetValue(PersonalRatedStrokeColorProperty, value); }
-    //    }
-    //    public static readonly DependencyProperty PersonalRatedStrokeColorProperty =
-    //        DependencyProperty.Register("PersonalRatedStrokeColor", typeof(Brush), typeof(RatingItemData), new UIPropertyMetadata(new SolidColorBrush(Colors.Goldenrod)));
-
-    //    public Brush HighlitedFillColor
-    //    {
-    //        get { return (Brush)GetValue(HighlitedFillColorProperty); }
-    //        set { SetValue(HighlitedFillColorProperty, value); }
-    //    }
-    //    public static readonly DependencyProperty HighlitedFillColorProperty =
-    //        DependencyProperty.Register("HighlitedFillColor", typeof(Brush), typeof(RatingItemData), new UIPropertyMetadata(new SolidColorBrush(Colors.LightGoldenrodYellow)));
-
-    //    public Brush HighlightedStrokeColor
-    //    {
-    //        get { return (Brush)GetValue(HighlightedStrokeColorProperty); }
-    //        set { SetValue(HighlightedStrokeColorProperty, value); }
-    //    }
-    //    public static readonly DependencyProperty HighlightedStrokeColorProperty =
-    //        DependencyProperty.Register("HighlightedStrokeColor", typeof(Brush), typeof(RatingItemData), new UIPropertyMetadata(new SolidColorBrush(Colors.Goldenrod)));
-
-    //    public PathGeometry PathData
-    //    {
-    //        get { return (PathGeometry)GetValue(PathDataProperty); }
-    //        set { SetValue(PathDataProperty, value); }
-    //    }
-    //    public static readonly DependencyProperty PathDataProperty =
-    //        DependencyProperty.Register("PathData", typeof(PathGeometry), typeof(RatingItemData), new UIPropertyMetadata(new PathGeometry()));
-
-    //    #endregion (Properties)
-    //}
-
-    public class RatingItem : Control
+    public delegate void RatingItemHotSpotChangedEventHandler(object sender, EventArgs e);
+    class RatingItem : Control
     {
         #region Properties
 
-        internal double Fraction
+        public double Fraction
         {
             get { return (double)GetValue(FractionProperty); }
             set { SetValue(FractionProperty, value); }
         }
 
-        internal static readonly DependencyProperty FractionProperty =
+        public static readonly DependencyProperty FractionProperty =
             DependencyProperty.Register("Fraction", typeof(double), typeof(RatingItem), 
-            new FrameworkPropertyMetadata(1.0, FrameworkPropertyMetadataOptions.AffectsRender, null, CoerceFractionValue));
+            new FrameworkPropertyMetadata(1.0, FrameworkPropertyMetadataOptions.AffectsRender));
 
-        internal PreviewState PreviewState
+        public PreviewState PreviewState
         {
             get { return (PreviewState)GetValue(PreviewStateProperty); }
             set { SetValue(PreviewStateProperty, value); }
@@ -145,9 +70,15 @@ namespace CustomControls
 
         public static readonly DependencyProperty PreviewStateProperty =
             DependencyProperty.Register("PreviewState", typeof(PreviewState), typeof(RatingItem), 
-            new FrameworkPropertyMetadata(PreviewState.PreviewUnrated, FrameworkPropertyMetadataOptions.AffectsRender, null, CoercePreviewStateValue));
+            new FrameworkPropertyMetadata(PreviewState.Unrated, FrameworkPropertyMetadataOptions.AffectsRender));
 
         #endregion (Properties)
+
+        #region Events
+
+        public event RatingItemHotSpotChangedEventHandler RatingItemHotSpotChangedEvent = new RatingItemHotSpotChangedEventHandler((s, e) => { }); 
+
+        #endregion (Events)
 
         #region Methods
 
@@ -162,8 +93,25 @@ namespace CustomControls
         private static object CoercePreviewStateValue(DependencyObject sender, object baseValue)
         {
             PreviewState previewState = (PreviewState)baseValue;
-            if ((previewState == PreviewState.PreviewCommonRating || previewState == PreviewState.PreviewPersonalRating) && (sender as RatingItem).Fraction == .0) return PreviewState.PreviewUnrated;
+            if ((previewState == PreviewState.CommonRated || previewState == PreviewState.PersonalRated) && (sender as RatingItem).Fraction == .0) return PreviewState.Unrated;
             return baseValue;
+        }
+
+        private static void PreviewStateValueChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
+        {
+            RatingItem item = (RatingItem)sender;
+
+            double itemFraction = item.Fraction; 
+            switch ((PreviewState)e.NewValue)
+            {
+                case PreviewState.Highlighted:
+                    itemFraction = (double)FractionProperty.DefaultMetadata.DefaultValue;
+                    break;
+                case PreviewState.Unrated:
+                    itemFraction = .0;
+                    break;
+            }
+            item.Fraction = itemFraction;
         }
 
         #endregion (Property event handlers)
@@ -174,8 +122,7 @@ namespace CustomControls
         {
             e.Handled = true;
 
-            var rating = ItemsControl.ItemsControlFromItemContainer(this) as RatingControl;
-            if (rating != null) rating.HighlightTailItem = this;
+            RatingItemHotSpotChangedEvent(this, new EventArgs());
 
             base.OnMouseEnter(e);
         }
@@ -196,20 +143,26 @@ namespace CustomControls
         #endregion (Constructuctors)
     }
 
-    [ContentProperty]
     [DefaultProperty("RatingItemsCount")]
     [StyleTypedProperty(Property = "ItemContainerStyle", StyleTargetType = typeof(RatingItem))]
+    [ContentProperty]
     public class RatingControl : ItemsControl
     {
-        private enum RatingItemUpdate
+        private enum RatingItemUpdateAction
         {
-            PreviewRate,
-            SelectRate,
-            SetRate,
-            SkipRate
+            Clear,
+            Preview,
+            Confirm,
+            Reset
         }
 
-        #region Properties 
+        #region Fields
+
+        private RatingItem _hotSpottedItem;
+
+        #endregion (Fields)
+
+        #region Properties
 
         // Orientation
         public Orientation Orientation
@@ -264,9 +217,9 @@ namespace CustomControls
         public static readonly DependencyProperty CommonRatingProperty =
             DependencyProperty.Register("CommonRating", typeof(double), typeof(RatingControl),
             new FrameworkPropertyMetadata(
-                RatingRangeMinProperty.DefaultMetadata.DefaultValue,
-                FrameworkPropertyMetadataOptions.BindsTwoWayByDefault | FrameworkPropertyMetadataOptions.AffectsRender,
-                RatingAttributesValueChanged, CoerceRatingValue)
+                    RatingRangeMinProperty.DefaultMetadata.DefaultValue,
+                    FrameworkPropertyMetadataOptions.BindsTwoWayByDefault | FrameworkPropertyMetadataOptions.AffectsRender,
+                    RatingAttributesValueChanged, CoerceRatingValue)
                 );
 
         // PersonalRating
@@ -279,37 +232,46 @@ namespace CustomControls
         public static readonly DependencyProperty PersonalRatingProperty =
             DependencyProperty.Register("PersonalRating", typeof(double), typeof(RatingControl),
             new FrameworkPropertyMetadata(RatingRangeMinProperty.DefaultMetadata.DefaultValue,
-                FrameworkPropertyMetadataOptions.BindsTwoWayByDefault | FrameworkPropertyMetadataOptions.AffectsRender, 
-                RatingAttributesValueChanged, CoerceRatingValue)
+                    FrameworkPropertyMetadataOptions.AffectsRender, 
+                    RatingAttributesValueChanged, CoerceRatingValue)
                 );
 
         // PersonalRatingPreview
-        public double PersonalRatingValuePreview
+        public double HighlightedRating
         {
-            get { return (double)GetValue(PersonalRatingValuePreviewProperty); }
-            private set { SetValue(PersonalRatingValuePreviewPropertyKey, value); }
+            get { return (double)GetValue(HighlightedRatingProperty); }
+            private set { SetValue(HighlightedRatingPropertyKey, value); }
         }
 
-        public static readonly DependencyPropertyKey PersonalRatingValuePreviewPropertyKey =
-            DependencyProperty.RegisterReadOnly("PersonalRatingValuePreview", typeof(double), typeof(RatingControl), 
+        public static readonly DependencyPropertyKey HighlightedRatingPropertyKey =
+            DependencyProperty.RegisterReadOnly("HighlightedRating", typeof(double), typeof(RatingControl), 
             new UIPropertyMetadata(PersonalRatingProperty.DefaultMetadata.DefaultValue));
+        public static readonly DependencyProperty HighlightedRatingProperty = HighlightedRatingPropertyKey.DependencyProperty;
 
-        public static readonly DependencyProperty PersonalRatingValuePreviewProperty = PersonalRatingValuePreviewPropertyKey.DependencyProperty;
-
-        // Highlight tail
-        [Bindable(false)]
-        [Browsable(false), EditorBrowsable(EditorBrowsableState.Never)]
-        public RatingItem HighlightTailItem
+        // IsHotSpotted
+        public bool IsHotSpotted
         {
-            get { return (RatingItem)GetValue(HighlightTailItemProperty); }
-            set { SetValue(HighlightTailItemProperty, value); }
+            get { return (bool)GetValue(IsHotSpottedProperty); }
+            private set { SetValue(IsHotSpottedPropertyKey, value); }
         }
 
-        [Browsable(false), EditorBrowsable(EditorBrowsableState.Never)]
-        public static readonly DependencyProperty HighlightTailItemProperty =
-            DependencyProperty.Register("HighlightTailItem", typeof(RatingItem), typeof(RatingControl),
-            new UIPropertyMetadata(null, HighlightTailItemValueChanged, CoerceHighlightTailItemValue));
+        private static readonly DependencyPropertyKey IsHotSpottedPropertyKey =
+            DependencyProperty.RegisterReadOnly("IsHotSpotted", typeof(bool), typeof(RatingControl), new UIPropertyMetadata(false));
+        public static readonly DependencyProperty IsHotSpottedProperty = IsHotSpottedPropertyKey.DependencyProperty;
 
+        // HotSpottedItem
+        private RatingItem HotSpottedItem
+        {
+            get { return _hotSpottedItem; }
+            set
+            {
+                if (!Items.Contains(value)) value = null;
+                _hotSpottedItem = value;
+
+                IsHotSpotted = _hotSpottedItem != null;
+            }
+        }
+        
         // RatingItemsCount
         [DesignOnly(true)]
         public int RatingItemsCount
@@ -318,9 +280,13 @@ namespace CustomControls
             set
             {
                 if (value < 1) throw new ArgumentOutOfRangeException(String.Format(@"{0}: Invalid number of rating items was specified to create. Is: {1}, must not be less than 1", Name, value));
-                
+
+                ManageItemCollectionHandlers(this, Items, true);
+
                 Items.Clear();
                 while (value-- > 0) Items.Add(new RatingItem());
+
+                ManageItemCollectionHandlers(this, Items, false);
             }
         }
 
@@ -355,14 +321,6 @@ namespace CustomControls
 
         #region Property event handlers
 
-        private static object CoerceHighlightTailItemValue(DependencyObject sender, object baseValue)
-        {
-            var rating = (RatingControl)sender;
-            var ratingItem = (RatingItem)baseValue;
-            if (rating.Items.Contains(ratingItem)) return baseValue;
-            return HighlightTailItemProperty.DefaultMetadata.DefaultValue;
-        }
-
         private static object CoerceRatingRangeMaxValue(DependencyObject sender, object baseValue)
         {
             var rating = (RatingControl)sender;
@@ -390,38 +348,35 @@ namespace CustomControls
             // else ...
             RoutedEvent risen = e.Property == PersonalRatingProperty ? PersonalRatingChanged : CommonRatingChanged;               
 
-            rating.UpdateItems(RatingItemUpdate.SetRate, null);
             rating.RaiseEvent(new RoutedEventArgs(risen));
 
-        }
-
-        private static void HighlightTailItemValueChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
-        {
-            var rating = (RatingControl)sender;
-
-            rating.UpdateItems(RatingItemUpdate.PreviewRate, e.NewValue as RatingItem);
         }
 
         #endregion (Property event handlers)
 
         #region UI behaviors
 
-        private void OnMouseAction(MouseEventArgs e)
+        private void OnRatingItemHotSpotChanged(object sender, EventArgs e)
+        {
+            HotSpottedItem = sender as RatingItem;
+            RatingControl.UpdateItems(this, RatingItemUpdateAction.Preview);
+        }
+
+        private void OnRatingControlMouseAction(MouseEventArgs e)
         {
             e.Handled = true;
 
-            if (e.RoutedEvent == UIElement.MouseLeaveEvent)
+            if (e.RoutedEvent == UIElement.MouseLeftButtonUpEvent) 
             {
-                HighlightTailItem = null;
-                UpdateItems(RatingItemUpdate.SetRate, HighlightTailItem);
-            }
-            else if (e.RoutedEvent == UIElement.MouseLeftButtonUpEvent) 
-            {
-                UpdateItems(RatingItemUpdate.SelectRate, HighlightTailItem);
+                RatingControl.UpdateItems(this, RatingItemUpdateAction.Confirm);
             }
             else if (e.RoutedEvent == UIElement.MouseRightButtonUpEvent) 
             {
-                PersonalRating = (double)PersonalRatingProperty.DefaultMetadata.DefaultValue;
+                RatingControl.UpdateItems(this, RatingItemUpdateAction.Clear);
+            }
+            else if (e.RoutedEvent == UIElement.MouseLeaveEvent)
+            {
+                RatingControl.UpdateItems(this, RatingItemUpdateAction.Reset);
             }
         }
 
@@ -429,31 +384,31 @@ namespace CustomControls
 
         protected override void OnMouseLeave(MouseEventArgs e)
         {
-            OnMouseAction(e);
+            OnRatingControlMouseAction(e);
             base.OnMouseLeave(e);
         }
 
         protected override void OnMouseRightButtonDown(MouseButtonEventArgs e)
         {
-            OnMouseAction(e);
+            OnRatingControlMouseAction(e);
             base.OnMouseRightButtonDown(e);
         }
 
         protected override void OnMouseRightButtonUp(MouseButtonEventArgs e)
         {
-            OnMouseAction(e);
+            OnRatingControlMouseAction(e);
             base.OnMouseRightButtonUp(e);
         }
 
         protected override void OnMouseLeftButtonDown(MouseButtonEventArgs e)
         {
-            OnMouseAction(e);
+            OnRatingControlMouseAction(e);
             base.OnMouseLeftButtonDown(e);
         }
 
         protected override void OnMouseLeftButtonUp(MouseButtonEventArgs e)
         {
-            OnMouseAction(e);
+            OnRatingControlMouseAction(e);
             base.OnMouseLeftButtonUp(e);
         }
 
@@ -461,81 +416,150 @@ namespace CustomControls
 
         #endregion (UI behabiors)
 
-        private void UpdateItems(RatingItemUpdate action, RatingItem keyItem)
+        #region Helpers
+
+        private static void UpdateItems(RatingControl rating, RatingItemUpdateAction action)
         {
-            if (ItemContainerGenerator.Status == System.Windows.Controls.Primitives.GeneratorStatus.ContainersGenerated)
+            if (rating == null) return;
+
+            if (rating.ItemContainerGenerator.Status == System.Windows.Controls.Primitives.GeneratorStatus.ContainersGenerated)
             {
+                // Initialization
+
+                RatingItem hotSpottedItem = rating.HotSpottedItem;
+              
+                double gaugeValue = rating.PersonalRating;
+                PreviewState itemPreviewState = PreviewState.PersonalRated;
+
                 switch (action)
                 {
-                    case RatingItemUpdate.SetRate:
-                        keyItem = null;
+                    case RatingItemUpdateAction.Preview:
+                        if (hotSpottedItem == null) action = RatingItemUpdateAction.Reset;
                         break;
-                    case RatingItemUpdate.PreviewRate:
-                        if (keyItem == null)
+                    case RatingItemUpdateAction.Reset:
+                        if (rating.PersonalRating == rating.RatingRangeMin)
                         {
-                            PersonalRatingValuePreview = (double)PersonalRatingValuePreviewProperty.DefaultMetadata.DefaultValue;
-                            return;
+                            gaugeValue = rating.CommonRating;
+                            itemPreviewState = PreviewState.CommonRated;
                         }
                         break;
-                    case RatingItemUpdate.SelectRate:
-                        if (keyItem == null) { action = RatingItemUpdate.SetRate; }
-                        break;
                 }
+                   
+                // Items state recompution
+                double itemValue = rating.RatingRangeDelta / rating.Items.Count;
 
-                bool commonRating = PersonalRating == (double)PersonalRatingProperty.DefaultMetadata.DefaultValue;
-
-                var gaugeValue = commonRating ? CommonRating : PersonalRating;
-                var itemValue = RatingRangeDelta / Items.Count;
-                var currentValue = RatingRangeMin;
-
-                var index = 0; var indexMax = Items.Count;
-                var increment = 1;
-                if (SelectionDirection == CustomControls.SelectionDirection.LastToFirst)
+                int index = 0, order = 1, indexMax = rating.Items.Count, increment = 1;
+                if (rating.SelectionDirection == CustomControls.SelectionDirection.LastToFirst)
                 {
                     var temp = index; index = indexMax - 1; indexMax = temp - 1;
                     increment = -1;
                 }
-                for (int order = 1; indexMax.CompareTo(index) == increment; index += increment, order++)
+                for (RatingItemUpdateAction selector = action; indexMax.CompareTo(index) == increment; index += increment)
                 {
-                    var item = ItemContainerGenerator.ContainerFromIndex(index) as RatingItem;
+                    var item = rating.ItemContainerGenerator.ContainerFromIndex(index) as RatingItem;
                     if (item != null)
                     {
-                        switch (action)
+                        switch (selector)
                         {
-                            case RatingItemUpdate.SetRate:
-                                var itemFraction = (double)RatingItem.FractionProperty.DefaultMetadata.DefaultValue;
+                            case RatingItemUpdateAction.Clear:
+                                item.PreviewState = PreviewState.Unrated;
+                                continue;
+
+                            case RatingItemUpdateAction.Preview:
+                                item.PreviewState = PreviewState.Highlighted;
+                                if (item == hotSpottedItem) selector = RatingItemUpdateAction.Clear;
+                                break;
+
+                            case RatingItemUpdateAction.Confirm:
+                                item.PreviewState = PreviewState.PersonalRated;
+                                if (item == hotSpottedItem) selector = RatingItemUpdateAction.Clear;
+                                break;
+
+                            case RatingItemUpdateAction.Reset:
+                                double itemFraction = (double)RatingItem.FractionProperty.DefaultMetadata.DefaultValue;
                                 if (order * itemValue > gaugeValue)
                                 {
                                     var delta = gaugeValue - ((order - 1) * itemValue);
-                                    itemFraction = delta > 0 ? delta / itemValue : .0;
-                                    if (itemFraction == .0) { action = RatingItemUpdate.SkipRate; }
+                                    itemFraction = delta > .0 ? delta / itemValue : .0;
+                                    if (itemFraction == .0)
+                                    {
+                                        selector = RatingItemUpdateAction.Clear;
+                                        index -= increment;
+                                        continue;
+                                    }
                                 }
                                 item.Fraction = itemFraction;
-                                item.PreviewState = commonRating ? PreviewState.PreviewCommonRating : PreviewState.PreviewPersonalRating;
-                                continue;
-
-                            case RatingItemUpdate.PreviewRate:
-                                PersonalRatingValuePreview = Math.Round(order * itemValue, 2);
-                                item.PreviewState = PreviewState.PreviewHighlight;
-                                break;
-
-                            case RatingItemUpdate.SelectRate:                                 
-                                currentValue += itemValue;
-                                break;
-
-                            case RatingItemUpdate.SkipRate:
-                                item.PreviewState = PreviewState.PreviewUnrated;
+                                item.PreviewState = itemPreviewState;
                                 break;
                         }
-                        if (item == keyItem)
-                        {
-                            if (action == RatingItemUpdate.SelectRate) PersonalRating = currentValue;
-                            action = RatingItemUpdate.SkipRate;
-                        }
+                        order++;
+                    }
+                }
+
+                double tempRating = rating.RatingRangeMin + Math.Round((order - 1) * itemValue, 2);
+
+                RatingItem ratingHotSpottedItem = null;
+                double ratingHighlightedRating = (double)HighlightedRatingProperty.DefaultMetadata.DefaultValue;
+                double ratingPersonalRating = rating.PersonalRating; 
+                switch (action)
+                {
+                    case RatingItemUpdateAction.Clear:
+                        ratingPersonalRating = (double)rating.RatingRangeMin;
+                        break;
+
+                    case RatingItemUpdateAction.Preview:
+                        ratingHighlightedRating = tempRating;
+                        ratingHotSpottedItem = hotSpottedItem;
+                        break;
+
+                    case RatingItemUpdateAction.Confirm:
+                        ratingPersonalRating = tempRating;
+                        break;
+                }
+                rating.PersonalRating = ratingPersonalRating;
+                rating.HighlightedRating = ratingHighlightedRating;
+                rating.HotSpottedItem = ratingHotSpottedItem;
+            }
+        }
+
+        private static void ManageItemCollectionHandlers(RatingControl rating, IList items, bool remove)
+        {
+            if (rating == null && items == null) return;
+            foreach (object obj in items)
+            {
+                RatingItem item = obj as RatingItem;
+                if (item != null)
+                {
+                    if (!remove)
+                    {
+                        item.RatingItemHotSpotChangedEvent += rating.OnRatingItemHotSpotChanged;
+                    }
+                    else
+                    {
+                        item.RatingItemHotSpotChangedEvent -= rating.OnRatingItemHotSpotChanged;
                     }
                 }
             }
         }
+
+        private static void UpdateItemCollectionHandlers(RatingControl rating, NotifyCollectionChangedEventArgs e)
+        {
+            if (e.NewItems != null) ManageItemCollectionHandlers(rating, e.NewItems, false);
+            if (e.OldItems != null) ManageItemCollectionHandlers(rating, e.OldItems, true);
+        }
+
+        #region Local overloads
+
+        protected override void OnItemsChanged(NotifyCollectionChangedEventArgs e)
+        {
+            RatingControl.UpdateItemCollectionHandlers(this, e);
+
+            base.OnItemsChanged(e);
+        }
+
+        #endregion (Local overloads)
+
+        #endregion (Helpers)
 
         #endregion (Methods)
 
@@ -543,7 +567,7 @@ namespace CustomControls
 
         public RatingControl()
         {
-            ItemContainerGenerator.StatusChanged += new EventHandler((s, e) => { UpdateItems(RatingItemUpdate.SetRate, null); });
+            ItemContainerGenerator.StatusChanged += new EventHandler((s, e) => { UpdateItems(this, RatingItemUpdateAction.Reset); });
         }
 
         static RatingControl()
