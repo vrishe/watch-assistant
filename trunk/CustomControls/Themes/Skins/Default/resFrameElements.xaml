@@ -82,16 +82,15 @@
                     </Viewbox>
 
                     <ControlTemplate.Triggers>
-                        <Trigger Property="PreviewState" Value="PreviewHighlight">
+                        <Trigger Property="PreviewState" Value="Highlighted">
                             <Setter TargetName="FigureBackground" Property="Stroke" Value="{StaticResource RatingItemStrokeHighlighted}" />
                             <Setter TargetName="FigureBackground" Property="Fill" Value="{StaticResource RatingItemFillHighlighted}" />
                         </Trigger>
-                        <Trigger Property="PreviewState" Value="PreviewPersonalRating">
+                        <Trigger Property="PreviewState" Value="PersonalRated">
                             <Setter TargetName="FigureBackground" Property="Stroke" Value="{StaticResource RatingItemStrokePersonalRated}" />
-                            <Setter TargetName="FigureForeground" Property="Fill" Value="{StaticResource RatingItemFillPersonalRated}" />
-                            <Setter TargetName="FigureForeground" Property="Visibility" Value="Visible" />
+                            <Setter TargetName="FigureBackground" Property="Fill" Value="{StaticResource RatingItemFillPersonalRated}" />
                         </Trigger>
-                        <Trigger Property="PreviewState" Value="PreviewCommonRating">
+                        <Trigger Property="PreviewState" Value="CommonRated">
                             <Setter TargetName="FigureBackground" Property="Stroke" Value="{StaticResource RatingItemStrokeCommonRated}" />
                             <Setter TargetName="FigureForeground" Property="Fill" Value="{StaticResource RatingItemFillCommonlRated}" />
                             <Setter TargetName="FigureForeground" Property="Visibility" Value="Visible" />

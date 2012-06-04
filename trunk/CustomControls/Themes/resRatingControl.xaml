@@ -35,16 +35,15 @@
                     </Viewbox>
 
                     <ControlTemplate.Triggers>
-                        <Trigger Property="PreviewState" Value="PreviewHighlight">
+                        <Trigger Property="PreviewState" Value="Highlighted">
                             <Setter TargetName="FigureBackground" Property="Stroke" Value="Goldenrod" />
                             <Setter TargetName="FigureBackground" Property="Fill" Value="Yellow" />                            
                         </Trigger>
-                        <Trigger Property="PreviewState" Value="PreviewPersonalRating">
+                        <Trigger Property="PreviewState" Value="PersonalRated">
                             <Setter TargetName="FigureBackground" Property="Stroke" Value="Goldenrod" />
-                            <Setter TargetName="FigureForeground" Property="Fill" Value="Gold" />
-                            <Setter TargetName="FigureForeground" Property="Visibility" Value="Visible" />
+                            <Setter TargetName="FigureBackground" Property="Fill" Value="Gold" />
                         </Trigger>
-                        <Trigger Property="PreviewState" Value="PreviewCommonRating">
+                        <Trigger Property="PreviewState" Value="CommonRated">
                             <Setter TargetName="FigureBackground" Property="Stroke" Value="Goldenrod" />
                             <Setter TargetName="FigureForeground" Property="Fill" Value="Cornsilk" />
                             <Setter TargetName="FigureForeground" Property="Visibility" Value="Visible" />
@@ -59,7 +58,7 @@
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="HorizontalContentAlignment" Value="Center" />
         <Setter Property="VerticalContentAlignment" Value="Center" />
-        <Setter Property="ToolTip" Value="{Binding RelativeSource={RelativeSource Self}, Path=PersonalRatingValuePreview}" />
+        <Setter Property="ToolTip" Value="{Binding RelativeSource={RelativeSource Self}, Path=HighlightedRating}" />
         <Setter Property="ItemsPanel">
             <Setter.Value>
                 <ItemsPanelTemplate>
@@ -77,7 +76,7 @@
             </Setter.Value>
         </Setter>
         <Style.Triggers>
-            <Trigger Property="HighlightTailItem" Value="{x:Null}">
+            <Trigger Property="IsHotSpotted" Value="false">
                 <Setter Property="ToolTip" Value="{x:Null}" />
             </Trigger>
         </Style.Triggers>
